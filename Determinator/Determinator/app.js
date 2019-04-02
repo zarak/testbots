@@ -1,16 +1,19 @@
-const { ActivityTypes, BotFrameworkAdapter, MemoryStorage, ConversationState } = require('botbuilder');
-const { DialogSet } = require('botbuilder-dialogs');
+const { BotFrameworkAdapter, MemoryStorage, ConversationState, UserState } = require('botbuilder');
 const restify = require('restify');
-const { EchoBot } = require('./bot.js');
+const { SimplePromptBot } = require('./bot.js');
 
 
-const inMemoryStorage = new MemoryStorage();
+const memoryStorage = new MemoryStorage();
 const adapter = new BotFrameworkAdapter({
     appId: process.env.MicrosoftAppID,
     appPassword: process.env.MicrosoftAppPassword
 });
 
-const bot = new EchoBot();
+// Create conversation state with in-memory storage provider.
+const conversationState = new ConversationState(memoryStorage);
+const userState = new UserState(memoryStorage);
+
+const bot = new SimplePromptBot(conversationState, userState);
 
 let server = restify.createServer();
 server.listen(process.env.port || process.env.PORT || 3978, () => {
