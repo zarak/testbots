@@ -38,8 +38,6 @@ class DeterminatorBot {
         // Add prompts
         this.dialogs.add(new TextPrompt(METHOD_PROMPT));
         
-
-        // TODO: Change this to Determinator dialog
         this.dialogs.add(new WaterfallDialog(BEGIN, [
             this.askForMethod.bind(this)
         ]));
@@ -51,7 +49,6 @@ class DeterminatorBot {
 
     // The first step in this waterfall asks the user for the prediction
     // method: Flip a coin or enchanted octaball.
-    // TODO: Give the user a list of options to choose from
     async askForMethod(dc) {
         await dc.prompt(METHOD_PROMPT, `Choose a prediction method:
                                             * _Flip a Coin_
