@@ -1,0 +1,10 @@
+{
+  "name": "determinator",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "author": "",
+  "dependencies": {
+    "restify": "^8.2.0"
+  }
+}
