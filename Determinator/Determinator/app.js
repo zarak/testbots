@@ -1,6 +1,6 @@
 const { BotFrameworkAdapter, MemoryStorage, ConversationState, UserState } = require('botbuilder');
 const restify = require('restify');
-const { SimplePromptBot } = require('./bot.js');
+const { DeterminatorBot } = require('./bot.js');
 
 
 const memoryStorage = new MemoryStorage();
@@ -13,7 +13,7 @@ const adapter = new BotFrameworkAdapter({
 const conversationState = new ConversationState(memoryStorage);
 const userState = new UserState(memoryStorage);
 
-const bot = new SimplePromptBot(conversationState, userState);
+const bot = new DeterminatorBot(conversationState, userState);
 
 let server = restify.createServer();
 server.listen(process.env.port || process.env.PORT || 3978, () => {
