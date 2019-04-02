@@ -53,7 +53,10 @@ class DeterminatorBot {
     // method: Flip a coin or enchanted octaball.
     // TODO: Give the user a list of options to choose from
     async askForMethod(dc) {
-        await dc.prompt(METHOD_PROMPT, `Choose a prediction method:`);
+        await dc.prompt(METHOD_PROMPT, `Choose a prediction method:
+                                            * _Flip a Coin_
+                                            * _Enchanted Octaball_
+                                            * _Quit_`);
     }
 
     async onTurn(turnContext) {
