@@ -5,6 +5,7 @@
   "main": "app.js",
   "author": "",
   "dependencies": {
+    "botbuilder-dialogs": "^4.3.4",
     "restify": "^8.2.0"
   }
 }
