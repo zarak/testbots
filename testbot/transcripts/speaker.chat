@@ -1,0 +1,13 @@
+user=Michael
+bot=edui Conference
+
+user: Who is speaking about bots?
+bot: Me
+
+user: Who is speaking on mobile development?
+bot: [Herocard
+    title=Michael
+    subtitle=UVA, School of Medicine
+    text=A discussion on building bots for the Microsoft Bot Framework
+    images=https://portlandrock.net/wp-content/uploads/2016/08/garden-with-beautiful-trees.jpg
+    buttons=Add to list|Learn more]

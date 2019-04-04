@@ -1,0 +1,126 @@
+[
+  {
+    "conversation": {
+      "id": "Qkmod6m5l/80iffM+pcwj26yBsA="
+    },
+    "id": "1",
+    "timestamp": "2019-03-18T07:24:11.100Z",
+    "type": "conversationUpdate",
+    "channelId": "chatdown",
+    "membersAdded": [
+      {
+        "id": "8c/PyulKvDS+ZqL+Q+4L8hOSXm0=",
+        "name": "edui Conference",
+        "role": "bot"
+      }
+    ],
+    "membersRemoved": []
+  },
+  {
+    "conversation": {
+      "id": "Qkmod6m5l/80iffM+pcwj26yBsA="
+    },
+    "id": "2",
+    "recipient": {
+      "id": "8c/PyulKvDS+ZqL+Q+4L8hOSXm0=",
+      "name": "edui Conference",
+      "role": "bot"
+    },
+    "from": {
+      "id": "+MOLIWfAq218cg5HwhOUKNd9i2o=",
+      "name": "Michael",
+      "role": "user"
+    },
+    "text": "Who is speaking about bots?",
+    "timestamp": "2019-03-18T07:24:13.100Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "Qkmod6m5l/80iffM+pcwj26yBsA="
+    },
+    "id": "3",
+    "recipient": {
+      "id": "+MOLIWfAq218cg5HwhOUKNd9i2o=",
+      "name": "Michael",
+      "role": "user"
+    },
+    "from": {
+      "id": "8c/PyulKvDS+ZqL+Q+4L8hOSXm0=",
+      "name": "edui Conference",
+      "role": "bot"
+    },
+    "text": "Me",
+    "timestamp": "2019-03-18T07:24:15.100Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "Qkmod6m5l/80iffM+pcwj26yBsA="
+    },
+    "id": "4",
+    "recipient": {
+      "id": "8c/PyulKvDS+ZqL+Q+4L8hOSXm0=",
+      "name": "edui Conference",
+      "role": "bot"
+    },
+    "from": {
+      "id": "+MOLIWfAq218cg5HwhOUKNd9i2o=",
+      "name": "Michael",
+      "role": "user"
+    },
+    "text": "Who is speaking on mobile development?",
+    "timestamp": "2019-03-18T07:24:17.100Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "attachments": [
+      {
+        "contentType": "application/vnd.microsoft.card.hero",
+        "content": {
+          "buttons": [
+            {
+              "title": "Add to list",
+              "type": "imBack",
+              "value": "Add to list"
+            },
+            {
+              "title": "Learn more",
+              "type": "imBack",
+              "value": "Learn more"
+            }
+          ],
+          "title": "Michael",
+          "subtitle": "UVA, School of Medicine",
+          "text": "A discussion on building bots for the Microsoft Bot Framework",
+          "images": [
+            {
+              "url": "https://portlandrock.net/wp-content/uploads/2016/08/garden-with-beautiful-trees.jpg"
+            }
+          ]
+        }
+      }
+    ],
+    "conversation": {
+      "id": "Qkmod6m5l/80iffM+pcwj26yBsA="
+    },
+    "id": "5",
+    "recipient": {
+      "id": "+MOLIWfAq218cg5HwhOUKNd9i2o=",
+      "name": "Michael",
+      "role": "user"
+    },
+    "from": {
+      "id": "8c/PyulKvDS+ZqL+Q+4L8hOSXm0=",
+      "name": "edui Conference",
+      "role": "bot"
+    },
+    "text": "",
+    "timestamp": "2019-03-18T07:24:19.100Z",
+    "type": "message",
+    "channelId": "chatdown"
+  }
+]

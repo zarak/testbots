@@ -1,0 +1,34 @@
+{
+  "urls": [],
+  "qnaList": [
+    {
+      "id": 0,
+      "answer": "* in-depth, half-day workshops (at no additional charge)\n* another item in the bullet list",
+      "source": "custom editorial",
+      "questions": [
+        "What can I expect?"
+      ],
+      "metadata": []
+    },
+    {
+      "id": 0,
+      "answer": "edUi is an annual conference",
+      "source": "custom editorial",
+      "questions": [
+        "Who is producing edui?"
+      ],
+      "metadata": []
+    },
+    {
+      "id": 0,
+      "answer": "We pride ourselves on being able to bring stuff.",
+      "source": "custom editorial",
+      "questions": [
+        "Who speaks at edUi?"
+      ],
+      "metadata": []
+    }
+  ],
+  "files": [],
+  "name": "qna"
+}

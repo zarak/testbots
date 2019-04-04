@@ -1,0 +1,26 @@
+{
+  "name": "testbot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/restify": "^7.2.8",
+    "botbuilder": "^4.3.2",
+    "botbuilder-ai": "^4.3.4",
+    "botbuilder-core": "^4.3.4",
+    "botbuilder-dialogs": "^4.3.4",
+    "botframework-config": "^4.3.4",
+    "chatdown": "^1.2.0",
+    "dotenv": "^7.0.0",
+    "restify": "^8.1.1",
+    "typescript": "^3.3.3333"
+  },
+  "devDependencies": {
+    "@types/dotenv": "^6.1.1"
+  }
+}

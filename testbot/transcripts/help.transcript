@@ -1,0 +1,108 @@
+[
+  {
+    "conversation": {
+      "id": "z0iocaCzgfAz3bxz7r5wM02d3a8="
+    },
+    "id": "1",
+    "timestamp": "2019-03-18T07:26:17.100Z",
+    "type": "conversationUpdate",
+    "channelId": "chatdown",
+    "membersAdded": [
+      {
+        "id": "8c/PyulKvDS+ZqL+Q+4L8hOSXm0=",
+        "name": "edui Conference",
+        "role": "bot"
+      }
+    ],
+    "membersRemoved": []
+  },
+  {
+    "conversation": {
+      "id": "z0iocaCzgfAz3bxz7r5wM02d3a8="
+    },
+    "id": "2",
+    "recipient": {
+      "id": "8c/PyulKvDS+ZqL+Q+4L8hOSXm0=",
+      "name": "edui Conference",
+      "role": "bot"
+    },
+    "from": {
+      "id": "+MOLIWfAq218cg5HwhOUKNd9i2o=",
+      "name": "Michael",
+      "role": "user"
+    },
+    "text": "help",
+    "timestamp": "2019-03-18T07:26:19.100Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "z0iocaCzgfAz3bxz7r5wM02d3a8="
+    },
+    "id": "3",
+    "recipient": {
+      "id": "+MOLIWfAq218cg5HwhOUKNd9i2o=",
+      "name": "Michael",
+      "role": "user"
+    },
+    "from": {
+      "id": "8c/PyulKvDS+ZqL+Q+4L8hOSXm0=",
+      "name": "edui Conference",
+      "role": "bot"
+    },
+    "text": "",
+    "timestamp": "2019-03-18T07:26:21.100Z",
+    "type": "message",
+    "channelId": "chatdown",
+    "suggestedActions": {
+      "actions": [
+        {
+          "title": "want to know about a venue",
+          "type": "imBack",
+          "value": "want to know about a venue"
+        }
+      ]
+    }
+  },
+  {
+    "conversation": {
+      "id": "z0iocaCzgfAz3bxz7r5wM02d3a8="
+    },
+    "id": "4",
+    "recipient": {
+      "id": "8c/PyulKvDS+ZqL+Q+4L8hOSXm0=",
+      "name": "edui Conference",
+      "role": "bot"
+    },
+    "from": {
+      "id": "+MOLIWfAq218cg5HwhOUKNd9i2o=",
+      "name": "Michael",
+      "role": "user"
+    },
+    "text": "I want to know about a tools",
+    "timestamp": "2019-03-18T07:26:23.100Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "z0iocaCzgfAz3bxz7r5wM02d3a8="
+    },
+    "id": "5",
+    "recipient": {
+      "id": "+MOLIWfAq218cg5HwhOUKNd9i2o=",
+      "name": "Michael",
+      "role": "user"
+    },
+    "from": {
+      "id": "8c/PyulKvDS+ZqL+Q+4L8hOSXm0=",
+      "name": "edui Conference",
+      "role": "bot"
+    },
+    "text": "You can ask\n* _Who is speaking about bots?_\n* _What time is the bot framework talk?_",
+    "timestamp": "2019-03-18T07:26:25.100Z",
+    "type": "message",
+    "channelId": "chatdown"
+  }
+]
