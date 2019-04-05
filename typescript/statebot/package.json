@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "@types/restify": "^7.2.9",
+    "botbuilder": "^4.3.4",
+    "botframework-config": "^4.3.4",
+    "restify": "^8.2.0"
+  }
+}
