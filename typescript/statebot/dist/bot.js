@@ -52,7 +52,7 @@ var StateBot = /** @class */ (function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        if (!(context.activity.type == botbuilder_1.ActivityTypes.Message)) return [3 /*break*/, 5];
+                        if (!(context.activity.type == botbuilder_1.ActivityTypes.Message)) return [3 /*break*/, 14];
                         userProfileObject = {
                             "name": null,
                             "age": null
@@ -65,17 +65,41 @@ var StateBot = /** @class */ (function () {
                             })];
                     case 2:
                         conversationData = _a.sent();
-                        if (!(userProfile.name == null)) return [3 /*break*/, 4];
-                        return [4 /*yield*/, context.sendActivity("Enter your name: ")];
+                        if (!(userProfile.name == null)) return [3 /*break*/, 9];
+                        if (!conversationData.promptedForUserName) return [3 /*break*/, 4];
+                        userProfileObject.name = context.activity.text;
+                        return [4 /*yield*/, context.sendActivity("Thanks " + userProfileObject.name)];
                     case 3:
                         _a.sent();
-                        _a.label = 4;
-                    case 4: return [3 /*break*/, 7];
-                    case 5: return [4 /*yield*/, context.sendActivity(context.activity.type + " detected.")];
-                    case 6:
+                        return [3 /*break*/, 6];
+                    case 4: return [4 /*yield*/, context.sendActivity("Enter your name: ")];
+                    case 5:
                         _a.sent();
-                        _a.label = 7;
-                    case 7: return [2 /*return*/];
+                        conversationData.promptedForUserName = true;
+                        _a.label = 6;
+                    case 6: return [4 /*yield*/, this._userProfile.set(context, userProfileObject)];
+                    case 7:
+                        _a.sent();
+                        return [4 /*yield*/, this._userState.saveChanges(context)];
+                    case 8:
+                        _a.sent();
+                        return [3 /*break*/, 11];
+                    case 9: return [4 /*yield*/, context.sendActivity("Hello " + userProfile.name)];
+                    case 10:
+                        _a.sent();
+                        _a.label = 11;
+                    case 11: return [4 /*yield*/, this._conversationData.set(context, conversationData)];
+                    case 12:
+                        _a.sent();
+                        return [4 /*yield*/, this._conversationState.saveChanges(context)];
+                    case 13:
+                        _a.sent();
+                        return [3 /*break*/, 16];
+                    case 14: return [4 /*yield*/, context.sendActivity(context.activity.type + " detected.")];
+                    case 15:
+                        _a.sent();
+                        _a.label = 16;
+                    case 16: return [2 /*return*/];
                 }
             });
         });

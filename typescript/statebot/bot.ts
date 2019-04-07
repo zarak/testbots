@@ -35,8 +35,21 @@ export class StateBot {
 
             // Name has not been set
             if (userProfile.name == null) {
-                await context.sendActivity("Enter your name: ");
+                // Has the user been prompted on the previous turn?
+                if (conversationData.promptedForUserName) {
+                    userProfileObject.name = context.activity.text;
+                    await context.sendActivity(`Thanks ${userProfileObject.name}`);
+                } else {
+                    await context.sendActivity("Enter your name: ");
+                    conversationData.promptedForUserName = true;
+                }
+                await this._userProfile.set(context, userProfileObject);
+                await this._userState.saveChanges(context);
+            } else {
+                await context.sendActivity(`Hello ${userProfile.name}`);
             }
+            await this._conversationData.set(context, conversationData);
+            await this._conversationState.saveChanges(context);
         } else {
             await context.sendActivity(`${context.activity.type} detected.`);
         }
