@@ -21,8 +21,22 @@ export class StateBot {
     }
 
     async onTurn(context: TurnContext) {
-        if (context.activity.type == 'message') {
-            await context.sendActivity(`You said ${context.activity.text}`);
+        if (context.activity.type == ActivityTypes.Message) {
+            const userProfileObject : {"name" : null | string, "age" : null | number } = 
+                { 
+                    "name": null,
+                    "age": null
+                };
+            const userProfile = await this._userProfile.get(context, userProfileObject);
+            const conversationData = await this._conversationData.get(context,
+                {
+                    promptedForUserName: false,
+                });
+
+            // Name has not been set
+            if (userProfile.name == null) {
+                await context.sendActivity("Enter your name: ");
+            }
         } else {
             await context.sendActivity(`${context.activity.type} detected.`);
         }

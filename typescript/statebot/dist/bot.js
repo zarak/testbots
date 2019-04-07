@@ -35,6 +35,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+var botbuilder_1 = require("botbuilder");
 // The accessor names for the conversation data and user profile state property accessors.
 var CONVERSATION_DATA_PROPERTY = 'conversationData';
 var USER_PROFILE_PROPERTY = 'userProfile';
@@ -47,19 +48,34 @@ var StateBot = /** @class */ (function () {
     }
     StateBot.prototype.onTurn = function (context) {
         return __awaiter(this, void 0, void 0, function () {
+            var userProfileObject, userProfile, conversationData;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        if (!(context.activity.type == 'message')) return [3 /*break*/, 2];
-                        return [4 /*yield*/, context.sendActivity("You said " + context.activity.text)];
+                        if (!(context.activity.type == botbuilder_1.ActivityTypes.Message)) return [3 /*break*/, 5];
+                        userProfileObject = {
+                            "name": null,
+                            "age": null
+                        };
+                        return [4 /*yield*/, this._userProfile.get(context, userProfileObject)];
                     case 1:
-                        _a.sent();
-                        return [3 /*break*/, 4];
-                    case 2: return [4 /*yield*/, context.sendActivity(context.activity.type + " detected.")];
+                        userProfile = _a.sent();
+                        return [4 /*yield*/, this._conversationData.get(context, {
+                                promptedForUserName: false,
+                            })];
+                    case 2:
+                        conversationData = _a.sent();
+                        if (!(userProfile.name == null)) return [3 /*break*/, 4];
+                        return [4 /*yield*/, context.sendActivity("Enter your name: ")];
                     case 3:
                         _a.sent();
                         _a.label = 4;
-                    case 4: return [2 /*return*/];
+                    case 4: return [3 /*break*/, 7];
+                    case 5: return [4 /*yield*/, context.sendActivity(context.activity.type + " detected.")];
+                    case 6:
+                        _a.sent();
+                        _a.label = 7;
+                    case 7: return [2 /*return*/];
                 }
             });
         });
