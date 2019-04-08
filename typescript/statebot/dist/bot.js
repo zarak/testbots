@@ -128,7 +128,7 @@ var StateBot2 = /** @class */ (function () {
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
-                        if (!(context.activity.type == botbuilder_1.ActivityTypes.Message)) return [3 /*break*/, 15];
+                        if (!(context.activity.type == botbuilder_1.ActivityTypes.Message)) return [3 /*break*/, 17];
                         return [4 /*yield*/, this._conversationFlow.get(context, { lastQuestionAsked: question.none })];
                     case 1:
                         flow = _b.sent();
@@ -141,13 +141,14 @@ var StateBot2 = /** @class */ (function () {
                             case question.none: return [3 /*break*/, 3];
                             case question.name: return [3 /*break*/, 5];
                             case question.age: return [3 /*break*/, 8];
+                            case question.date: return [3 /*break*/, 11];
                         }
-                        return [3 /*break*/, 11];
+                        return [3 /*break*/, 14];
                     case 3: return [4 /*yield*/, context.sendActivity("Let's get started! What is your name?")];
                     case 4:
                         _b.sent();
                         flow.lastQuestionAsked = question.name;
-                        return [3 /*break*/, 12];
+                        return [3 /*break*/, 14];
                     case 5:
                         userProfileData.name = context.activity.text;
                         return [4 /*yield*/, context.sendActivity("I got your name as " + userProfileData.name)];
@@ -157,7 +158,7 @@ var StateBot2 = /** @class */ (function () {
                     case 7:
                         _b.sent();
                         flow.lastQuestionAsked = question.age;
-                        return [3 /*break*/, 12];
+                        return [3 /*break*/, 14];
                     case 8:
                         try {
                             userProfileData.age = parseInt(context.activity.text);
@@ -172,16 +173,25 @@ var StateBot2 = /** @class */ (function () {
                     case 10:
                         _b.sent();
                         flow.lastQuestionAsked = question.date;
-                        return [3 /*break*/, 12];
-                    case 11: return [3 /*break*/, 12];
-                    case 12: return [4 /*yield*/, this._conversationFlow.set(context, flow)];
+                        return [3 /*break*/, 14];
+                    case 11:
+                        userProfileData.date = context.activity.text;
+                        return [4 /*yield*/, context.sendActivity("Your meeting is scheduled for " + userProfileData.date)];
+                    case 12:
+                        _b.sent();
+                        return [4 /*yield*/, context.sendActivity("Type anything to run the bot again")];
                     case 13:
                         _b.sent();
-                        return [4 /*yield*/, this._conversationState.saveChanges(context)];
-                    case 14:
+                        flow.lastQuestionAsked = question.none;
+                        return [3 /*break*/, 14];
+                    case 14: return [4 /*yield*/, this._conversationFlow.set(context, flow)];
+                    case 15:
                         _b.sent();
-                        _b.label = 15;
-                    case 15: return [2 /*return*/];
+                        return [4 /*yield*/, this._conversationState.saveChanges(context)];
+                    case 16:
+                        _b.sent();
+                        _b.label = 17;
+                    case 17: return [2 /*return*/];
                 }
             });
         });

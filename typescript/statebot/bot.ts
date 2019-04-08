@@ -114,7 +114,11 @@ export class StateBot2 {
                     await context.sendActivity("What is the date?");
                     flow.lastQuestionAsked = question.date;
                     break;
-                default:
+                case question.date:
+                    userProfileData.date = context.activity.text;
+                    await context.sendActivity(`Your meeting is scheduled for ${userProfileData.date}`);
+                    await context.sendActivity("Type anything to run the bot again");
+                    flow.lastQuestionAsked = question.none;
                     break;
             }
             await this._conversationFlow.set(context, flow);
