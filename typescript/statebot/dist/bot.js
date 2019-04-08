@@ -110,7 +110,7 @@ exports.StateBot1 = StateBot1;
 var CONVERSATION_FLOW_PROPERTY = 'conversationFlowProperty';
 var question = {
     name: "name",
-    age: "age",
+    employeeNumber: "employeeNumber",
     date: "date",
     none: "none"
 };
@@ -124,74 +124,84 @@ var StateBot2 = /** @class */ (function () {
     }
     StateBot2.prototype.onTurn = function (context) {
         return __awaiter(this, void 0, void 0, function () {
-            var flow, userProfileData, profile, _a;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+            var flow, userProfileData, profile, _a, _b, _c;
+            return __generator(this, function (_d) {
+                switch (_d.label) {
                     case 0:
-                        if (!(context.activity.type == botbuilder_1.ActivityTypes.Message)) return [3 /*break*/, 17];
+                        if (!(context.activity.type == botbuilder_1.ActivityTypes.Message)) return [3 /*break*/, 20];
                         return [4 /*yield*/, this._conversationFlow.get(context, { lastQuestionAsked: question.none })];
                     case 1:
-                        flow = _b.sent();
+                        flow = _d.sent();
                         userProfileData = {};
                         return [4 /*yield*/, this._userProfile.get(context, userProfileData)];
                     case 2:
-                        profile = _b.sent();
+                        profile = _d.sent();
                         _a = flow.lastQuestionAsked;
                         switch (_a) {
                             case question.none: return [3 /*break*/, 3];
                             case question.name: return [3 /*break*/, 5];
-                            case question.age: return [3 /*break*/, 8];
+                            case question.employeeNumber: return [3 /*break*/, 8];
                             case question.date: return [3 /*break*/, 11];
                         }
-                        return [3 /*break*/, 14];
+                        return [3 /*break*/, 15];
                     case 3: return [4 /*yield*/, context.sendActivity("Let's get started! What is your name?")];
                     case 4:
-                        _b.sent();
+                        _d.sent();
                         flow.lastQuestionAsked = question.name;
-                        return [3 /*break*/, 14];
+                        return [3 /*break*/, 15];
                     case 5:
-                        userProfileData.name = context.activity.text;
-                        return [4 /*yield*/, context.sendActivity("I got your name as " + userProfileData.name)];
+                        profile.name = context.activity.text;
+                        return [4 /*yield*/, context.sendActivity("I got your name as " + profile.name)];
                     case 6:
-                        _b.sent();
-                        return [4 /*yield*/, context.sendActivity("What is your age")];
+                        _d.sent();
+                        return [4 /*yield*/, context.sendActivity("What is your employee number?")];
                     case 7:
-                        _b.sent();
-                        flow.lastQuestionAsked = question.age;
-                        return [3 /*break*/, 14];
+                        _d.sent();
+                        flow.lastQuestionAsked = question.employeeNumber;
+                        return [3 /*break*/, 15];
                     case 8:
                         try {
-                            userProfileData.age = parseInt(context.activity.text);
+                            profile.employeeNumber = parseInt(context.activity.text);
                         }
                         catch (e) {
                             console.error("Couldn't process input", e);
                         }
-                        return [4 /*yield*/, context.sendActivity("I got your age as " + userProfileData.age)];
+                        return [4 /*yield*/, context.sendActivity("I got your employee number as " + profile.employeeNumber)];
                     case 9:
-                        _b.sent();
-                        return [4 /*yield*/, context.sendActivity("What is the date?")];
+                        _d.sent();
+                        return [4 /*yield*/, context.sendActivity("When shall I schedule the meeting?")];
                     case 10:
-                        _b.sent();
+                        _d.sent();
                         flow.lastQuestionAsked = question.date;
-                        return [3 /*break*/, 14];
+                        return [3 /*break*/, 15];
                     case 11:
-                        userProfileData.date = context.activity.text;
-                        return [4 /*yield*/, context.sendActivity("Your meeting is scheduled for " + userProfileData.date)];
+                        profile.date = context.activity.text;
+                        return [4 /*yield*/, context.sendActivity("Your meeting is scheduled for " + profile.date)];
                     case 12:
-                        _b.sent();
+                        _d.sent();
                         return [4 /*yield*/, context.sendActivity("Type anything to run the bot again")];
                     case 13:
-                        _b.sent();
+                        _d.sent();
+                        _c = (_b = console).log;
+                        return [4 /*yield*/, this._userProfile.get(context)];
+                    case 14:
+                        _c.apply(_b, [_d.sent()]);
                         flow.lastQuestionAsked = question.none;
-                        return [3 /*break*/, 14];
-                    case 14: return [4 /*yield*/, this._conversationFlow.set(context, flow)];
-                    case 15:
-                        _b.sent();
-                        return [4 /*yield*/, this._conversationState.saveChanges(context)];
+                        return [3 /*break*/, 15];
+                    case 15: return [4 /*yield*/, this._conversationFlow.set(context, flow)];
                     case 16:
-                        _b.sent();
-                        _b.label = 17;
-                    case 17: return [2 /*return*/];
+                        _d.sent();
+                        return [4 /*yield*/, this._conversationState.saveChanges(context)];
+                    case 17:
+                        _d.sent();
+                        return [4 /*yield*/, this._userProfile.set(context, profile)];
+                    case 18:
+                        _d.sent();
+                        return [4 /*yield*/, this._userState.saveChanges(context)];
+                    case 19:
+                        _d.sent();
+                        _d.label = 20;
+                    case 20: return [2 /*return*/];
                 }
             });
         });

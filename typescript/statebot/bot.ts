@@ -61,14 +61,14 @@ const CONVERSATION_FLOW_PROPERTY = 'conversationFlowProperty';
 
 const question = {
     name: "name",
-    age: "age",
+    employeeNumber: "employeeNumber",
     date: "date",
     none: "none"
 };
 
 interface IUserProfile {
     name?: string,
-    age? : number,
+    employeeNumber? : number,
     date? : string
 };
 
@@ -99,30 +99,33 @@ export class StateBot2 {
                     flow.lastQuestionAsked = question.name;
                     break;
                 case question.name:
-                    userProfileData.name = context.activity.text;
-                    await context.sendActivity(`I got your name as ${userProfileData.name}`);
-                    await context.sendActivity("What is your age");
-                    flow.lastQuestionAsked = question.age;
+                    profile.name = context.activity.text;
+                    await context.sendActivity(`I got your name as ${profile.name}`);
+                    await context.sendActivity("What is your employee number?");
+                    flow.lastQuestionAsked = question.employeeNumber;
                     break;
-                case question.age:
+                case question.employeeNumber:
                     try {
-                        userProfileData.age = parseInt(context.activity.text);
+                        profile.employeeNumber = parseInt(context.activity.text);
                     } catch (e) {
                         console.error("Couldn't process input", e);
                     }
-                    await context.sendActivity(`I got your age as ${userProfileData.age}`);
-                    await context.sendActivity("What is the date?");
+                    await context.sendActivity(`I got your employee number as ${profile.employeeNumber}`);
+                    await context.sendActivity("When shall I schedule the meeting?");
                     flow.lastQuestionAsked = question.date;
                     break;
                 case question.date:
-                    userProfileData.date = context.activity.text;
-                    await context.sendActivity(`Your meeting is scheduled for ${userProfileData.date}`);
+                    profile.date = context.activity.text;
+                    await context.sendActivity(`Your meeting is scheduled for ${profile.date}`);
                     await context.sendActivity("Type anything to run the bot again");
+                    console.log(await this._userProfile.get(context));
                     flow.lastQuestionAsked = question.none;
                     break;
             }
             await this._conversationFlow.set(context, flow);
             await this._conversationState.saveChanges(context);
+            await this._userProfile.set(context, profile);
+            await this._userState.saveChanges(context);
         }
     }
 }
