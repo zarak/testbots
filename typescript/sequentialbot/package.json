@@ -1,0 +1,12 @@
+{
+  "dependencies": {
+    "@types/restify": "^7.2.9",
+    "botbuilder": "^4.3.4",
+    "botbuilder-dialogs": "^4.3.4",
+    "restify": "^8.2.0"
+  },
+  "name": "sequentialbot",
+  "version": "1.0.0",
+  "main": "server.js",
+  "license": "MIT"
+}
