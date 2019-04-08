@@ -72,7 +72,7 @@ var conversationState;
 var memoryStorage = new botbuilder_1.MemoryStorage();
 conversationState = new botbuilder_1.ConversationState(memoryStorage);
 var userState = new botbuilder_1.UserState(memoryStorage);
-var myBot = new bot_1.StateBot(conversationState, userState);
+var myBot = new bot_1.StateBot2(conversationState, userState);
 var server = restify.createServer();
 server.listen(process.env.port || process.env.PORT || 3978, function () {
     console.log("Listening");

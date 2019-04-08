@@ -39,14 +39,14 @@ var botbuilder_1 = require("botbuilder");
 // The accessor names for the conversation data and user profile state property accessors.
 var CONVERSATION_DATA_PROPERTY = 'conversationData';
 var USER_PROFILE_PROPERTY = 'userProfile';
-var StateBot = /** @class */ (function () {
-    function StateBot(conversationState, userState) {
+var StateBot1 = /** @class */ (function () {
+    function StateBot1(conversationState, userState) {
         this._conversationData = conversationState.createProperty(CONVERSATION_DATA_PROPERTY);
         this._userProfile = userState.createProperty(USER_PROFILE_PROPERTY);
         this._conversationState = conversationState;
         this._userState = userState;
     }
-    StateBot.prototype.onTurn = function (context) {
+    StateBot1.prototype.onTurn = function (context) {
         return __awaiter(this, void 0, void 0, function () {
             var userProfileObject, userProfile, conversationData;
             return __generator(this, function (_a) {
@@ -67,7 +67,7 @@ var StateBot = /** @class */ (function () {
                         conversationData = _a.sent();
                         if (!(userProfile.name == null)) return [3 /*break*/, 9];
                         if (!conversationData.promptedForUserName) return [3 /*break*/, 4];
-                        userProfileObject.name = context.activity.text;
+                        userProfileObject.name = context.activity.text; // set the name using user's response
                         return [4 /*yield*/, context.sendActivity("Thanks " + userProfileObject.name)];
                     case 3:
                         _a.sent();
@@ -104,6 +104,88 @@ var StateBot = /** @class */ (function () {
             });
         });
     };
-    return StateBot;
+    return StateBot1;
 }());
-exports.StateBot = StateBot;
+exports.StateBot1 = StateBot1;
+var CONVERSATION_FLOW_PROPERTY = 'conversationFlowProperty';
+var question = {
+    name: "name",
+    age: "age",
+    date: "date",
+    none: "none"
+};
+;
+var StateBot2 = /** @class */ (function () {
+    function StateBot2(conversationState, userState) {
+        this._conversationFlow = conversationState.createProperty(CONVERSATION_FLOW_PROPERTY);
+        this._userProfile = userState.createProperty(USER_PROFILE_PROPERTY);
+        this._conversationState = conversationState;
+        this._userState = userState;
+    }
+    StateBot2.prototype.onTurn = function (context) {
+        return __awaiter(this, void 0, void 0, function () {
+            var flow, userProfileData, profile, _a;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        if (!(context.activity.type == botbuilder_1.ActivityTypes.Message)) return [3 /*break*/, 15];
+                        return [4 /*yield*/, this._conversationFlow.get(context, { lastQuestionAsked: question.none })];
+                    case 1:
+                        flow = _b.sent();
+                        userProfileData = {};
+                        return [4 /*yield*/, this._userProfile.get(context, userProfileData)];
+                    case 2:
+                        profile = _b.sent();
+                        _a = flow.lastQuestionAsked;
+                        switch (_a) {
+                            case question.none: return [3 /*break*/, 3];
+                            case question.name: return [3 /*break*/, 5];
+                            case question.age: return [3 /*break*/, 8];
+                        }
+                        return [3 /*break*/, 11];
+                    case 3: return [4 /*yield*/, context.sendActivity("Let's get started! What is your name?")];
+                    case 4:
+                        _b.sent();
+                        flow.lastQuestionAsked = question.name;
+                        return [3 /*break*/, 12];
+                    case 5:
+                        userProfileData.name = context.activity.text;
+                        return [4 /*yield*/, context.sendActivity("I got your name as " + userProfileData.name)];
+                    case 6:
+                        _b.sent();
+                        return [4 /*yield*/, context.sendActivity("What is your age")];
+                    case 7:
+                        _b.sent();
+                        flow.lastQuestionAsked = question.age;
+                        return [3 /*break*/, 12];
+                    case 8:
+                        try {
+                            userProfileData.age = parseInt(context.activity.text);
+                        }
+                        catch (e) {
+                            console.error("Couldn't process input", e);
+                        }
+                        return [4 /*yield*/, context.sendActivity("I got your age as " + userProfileData.age)];
+                    case 9:
+                        _b.sent();
+                        return [4 /*yield*/, context.sendActivity("What is the date?")];
+                    case 10:
+                        _b.sent();
+                        flow.lastQuestionAsked = question.date;
+                        return [3 /*break*/, 12];
+                    case 11: return [3 /*break*/, 12];
+                    case 12: return [4 /*yield*/, this._conversationFlow.set(context, flow)];
+                    case 13:
+                        _b.sent();
+                        return [4 /*yield*/, this._conversationState.saveChanges(context)];
+                    case 14:
+                        _b.sent();
+                        _b.label = 15;
+                    case 15: return [2 /*return*/];
+                }
+            });
+        });
+    };
+    return StateBot2;
+}());
+exports.StateBot2 = StateBot2;

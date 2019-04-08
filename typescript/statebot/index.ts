@@ -1,6 +1,6 @@
 import { BotFrameworkAdapter, MemoryStorage, ConversationState, UserState, TurnContext } from 'botbuilder';
 import * as restify from 'restify';
-import { StateBot } from './bot';
+import { StateBot2 } from './bot';
 
 // State Accessor Properties
 
@@ -26,7 +26,7 @@ conversationState = new ConversationState(memoryStorage);
 const userState = new UserState(memoryStorage);
 
 
-const myBot = new StateBot(conversationState, userState);
+const myBot = new StateBot2(conversationState, userState);
 
 let server = restify.createServer();
 server.listen(process.env.port || process.env.PORT || 3978, () => {
