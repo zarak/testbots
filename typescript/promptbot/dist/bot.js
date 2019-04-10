@@ -41,8 +41,10 @@ var DIALOG_STATE_PROPERTY = 'dialogState';
 var USER_PROFILE_PROPERTY = 'userProfile';
 // Dialog contexts
 var ROOT = 'root';
+var HELP = 'help';
 var NAME_PROMPT = 'name_prompt';
 var ID_PROMPT = 'id_prompt';
+var HELP_MENU = 'help_menu';
 ;
 var PromptBot = /** @class */ (function () {
     function PromptBot(conversationState, userState) {
@@ -53,13 +55,19 @@ var PromptBot = /** @class */ (function () {
         this.dialogs = new botbuilder_dialogs_1.DialogSet(this.dialogState);
         this.dialogs.add(new botbuilder_dialogs_1.TextPrompt(NAME_PROMPT));
         this.dialogs.add(new botbuilder_dialogs_1.TextPrompt(ID_PROMPT));
+        this.dialogs.add(new botbuilder_dialogs_1.ChoicePrompt(HELP_MENU));
         // Create a dialog that asks the user for their name.
         var onboarding = [
             this.promptForName.bind(this),
             this.promptForEmployeeID.bind(this),
             this.end.bind(this)
         ];
+        var helpMenu = [
+            this.promptForHelpMenu.bind(this),
+            this.endHelp.bind(this)
+        ];
         this.dialogs.add(new botbuilder_dialogs_1.WaterfallDialog(ROOT, onboarding));
+        this.dialogs.add(new botbuilder_dialogs_1.WaterfallDialog(HELP, helpMenu));
     }
     // This step in the dialog prompts the user for their name.
     PromptBot.prototype.promptForName = function (step) {
@@ -110,48 +118,76 @@ var PromptBot = /** @class */ (function () {
             });
         });
     };
-    PromptBot.prototype.onTurn = function (context) {
+    PromptBot.prototype.promptForHelpMenu = function (step) {
         return __awaiter(this, void 0, void 0, function () {
-            var dc, user;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, step.prompt(HELP_MENU, 'Would you like me schedule an appointment with an agent?', ['yes', 'no'])];
+                    case 1: return [2 /*return*/, _a.sent()];
+                }
+            });
+        });
+    };
+    PromptBot.prototype.endHelp = function (step) {
+        return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        if (!(context.activity.type === botbuilder_1.ActivityTypes.Message)) return [3 /*break*/, 7];
+                        console.log(step.result);
+                        return [4 /*yield*/, step.context.sendActivity("You selected " + step.result.value)];
+                    case 1:
+                        _a.sent();
+                        return [2 /*return*/, step.endDialog()];
+                }
+            });
+        });
+    };
+    PromptBot.prototype.onTurn = function (context) {
+        return __awaiter(this, void 0, void 0, function () {
+            var dc, utterance, user;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        if (!(context.activity.type === botbuilder_1.ActivityTypes.Message)) return [3 /*break*/, 9];
                         return [4 /*yield*/, this.dialogs.createContext(context)];
                     case 1:
                         dc = _a.sent();
-                        //const utterance = (context.activity.text || '').trim().toLowerCase();
+                        utterance = (context.activity.text || '').trim().toLowerCase();
                         // If the bot has not yet responded, continue processing the current
                         // dialog.
                         return [4 /*yield*/, dc.continueDialog()];
                     case 2:
-                        //const utterance = (context.activity.text || '').trim().toLowerCase();
                         // If the bot has not yet responded, continue processing the current
                         // dialog.
                         _a.sent();
-                        if (!!context.responded) return [3 /*break*/, 7];
+                        if (!!context.responded) return [3 /*break*/, 9];
                         return [4 /*yield*/, this.userProfile.get(dc.context, {})];
                     case 3:
                         user = _a.sent();
-                        console.log(user);
-                        if (!(user.name && user.employeeID)) return [3 /*break*/, 5];
-                        return [4 /*yield*/, context.sendActivity("Hello " + user.name + ". Your employee ID is " + user.employeeID)];
+                        if (!(utterance === 'help')) return [3 /*break*/, 5];
+                        return [4 /*yield*/, dc.beginDialog(HELP)];
                     case 4:
                         _a.sent();
-                        return [3 /*break*/, 7];
-                    case 5: return [4 /*yield*/, dc.beginDialog(ROOT)];
+                        return [3 /*break*/, 9];
+                    case 5:
+                        if (!(user.name && user.employeeID)) return [3 /*break*/, 7];
+                        return [4 /*yield*/, context.sendActivity("Hello " + user.name + ". Your employee ID is " + user.employeeID)];
                     case 6:
                         _a.sent();
-                        _a.label = 7;
-                    case 7: 
+                        return [3 /*break*/, 9];
+                    case 7: return [4 /*yield*/, dc.beginDialog(ROOT)];
+                    case 8:
+                        _a.sent();
+                        _a.label = 9;
+                    case 9: 
                     // Save changes to the user state.
                     return [4 /*yield*/, this.userState.saveChanges(context)];
-                    case 8:
+                    case 10:
                         // Save changes to the user state.
                         _a.sent();
                         // End this turn by saving changes to the conversation state.
                         return [4 /*yield*/, this.conversationState.saveChanges(context)];
-                    case 9:
+                    case 11:
                         // End this turn by saving changes to the conversation state.
                         _a.sent();
                         return [2 /*return*/];
