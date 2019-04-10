@@ -72,10 +72,10 @@ var SequentialBot = /** @class */ (function () {
         }); }));
         // Create a dialog that asks the user for their name.
         this.dialogs.add(new botbuilder_dialogs_1.WaterfallDialog(WHO_ARE_YOU, [
-            this.promptForName.bind(this),
-            this.confirmAgePrompt.bind(this),
-            this.promptForAge.bind(this),
-            this.captureAge.bind(this)
+            this.promptForName,
+            this.confirmAgePrompt,
+            this.promptForAge,
+            this.captureAge
         ]));
         // Create a dialog that displays a user name after it has been collected.
         this.dialogs.add(new botbuilder_dialogs_1.WaterfallDialog(HELLO_USER, [

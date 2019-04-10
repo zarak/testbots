@@ -46,42 +46,23 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var botbuilder_1 = require("botbuilder");
 var restify = __importStar(require("restify"));
 var bot_1 = require("./bot");
-// State Accessor Properties
-var DEV_ENVIRONMENT = 'development';
-var BOT_CONFIGURATION = (process.env.NODE_ENV || DEV_ENVIRONMENT);
-var adapter = new botbuilder_1.BotFrameworkAdapter({
-    appId: process.env.microsoftAppID,
-    appPassword: process.env.microsoftAppPassword
-});
-adapter.onTurnError = function (context, error) { return __awaiter(_this, void 0, void 0, function () {
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                console.error(error);
-                return [4 /*yield*/, context.sendActivity('Oops. Something went wrong')];
-            case 1:
-                _a.sent();
-                return [4 /*yield*/, conversationState.delete(context)];
-            case 2:
-                _a.sent();
-                return [2 /*return*/];
-        }
-    });
-}); };
-var conversationState;
-var memoryStorage = new botbuilder_1.MemoryStorage();
-conversationState = new botbuilder_1.ConversationState(memoryStorage);
-var userState = new botbuilder_1.UserState(memoryStorage);
-var myBot = new bot_1.StateBot2(conversationState, userState);
 var server = restify.createServer();
 server.listen(process.env.port || process.env.PORT || 3978, function () {
     console.log("Listening on " + server.url);
 });
-server.post('/api/messages', function (req, res) {
+var adapter = new botbuilder_1.BotFrameworkAdapter({
+    appId: process.env.MICROSOFT_APP_ID,
+    appPassword: process.env.MICROSOFT_APP_PASSWORD
+});
+var memoryStorage = new botbuilder_1.MemoryStorage();
+var conversationState = new botbuilder_1.ConversationState(memoryStorage);
+var userState = new botbuilder_1.UserState(memoryStorage);
+var bot = new bot_1.PromptBot(conversationState, userState);
+server.post("/api/messages", function (req, res) {
     adapter.processActivity(req, res, function (context) { return __awaiter(_this, void 0, void 0, function () {
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, myBot.onTurn(context)];
+                case 0: return [4 /*yield*/, bot.onTurn(context)];
                 case 1:
                     _a.sent();
                     return [2 /*return*/];
@@ -89,3 +70,4 @@ server.post('/api/messages', function (req, res) {
         });
     }); });
 });
+//# sourceMappingURL=app.js.map

@@ -30,7 +30,7 @@ const myBot = new StateBot2(conversationState, userState);
 
 let server = restify.createServer();
 server.listen(process.env.port || process.env.PORT || 3978, () => {
-    console.log(`Listening`);
+    console.log(`Listening on ${server.url}`);
 });
 
 server.post('/api/messages', (req, res) => {
