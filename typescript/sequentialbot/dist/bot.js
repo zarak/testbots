@@ -45,6 +45,7 @@ var HELLO_USER = 'hello_user';
 var NAME_PROMPT = 'name_prompt';
 var CONFIRM_PROMPT = 'confirm_prompt';
 var AGE_PROMPT = 'age_prompt';
+;
 var SequentialBot = /** @class */ (function () {
     function SequentialBot(conversationState, userState) {
         var _this = this;
@@ -70,13 +71,14 @@ var SequentialBot = /** @class */ (function () {
                 }
             });
         }); }));
+        var whoAreYou = [
+            this.promptForName.bind(this),
+            this.confirmAgePrompt.bind(this),
+            this.promptForAge.bind(this),
+            this.captureAge.bind(this)
+        ];
         // Create a dialog that asks the user for their name.
-        this.dialogs.add(new botbuilder_dialogs_1.WaterfallDialog(WHO_ARE_YOU, [
-            this.promptForName,
-            this.confirmAgePrompt,
-            this.promptForAge,
-            this.captureAge
-        ]));
+        this.dialogs.add(new botbuilder_dialogs_1.WaterfallDialog(WHO_ARE_YOU, whoAreYou));
         // Create a dialog that displays a user name after it has been collected.
         this.dialogs.add(new botbuilder_dialogs_1.WaterfallDialog(HELLO_USER, [
             this.displayProfile.bind(this)
@@ -96,10 +98,12 @@ var SequentialBot = /** @class */ (function () {
     // This step captures the user's name, then prompts whether or not to collect an age.
     SequentialBot.prototype.confirmAgePrompt = function (step) {
         return __awaiter(this, void 0, void 0, function () {
-            var user;
+            var userData, user;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.userProfile.get(step.context, {})];
+                    case 0:
+                        userData = { name: '', age: 0 };
+                        return [4 /*yield*/, this.userProfile.get(step.context, userData)];
                     case 1:
                         user = _a.sent();
                         user.name = step.result;
@@ -107,9 +111,7 @@ var SequentialBot = /** @class */ (function () {
                     case 2:
                         _a.sent();
                         return [4 /*yield*/, step.prompt(CONFIRM_PROMPT, 'Do you want to give your age?', ['yes', 'no'])];
-                    case 3:
-                        _a.sent();
-                        return [2 /*return*/];
+                    case 3: return [2 /*return*/, _a.sent()];
                 }
             });
         });
@@ -133,10 +135,12 @@ var SequentialBot = /** @class */ (function () {
     // This step captures the user's age.
     SequentialBot.prototype.captureAge = function (step) {
         return __awaiter(this, void 0, void 0, function () {
-            var user;
+            var userData, user;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.userProfile.get(step.context, {})];
+                    case 0:
+                        userData = { name: '', age: 0 };
+                        return [4 /*yield*/, this.userProfile.get(step.context, userData)];
                     case 1:
                         user = _a.sent();
                         if (!(step.result !== -1)) return [3 /*break*/, 4];
@@ -184,7 +188,7 @@ var SequentialBot = /** @class */ (function () {
     };
     SequentialBot.prototype.onTurn = function (context) {
         return __awaiter(this, void 0, void 0, function () {
-            var dc, utterance, user;
+            var dc, user;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -192,11 +196,12 @@ var SequentialBot = /** @class */ (function () {
                         return [4 /*yield*/, this.dialogs.createContext(context)];
                     case 1:
                         dc = _a.sent();
-                        utterance = (context.activity.text || '').trim().toLowerCase();
+                        //const utterance = (context.activity.text || '').trim().toLowerCase();
                         // If the bot has not yet responded, continue processing the current
                         // dialog.
                         return [4 /*yield*/, dc.continueDialog()];
                     case 2:
+                        //const utterance = (context.activity.text || '').trim().toLowerCase();
                         // If the bot has not yet responded, continue processing the current
                         // dialog.
                         _a.sent();

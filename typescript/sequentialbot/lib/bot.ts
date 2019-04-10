@@ -1,5 +1,5 @@
 import { TurnContext, ActivityTypes, StatePropertyAccessor, ConversationState, UserState } from 'botbuilder';
-import { ChoicePrompt, DialogSet, WaterfallDialog, NumberPrompt, TextPrompt, WaterfallStepContext } from 'botbuilder-dialogs';
+import { DialogTurnResult, ChoicePrompt, DialogSet, WaterfallDialog, NumberPrompt, TextPrompt, WaterfallStepContext } from 'botbuilder-dialogs';
 
 const DIALOG_STATE_PROPERTY = 'dialogState';
 const USER_PROFILE_PROPERTY = 'userProfile';
@@ -11,6 +11,11 @@ const HELLO_USER = 'hello_user';
 const NAME_PROMPT = 'name_prompt';
 const CONFIRM_PROMPT = 'confirm_prompt';
 const AGE_PROMPT = 'age_prompt';
+
+interface IUserData {
+    name? : string,
+    age? : number
+};
 
 export class SequentialBot {
     private dialogState : StatePropertyAccessor;
@@ -39,13 +44,14 @@ export class SequentialBot {
             return false;
         }));
 
+        const whoAreYou : ((sc: WaterfallStepContext<IUserData>) => Promise<DialogTurnResult<any>>)[] = [
+            this.promptForName.bind(this),
+            this.confirmAgePrompt.bind(this),
+            this.promptForAge.bind(this),
+            this.captureAge.bind(this)
+        ];
         // Create a dialog that asks the user for their name.
-        this.dialogs.add(new WaterfallDialog(WHO_ARE_YOU, [
-            this.promptForName,
-            this.confirmAgePrompt,
-            this.promptForAge,
-            this.captureAge
-        ]));
+        this.dialogs.add(new WaterfallDialog(WHO_ARE_YOU, whoAreYou));
 
         // Create a dialog that displays a user name after it has been collected.
         this.dialogs.add(new WaterfallDialog(HELLO_USER, [
@@ -54,16 +60,17 @@ export class SequentialBot {
     }
 
     // This step in the dialog prompts the user for their name.
-    async promptForName(step: WaterfallStepContext) {
+    async promptForName(step: WaterfallStepContext<IUserData>) {
         return await step.prompt(NAME_PROMPT, `What is your name, human?`);
     }
 
     // This step captures the user's name, then prompts whether or not to collect an age.
     async confirmAgePrompt(step: WaterfallStepContext) {
-        const user = await this.userProfile.get(step.context, {});
+        const userData : IUserData = { name: '', age : 0 };
+        const user = await this.userProfile.get(step.context, userData);
         user.name = step.result;
         await this.userProfile.set(step.context, user);
-        await step.prompt(CONFIRM_PROMPT, 'Do you want to give your age?', ['yes', 'no']);
+        return await step.prompt(CONFIRM_PROMPT, 'Do you want to give your age?', ['yes', 'no']);
     }
 
     // This step checks the user's response - if yes, the bot will proceed to prompt for age.
@@ -82,7 +89,8 @@ export class SequentialBot {
 
     // This step captures the user's age.
     async captureAge(step: WaterfallStepContext) {
-        const user = await this.userProfile.get(step.context, {});
+        const userData : IUserData = { name: '', age : 0 };
+        const user = await this.userProfile.get(step.context, userData );
         if (step.result !== -1) {
             user.age = step.result;
             await this.userProfile.set(step.context, user);
@@ -109,7 +117,7 @@ export class SequentialBot {
         if (context.activity.type === ActivityTypes.Message) {
             const dc = await this.dialogs.createContext(context);
 
-            const utterance = (context.activity.text || '').trim().toLowerCase();
+            //const utterance = (context.activity.text || '').trim().toLowerCase();
 
             // If the bot has not yet responded, continue processing the current
             // dialog.
