@@ -149,7 +149,7 @@ export class ConfBot {
 
             if (context.activity.type === 'message') {
                 const qnaResults = await this._qnaMaker.generateAnswer(context.activity.text);
-                if (qnaResults && qnaResults.length > 0) {
+                if (qnaResults && qnaResults.length > 0 && qnaResults[0].score > 0.60) {
                     await context.sendActivity(qnaResults[0].answer);
                 } else {
                     await dc.beginDialog(HELP_DIALOG);
