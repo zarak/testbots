@@ -118,7 +118,7 @@ export class ConfBot {
             "No"
         ];
         const options : PromptOptions = {
-            prompt: "Would you like to schedule a meeting with a human agent?",
+            prompt: "I did not understand. Would you like to schedule a meeting with a human agent?",
             choices: choices
         };
         return await step.prompt("choicePrompt", options);

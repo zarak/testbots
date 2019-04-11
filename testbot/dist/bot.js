@@ -82,7 +82,7 @@ class ConfBot {
                 "No"
             ];
             const options = {
-                prompt: "Would you like to schedule a meeting with a human agent?",
+                prompt: "I did not understand. Would you like to schedule a meeting with a human agent?",
                 choices: choices
             };
             return yield step.prompt("choicePrompt", options);
@@ -108,7 +108,7 @@ class ConfBot {
                 }
                 if (context.activity.type === 'message') {
                     const qnaResults = yield this._qnaMaker.generateAnswer(context.activity.text);
-                    if (qnaResults && qnaResults.length > 0) {
+                    if (qnaResults && qnaResults.length > 0 && qnaResults[0].score > 0.60) {
                         yield context.sendActivity(qnaResults[0].answer);
                     }
                     else {

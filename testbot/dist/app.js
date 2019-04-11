@@ -24,8 +24,8 @@ server.listen(process.env.port || process.env.PORT || 3978, () => {
     console.log(`${server.name} listening on ${server.url}`);
 });
 const adapter = new botbuilder_1.BotFrameworkAdapter({
-    appId: process.env.MICROSOFT_APP_ID,
-    appPassword: process.env.MICROSOFT_APP_PASSWORD
+    appId: process.env.MicrosoftAppId,
+    appPassword: process.env.MicrosoftAppPassword
 });
 const qnaMaker = new botbuilder_ai_1.QnAMaker({
     knowledgeBaseId: botConfig.findServiceByNameOrId("192").kbId,
