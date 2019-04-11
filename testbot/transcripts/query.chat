@@ -1,0 +1,11 @@
+user=Michael
+bot=navtech
+
+user: Hello
+bot: Hi
+
+user: How many vacation days do I get?
+bot: According to section 3.(a) of the Company Policy and Guidelines document,
+the number of vacation days is computed according to the formula f(d)
+= floor(log(d)),
+where d is the number of days since you joined as a full-time employee.
