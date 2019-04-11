@@ -1,0 +1,17 @@
+user=Michael
+bot=navtech
+
+user: Hello
+bot: Hi
+
+user: Is Gimli a dwarf?
+bot: I'm afraid I can't help you with that. Would you like to schedule
+a meeting with a human agent?
+
+user: Yes
+
+bot: The following agents are available this week:
+
+[AttachmentLayout=carousel]
+[Attachment=cards/ruth.card adaptivecard]
+[Attachment=cards/obama.card adaptivecard]

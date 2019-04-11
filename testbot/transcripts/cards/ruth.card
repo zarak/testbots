@@ -1,0 +1,99 @@
+{
+    "type": "AdaptiveCard",
+    "body": [
+        {
+            "type": "Container",
+            "items": [
+                {
+                    "type": "TextBlock",
+                    "size": "Medium",
+                    "weight": "Bolder",
+                    "text": "Human Resources"
+                },
+                {
+                    "type": "ColumnSet",
+                    "columns": [
+                        {
+                            "type": "Column",
+                            "items": [
+                                {
+                                    "type": "Image",
+                                    "style": "Person",
+                                    "url": "https://proxy.duckduckgo.com/iu/?u=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Fb%2Fbd%2FRuth_Bader_Ginsburg%252C_official_SCOTUS_portrait%252C_crop.jpg&f=1",
+                                    "size": "Small"
+                                }
+                            ],
+                            "width": "auto"
+                        },
+                        {
+                            "type": "Column",
+                            "items": [
+                                {
+                                    "type": "TextBlock",
+                                    "weight": "Bolder",
+                                    "text": "Penny Doe",
+                                    "wrap": true
+                                },
+                                {
+                                    "type": "TextBlock",
+                                    "spacing": "None",
+                                    "text": "Accountant",
+                                    "isSubtle": true,
+                                    "wrap": true
+                                }
+                            ],
+                            "width": "stretch"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "Container",
+            "items": [
+                {
+                    "type": "TextBlock",
+                    "text": "Monday 4:00pm 5:00pm \nTuesday 11:00am 2:30pm",
+                    "wrap": true
+                }
+            ]
+        }
+    ],
+    "actions": [
+        {
+            "type": "Action.ShowCard",
+            "title": "Make appointment",
+            "card": {
+                "type": "AdaptiveCard",
+                "style": "emphasis",
+                "body": [
+                    {
+                        "type": "Input.Date",
+                        "id": "dueDate"
+                    },
+                    {
+                        "type": "Input.Text",
+                        "id": "comment",
+                        "placeholder": "Add a comment",
+                        "isMultiline": true
+                    }
+                ],
+                "actions": [
+                    {
+                        "type": "Action.OpenUrl",
+                        "title": "OK",
+                        "url": "http://adaptivecards.io"
+                    }
+                ],
+                "$schema": "http://adaptivecards.io/schemas/adaptive-card.json"
+            }
+        },
+        {
+            "type": "Action.OpenUrl",
+            "title": "Cancel",
+            "url": "http://adaptivecards.io"
+        }
+    ],
+    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+    "version": "1.0"
+}

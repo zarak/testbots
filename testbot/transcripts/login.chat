@@ -1,0 +1,12 @@
+user=Michael
+bot=navtech
+
+user: Is Gimli a dwarf?
+bot: I'm afraid I can't help you with that. Would you like to schedule
+a meeting with a human agent?
+
+user: Yes
+
+bot: You need to be logged in to make an appointment.
+
+[Suggestions=Login|Cancel]

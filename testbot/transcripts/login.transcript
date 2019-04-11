@@ -1,0 +1,113 @@
+[
+  {
+    "conversation": {
+      "id": "/4O7q16+s/VGHat/TputPf80tXE="
+    },
+    "id": "1",
+    "timestamp": "2019-04-11T10:50:41.100Z",
+    "type": "conversationUpdate",
+    "channelId": "chatdown",
+    "membersAdded": [
+      {
+        "id": "SHeHhWv66/xytIeV4tpH4h6Zp4A=",
+        "name": "navtech",
+        "role": "bot"
+      }
+    ],
+    "membersRemoved": []
+  },
+  {
+    "conversation": {
+      "id": "/4O7q16+s/VGHat/TputPf80tXE="
+    },
+    "id": "2",
+    "recipient": {
+      "id": "SHeHhWv66/xytIeV4tpH4h6Zp4A=",
+      "name": "navtech",
+      "role": "bot"
+    },
+    "from": {
+      "id": "+MOLIWfAq218cg5HwhOUKNd9i2o=",
+      "name": "Michael",
+      "role": "user"
+    },
+    "text": "Is Gimli a dwarf?",
+    "timestamp": "2019-04-11T10:50:43.100Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "/4O7q16+s/VGHat/TputPf80tXE="
+    },
+    "id": "3",
+    "recipient": {
+      "id": "+MOLIWfAq218cg5HwhOUKNd9i2o=",
+      "name": "Michael",
+      "role": "user"
+    },
+    "from": {
+      "id": "SHeHhWv66/xytIeV4tpH4h6Zp4A=",
+      "name": "navtech",
+      "role": "bot"
+    },
+    "text": "I'm afraid I can't help you with that. Would you like to schedule\na meeting with a human agent?",
+    "timestamp": "2019-04-11T10:50:45.100Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "/4O7q16+s/VGHat/TputPf80tXE="
+    },
+    "id": "4",
+    "recipient": {
+      "id": "SHeHhWv66/xytIeV4tpH4h6Zp4A=",
+      "name": "navtech",
+      "role": "bot"
+    },
+    "from": {
+      "id": "+MOLIWfAq218cg5HwhOUKNd9i2o=",
+      "name": "Michael",
+      "role": "user"
+    },
+    "text": "Yes",
+    "timestamp": "2019-04-11T10:50:47.100Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "/4O7q16+s/VGHat/TputPf80tXE="
+    },
+    "id": "5",
+    "recipient": {
+      "id": "+MOLIWfAq218cg5HwhOUKNd9i2o=",
+      "name": "Michael",
+      "role": "user"
+    },
+    "from": {
+      "id": "SHeHhWv66/xytIeV4tpH4h6Zp4A=",
+      "name": "navtech",
+      "role": "bot"
+    },
+    "text": "You need to be logged in to make an appointment.",
+    "timestamp": "2019-04-11T10:50:49.100Z",
+    "type": "message",
+    "channelId": "chatdown",
+    "suggestedActions": {
+      "actions": [
+        {
+          "title": "Login",
+          "type": "imBack",
+          "value": "Login"
+        },
+        {
+          "title": "Cancel",
+          "type": "imBack",
+          "value": "Cancel"
+        }
+      ]
+    }
+  }
+]

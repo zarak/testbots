@@ -1,0 +1,6 @@
+user=Michael
+bot=navtech
+
+bot: Hi Michael! Just a reminder that you have a meeting with John Smith soon.
+
+[Attachment=cards/reminder.card adaptivecard]

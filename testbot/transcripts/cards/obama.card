@@ -1,0 +1,99 @@
+{
+    "type": "AdaptiveCard",
+    "body": [
+        {
+            "type": "Container",
+            "items": [
+                {
+                    "type": "TextBlock",
+                    "size": "Medium",
+                    "weight": "Bolder",
+                    "text": "Human Resources"
+                },
+                {
+                    "type": "ColumnSet",
+                    "columns": [
+                        {
+                            "type": "Column",
+                            "items": [
+                                {
+                                    "type": "Image",
+                                    "style": "Person",
+                                    "url": "https://proxy.duckduckgo.com/iu/?u=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Fthumb%2F5%2F55%2FPresident_Barack_Obama%252C_2012_portrait_crop.jpg%2F788px-President_Barack_Obama%252C_2012_portrait_crop.jpg&f=1",
+                                    "size": "Small"
+                                }
+                            ],
+                            "width": "auto"
+                        },
+                        {
+                            "type": "Column",
+                            "items": [
+                                {
+                                    "type": "TextBlock",
+                                    "weight": "Bolder",
+                                    "text": "John Smith",
+                                    "wrap": true
+                                },
+                                {
+                                    "type": "TextBlock",
+                                    "spacing": "None",
+                                    "text": "Head of Legal",
+                                    "isSubtle": true,
+                                    "wrap": true
+                                }
+                            ],
+                            "width": "stretch"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "Container",
+            "items": [
+                {
+                    "type": "TextBlock",
+                    "text": "Sunday 1:00am",
+                    "wrap": true
+                }
+            ]
+        }
+    ],
+    "actions": [
+        {
+            "type": "Action.ShowCard",
+            "title": "Make appointment",
+            "card": {
+                "type": "AdaptiveCard",
+                "style": "emphasis",
+                "body": [
+                    {
+                        "type": "Input.Date",
+                        "id": "dueDate"
+                    },
+                    {
+                        "type": "Input.Text",
+                        "id": "comment",
+                        "placeholder": "Add a comment",
+                        "isMultiline": true
+                    }
+                ],
+                "actions": [
+                    {
+                        "type": "Action.OpenUrl",
+                        "title": "OK",
+                        "url": "http://adaptivecards.io"
+                    }
+                ],
+                "$schema": "http://adaptivecards.io/schemas/adaptive-card.json"
+            }
+        },
+        {
+            "type": "Action.OpenUrl",
+            "title": "Cancel",
+            "url": "http://adaptivecards.io"
+        }
+    ],
+    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+    "version": "1.0"
+}
