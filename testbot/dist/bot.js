@@ -9,7 +9,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const botbuilder_1 = require("botbuilder");
-const botbuilder_ai_1 = require("botbuilder-ai");
 const botbuilder_dialogs_1 = require("botbuilder-dialogs");
 const OAUTH_PROMPT = 'oAuth_prompt';
 const CONFIRM_PROMPT = 'confirm_prompt';
@@ -105,48 +104,24 @@ class ConfBot {
         return __awaiter(this, void 0, void 0, function* () {
             const dc = yield this._dialogs.createContext(context);
             const text = context.activity.text;
-            const validCommands = ['logout', 'help'];
             yield dc.continueDialog();
-            if (validCommands.includes(text)) {
-                if (text === 'help') {
-                    yield context.sendActivity(HELP_TEXT);
+            if (!context.responded) {
+                if (context.activity.type === botbuilder_1.ActivityTypes.ConversationUpdate) {
+                    const welcomeMessage = `Welcome!` + HELP_TEXT;
+                    yield context.sendActivity(welcomeMessage);
                 }
-                if (text === 'logout') {
-                    let botAdapter = context.adapter;
-                    yield context.sendActivity('You have been signed out.');
-                    yield context.sendActivity(HELP_TEXT);
-                }
-            }
-            else {
-                if (!context.responded) {
-                    yield dc.beginDialog(AUTH_DIALOG);
-                }
-            }
-            ;
-            if (context.activity.type === botbuilder_1.ActivityTypes.ConversationUpdate) {
-                const welcomeMessage = `Welcome!` + HELP_TEXT;
-                yield context.sendActivity(welcomeMessage);
-            }
-            ;
-            if (text != null && text === "continue") {
-                yield dc.beginDialog("help");
-            }
-            if (context.activity.type === 'message') {
-                const qnaResults = yield this._qnaMaker.generateAnswer(context.activity.text);
-                if (qnaResults && qnaResults.length > 0) {
-                    yield context.sendActivity(qnaResults[0].answer);
+                if (context.activity.type === 'message') {
+                    const qnaResults = yield this._qnaMaker.generateAnswer(context.activity.text);
+                    if (qnaResults && qnaResults.length > 0) {
+                        yield context.sendActivity(qnaResults[0].answer);
+                    }
+                    else {
+                        yield context.sendActivity(`Did not understand your query. Would you like to schedule an appointment with a human agent?`);
+                    }
                 }
                 else {
-                    console.log(context);
-                    yield this._luis.recognize(context).then((res) => __awaiter(this, void 0, void 0, function* () {
-                        const top = botbuilder_ai_1.LuisRecognizer.topIntent(res);
-                        yield context.sendActivity(`the top intent found was ${top}`);
-                    }))
-                        .catch(err => console.error(err));
+                    yield context.sendActivity(`${context.activity.type} event detected`);
                 }
-            }
-            else {
-                yield context.sendActivity(`${context.activity.type} event detected`);
             }
             yield this._conversationState.saveChanges(context);
         });

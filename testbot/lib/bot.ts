@@ -138,52 +138,28 @@ export class ConfBot {
         const dc = await this._dialogs.createContext(context);
         const text = context.activity.text;
 
-        const validCommands = ['logout', 'help'];
         await dc.continueDialog();
         
-        // If the user asks for help, send a message to them informing them of the operations they can perform.
-        if (validCommands.includes(text)) {
-            if (text === 'help') {
-                await context.sendActivity(HELP_TEXT);
-            }
-            // Log the user out
-            if (text === 'logout') {
-                let botAdapter: BotAdapter = context.adapter;
-                //await botAdapter.signOutUser(context, CONNECTION_NAME);
-                await context.sendActivity('You have been signed out.');
-                await context.sendActivity(HELP_TEXT);
-            }
-        } else {
-            if (!context.responded) {
-                await dc.beginDialog(AUTH_DIALOG);
-            }
-        };
-        if (context.activity.type === ActivityTypes.ConversationUpdate) {
-            // Send a greeting to new members that join the conversation.
-            const welcomeMessage = `Welcome!` + HELP_TEXT;
-            await context.sendActivity(welcomeMessage);
-        };
+        if (!context.responded) {
 
-        if (text != null && text === "continue") {
-            await dc.beginDialog("help");
-        }
+            if (context.activity.type === ActivityTypes.ConversationUpdate) {
+                // Send a greeting to new members that join the conversation.
+                const welcomeMessage = `Welcome!` + HELP_TEXT;
+                await context.sendActivity(welcomeMessage);
+            }
 
-        if (context.activity.type === 'message') {
-            const qnaResults = await this._qnaMaker.generateAnswer(context.activity.text);
-            if (qnaResults && qnaResults.length > 0) {
-                await context.sendActivity(qnaResults[0].answer);
+            if (context.activity.type === 'message') {
+                const qnaResults = await this._qnaMaker.generateAnswer(context.activity.text);
+                if (qnaResults && qnaResults.length > 0) {
+                    await context.sendActivity(qnaResults[0].answer);
+                } else {
+                    await context.sendActivity(`Did not understand your query. Would you like to schedule an appointment with a human agent?`);
+                }
             } else {
-                console.log(context);
-
-                await this._luis.recognize(context).then( async res => {
-                    const top = LuisRecognizer.topIntent(res);
-                    await context.sendActivity(`the top intent found was ${top}`);
-                })
-                    .catch(err => console.error(err));
+                await context.sendActivity(`${context.activity.type} event detected`);
             }
-        } else {
-            await context.sendActivity(`${context.activity.type} event detected`);
         }
+
         await this._conversationState.saveChanges(context);
     }
 }

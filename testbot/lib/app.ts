@@ -1,4 +1,4 @@
-import { BotFrameworkAdapter, TurnContext, ConversationState, MemoryStorage } from 'botbuilder';
+import { BotFrameworkAdapter, ConversationState, MemoryStorage } from 'botbuilder';
 import { QnAMaker, LuisRecognizer } from 'botbuilder-ai';
 import { DialogSet } from 'botbuilder-dialogs';
 import { IQnAService, ILuisService, BotConfiguration } from 'botframework-config';
