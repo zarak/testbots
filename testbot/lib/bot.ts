@@ -1,6 +1,6 @@
-import { BotAdapter, ActivityTypes, TurnContext, ConversationState } from 'botbuilder';
+import { ActivityTypes, TurnContext, ConversationState } from 'botbuilder';
 import { QnAMaker, LuisRecognizer } from 'botbuilder-ai';
-import { OAuthPrompt, DialogSet, WaterfallDialog, ChoicePrompt, WaterfallStepContext, PromptOptions } from 'botbuilder-dialogs';
+import { DialogTurnResult, OAuthPrompt, DialogSet, WaterfallDialog, ChoicePrompt, WaterfallStepContext, PromptOptions } from 'botbuilder-dialogs';
 
 // Names of the prompts the bot uses.
 const OAUTH_PROMPT = 'oAuth_prompt';
@@ -8,6 +8,7 @@ const CONFIRM_PROMPT = 'confirm_prompt';
 
 // Name of the WaterfallDialog the bot uses.
 const AUTH_DIALOG = 'auth_dialog';
+const HELP_DIALOG = 'help_dialog';
 
 // Text to help guide the user through using the bot.
 const HELP_TEXT = ' Type anything to get logged in. Type \'logout\' to signout.' +
@@ -41,14 +42,19 @@ export class ConfBot {
         this._dialogs.add(new OAuthPrompt(OAUTH_PROMPT, OAUTH_SETTINGS));
         this._dialogs.add(new ChoicePrompt("choicePrompt"));
 
-        // The WaterfallDialog that controls the flow of the conversation.
-        this._dialogs.add(new WaterfallDialog(AUTH_DIALOG, [
-            this.oauthPrompt,
-            this.loginResults,
-            this.displayToken,
-            this.pickOptions,
-            this.additionalOptions
+        this._dialogs.add(new WaterfallDialog(HELP_DIALOG, [
+            this.helpAgent.bind(this),
+            this.endHelp.bind(this)
         ]));
+
+        const authenticate: ((sc: WaterfallStepContext<{}>) => Promise<DialogTurnResult<any>>)[] = [
+            this.oauthPrompt.bind(this),
+            this.loginResults.bind(this),
+            this.displayToken.bind(this),
+        ];
+
+        // The WaterfallDialog that controls the flow of the conversation.
+        this._dialogs.add(new WaterfallDialog(AUTH_DIALOG, authenticate));
     }
 
     /**
@@ -56,7 +62,7 @@ export class ConfBot {
      * @param {WaterfallStepContext} step
      */
     async oauthPrompt(step: WaterfallStepContext) {
-        return await step.prompt(OAUTH_PROMPT, "oauth prompt");
+        return await step.prompt(OAUTH_PROMPT, {});
     }
 
     /**
@@ -64,7 +70,7 @@ export class ConfBot {
      * the user if they would like to see their token via a prompt
      * @param {WaterfallStepContext} step
      */
-    async loginResults(step: WaterfallStepContext) {
+    async loginResults(step: WaterfallStepContext): Promise<DialogTurnResult> {
         let tokenResponse = step.result;
         if (tokenResponse != null) {
             await step.context.sendActivity('You are now logged in.');
@@ -106,37 +112,30 @@ export class ConfBot {
         return await step.endDialog();
     }
 
-    async pickOptions (step: WaterfallStepContext)  {
+    async helpAgent (step: WaterfallStepContext)  {
         const choices = [
-            "I want to know about a topic", 
-            "I want to know about a speaker",
-            "I want to know about a venue"
+            "Yes",
+            "No"
         ];
         const options : PromptOptions = {
-            prompt: "What would you like to know?",
+            prompt: "Would you like to schedule a meeting with a human agent?",
             choices: choices
         };
         return await step.prompt("choicePrompt", options);
     }
 
-    async additionalOptions(step: WaterfallStepContext) {
-        switch(step.result.index) {
-            case 0:
-                await step.context.sendActivity(`You can ask:
-                    * _Is thre a chatbot presentation?_
-                    * _What is Michael Szul speaking about?_
-                    * _Are there any Xamarin talks?_`);
-                break;
-            default:
-                break;
+    async endHelp (step: WaterfallStepContext) {
+        const response = step.result.value;
+        //await step.context.sendActivity(`You selected ${response}`);
+        if (response == 'Yes') {
+            await step.beginDialog(AUTH_DIALOG);
         }
         return await step.endDialog();
     }
 
-
     async onTurn(context: TurnContext) {
         const dc = await this._dialogs.createContext(context);
-        const text = context.activity.text;
+        //const text = context.activity.text;
 
         await dc.continueDialog();
         
@@ -153,7 +152,7 @@ export class ConfBot {
                 if (qnaResults && qnaResults.length > 0) {
                     await context.sendActivity(qnaResults[0].answer);
                 } else {
-                    await context.sendActivity(`Did not understand your query. Would you like to schedule an appointment with a human agent?`);
+                    await dc.beginDialog(HELP_DIALOG);
                 }
             } else {
                 await context.sendActivity(`${context.activity.type} event detected`);

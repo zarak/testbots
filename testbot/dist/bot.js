@@ -13,6 +13,7 @@ const botbuilder_dialogs_1 = require("botbuilder-dialogs");
 const OAUTH_PROMPT = 'oAuth_prompt';
 const CONFIRM_PROMPT = 'confirm_prompt';
 const AUTH_DIALOG = 'auth_dialog';
+const HELP_DIALOG = 'help_dialog';
 const HELP_TEXT = ' Type anything to get logged in. Type \'logout\' to signout.' +
     ' Type \'help\' to view this message again';
 const CONNECTION_NAME = 'calendar';
@@ -31,17 +32,20 @@ class ConfBot {
         this._dialogs.add(new botbuilder_dialogs_1.ChoicePrompt(CONFIRM_PROMPT));
         this._dialogs.add(new botbuilder_dialogs_1.OAuthPrompt(OAUTH_PROMPT, OAUTH_SETTINGS));
         this._dialogs.add(new botbuilder_dialogs_1.ChoicePrompt("choicePrompt"));
-        this._dialogs.add(new botbuilder_dialogs_1.WaterfallDialog(AUTH_DIALOG, [
-            this.oauthPrompt,
-            this.loginResults,
-            this.displayToken,
-            this.pickOptions,
-            this.additionalOptions
+        this._dialogs.add(new botbuilder_dialogs_1.WaterfallDialog(HELP_DIALOG, [
+            this.helpAgent.bind(this),
+            this.endHelp.bind(this)
         ]));
+        const authenticate = [
+            this.oauthPrompt.bind(this),
+            this.loginResults.bind(this),
+            this.displayToken.bind(this),
+        ];
+        this._dialogs.add(new botbuilder_dialogs_1.WaterfallDialog(AUTH_DIALOG, authenticate));
     }
     oauthPrompt(step) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield step.prompt(OAUTH_PROMPT, "oauth prompt");
+            return yield step.prompt(OAUTH_PROMPT, {});
         });
     }
     loginResults(step) {
@@ -71,31 +75,24 @@ class ConfBot {
             return yield step.endDialog();
         });
     }
-    pickOptions(step) {
+    helpAgent(step) {
         return __awaiter(this, void 0, void 0, function* () {
             const choices = [
-                "I want to know about a topic",
-                "I want to know about a speaker",
-                "I want to know about a venue"
+                "Yes",
+                "No"
             ];
             const options = {
-                prompt: "What would you like to know?",
+                prompt: "Would you like to schedule a meeting with a human agent?",
                 choices: choices
             };
             return yield step.prompt("choicePrompt", options);
         });
     }
-    additionalOptions(step) {
+    endHelp(step) {
         return __awaiter(this, void 0, void 0, function* () {
-            switch (step.result.index) {
-                case 0:
-                    yield step.context.sendActivity(`You can ask:
-                    * _Is thre a chatbot presentation?_
-                    * _What is Michael Szul speaking about?_
-                    * _Are there any Xamarin talks?_`);
-                    break;
-                default:
-                    break;
+            const response = step.result.value;
+            if (response == 'Yes') {
+                yield step.beginDialog(AUTH_DIALOG);
             }
             return yield step.endDialog();
         });
@@ -103,7 +100,6 @@ class ConfBot {
     onTurn(context) {
         return __awaiter(this, void 0, void 0, function* () {
             const dc = yield this._dialogs.createContext(context);
-            const text = context.activity.text;
             yield dc.continueDialog();
             if (!context.responded) {
                 if (context.activity.type === botbuilder_1.ActivityTypes.ConversationUpdate) {
@@ -116,7 +112,7 @@ class ConfBot {
                         yield context.sendActivity(qnaResults[0].answer);
                     }
                     else {
-                        yield context.sendActivity(`Did not understand your query. Would you like to schedule an appointment with a human agent?`);
+                        yield dc.beginDialog(HELP_DIALOG);
                     }
                 }
                 else {
