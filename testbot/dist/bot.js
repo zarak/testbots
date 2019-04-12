@@ -16,7 +16,7 @@ const AUTH_DIALOG = 'auth_dialog';
 const HELP_DIALOG = 'help_dialog';
 const HELP_TEXT = ' Type anything to get logged in. Type \'logout\' to signout.' +
     ' Type \'help\' to view this message again';
-const CONNECTION_NAME = 'calendar';
+const CONNECTION_NAME = 'graphtest';
 const OAUTH_SETTINGS = {
     connectionName: CONNECTION_NAME,
     title: 'Sign In',

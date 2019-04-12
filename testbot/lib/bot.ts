@@ -16,7 +16,7 @@ const HELP_TEXT = ' Type anything to get logged in. Type \'logout\' to signout.'
 
 // The connection name here must match the one from
 // your Bot Channels Registration on the settings blade in Azure.
-const CONNECTION_NAME = 'calendar';
+const CONNECTION_NAME = 'graphtest';
 
 // Create the settings for the OAuthPrompt.
 const OAUTH_SETTINGS = {
