@@ -107,8 +107,9 @@ class ConfBot {
                     yield context.sendActivity(welcomeMessage);
                 }
                 if (context.activity.type === 'message') {
-                    const qnaResults = yield this._qnaMaker.generateAnswer(context.activity.text);
-                    if (qnaResults && qnaResults.length > 0 && qnaResults[0].score > 0.60) {
+                    const qnaResults = yield this._qnaMaker.generateAnswer(context.activity.text, 3, 0.5);
+                    console.log(qnaResults);
+                    if (qnaResults && qnaResults.length > 0) {
                         yield context.sendActivity(qnaResults[0].answer);
                     }
                     else {
