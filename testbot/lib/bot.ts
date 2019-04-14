@@ -2,6 +2,10 @@ import { ActivityTypes, TurnContext, ConversationState } from 'botbuilder';
 import { QnAMaker, LuisRecognizer } from 'botbuilder-ai';
 import { DialogTurnResult, OAuthPrompt, DialogSet, WaterfallDialog, ChoicePrompt, WaterfallStepContext, PromptOptions } from 'botbuilder-dialogs';
 
+// Arguments to qnamaker generateAnswer
+const TOPN = 3;
+const SCORE_THRESHOLD = 0.50;
+
 // Names of the prompts the bot uses.
 const OAUTH_PROMPT = 'oAuth_prompt';
 const CONFIRM_PROMPT = 'confirm_prompt';
@@ -148,7 +152,8 @@ export class ConfBot {
             }
 
             if (context.activity.type === 'message') {
-                const qnaResults = await this._qnaMaker.generateAnswer(context.activity.text, 3, 0.5);
+                const qnaResults = await this._qnaMaker.generateAnswer(
+                    context.activity.text, TOPN, SCORE_THRESHOLD);
                 console.log(qnaResults);
                 if (qnaResults && qnaResults.length > 0) {
                     await context.sendActivity(qnaResults[0].answer);
