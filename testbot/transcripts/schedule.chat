@@ -1,0 +1,8 @@
+user=Michael
+bot=navtechHR
+
+bot: When should I schedule the appointment?
+user: On Thursday at 3:00pm
+
+bot: Appointment scheduled for April 19th, 2019 at 3:00pm.
+

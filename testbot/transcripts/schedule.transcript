@@ -1,0 +1,79 @@
+[
+  {
+    "conversation": {
+      "id": "DJsX7pBwlV9y9Ws0/ADlTs1wqiA="
+    },
+    "id": "1",
+    "timestamp": "2019-04-15T11:09:26.100Z",
+    "type": "conversationUpdate",
+    "channelId": "chatdown",
+    "membersAdded": [
+      {
+        "id": "m9mtMhS/wDEmbPKvBL7yHphr8MI=",
+        "name": "navtechHR",
+        "role": "bot"
+      }
+    ],
+    "membersRemoved": []
+  },
+  {
+    "conversation": {
+      "id": "DJsX7pBwlV9y9Ws0/ADlTs1wqiA="
+    },
+    "id": "2",
+    "recipient": {
+      "id": "+MOLIWfAq218cg5HwhOUKNd9i2o=",
+      "name": "Michael",
+      "role": "user"
+    },
+    "from": {
+      "id": "m9mtMhS/wDEmbPKvBL7yHphr8MI=",
+      "name": "navtechHR",
+      "role": "bot"
+    },
+    "text": "When should I schedule the appointment?",
+    "timestamp": "2019-04-15T11:09:28.100Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "DJsX7pBwlV9y9Ws0/ADlTs1wqiA="
+    },
+    "id": "3",
+    "recipient": {
+      "id": "m9mtMhS/wDEmbPKvBL7yHphr8MI=",
+      "name": "navtechHR",
+      "role": "bot"
+    },
+    "from": {
+      "id": "+MOLIWfAq218cg5HwhOUKNd9i2o=",
+      "name": "Michael",
+      "role": "user"
+    },
+    "text": "On Thursday at 3:00pm",
+    "timestamp": "2019-04-15T11:09:30.100Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "DJsX7pBwlV9y9Ws0/ADlTs1wqiA="
+    },
+    "id": "4",
+    "recipient": {
+      "id": "+MOLIWfAq218cg5HwhOUKNd9i2o=",
+      "name": "Michael",
+      "role": "user"
+    },
+    "from": {
+      "id": "m9mtMhS/wDEmbPKvBL7yHphr8MI=",
+      "name": "navtechHR",
+      "role": "bot"
+    },
+    "text": "Appointment scheduled for April 19th, 2019 at 3:00pm.",
+    "timestamp": "2019-04-15T11:09:32.100Z",
+    "type": "message",
+    "channelId": "chatdown"
+  }
+]

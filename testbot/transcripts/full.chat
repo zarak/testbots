@@ -1,0 +1,19 @@
+user=Michael
+bot=navtechHR
+
+bot: Greetings! Please login to access HR services.
+bot: [Suggestions=Login|Cancel]
+
+Michael: Login
+bot: Hello, Michael! You can ask me a question such as "What are the
+regulations?"
+Michael: I can't find my socks.
+
+bot: I'm afraid I can't help you with that. Would you like to schedule an
+appointment with a human agent?
+Michael: Yes
+
+bot: When should I schedule the appointment?
+user: On Thursday at 3:00pm
+
+bot: Appointment scheduled for April 19th, 2019 at 3:00pm.
