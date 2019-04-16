@@ -1,6 +1,6 @@
 import { TurnContext, ActivityTypes, StatePropertyAccessor, ConversationState } from 'botbuilder';
 import { DateTimePrompt, DialogTurnResult, ChoicePrompt, DialogSet, WaterfallDialog, NumberPrompt, WaterfallStepContext } from 'botbuilder-dialogs';
-//
+
 // Define identifiers for our state property accessors.
 const DIALOG_STATE_ACCESSOR = 'dialogStateAccessor';
 const RESERVATION_ACCESSOR = 'reservationAccessor';
@@ -11,10 +11,11 @@ const SIZE_RANGE_PROMPT = 'rangePrompt';
 const LOCATION_PROMPT = 'locationPrompt';
 const RESERVATION_DATE_PROMPT = 'reservationDatePrompt';
 
-interface IUserData {
-    name? : string,
-    age? : number
+interface LooseObject {
+    [key: string]: any
 };
+
+var obj: LooseObject = {};
 
 export class GatherBot {
     private dialogStateAccessor : StatePropertyAccessor;
@@ -30,7 +31,7 @@ export class GatherBot {
         this.dialogSet.add(new ChoicePrompt(LOCATION_PROMPT));
         this.dialogSet.add(new DateTimePrompt(RESERVATION_DATE_PROMPT));
 
-        const reservations : ((sc: WaterfallStepContext<IUserData>) => Promise<DialogTurnResult<any>>)[] = [
+        const reservations : ((sc: WaterfallStepContext<{}>) => Promise<DialogTurnResult<any>>)[] = [
             this.promptForPartySize.bind(this),
             //this.promptForLocation.bind(this),
             //this.promptForReservationDate.bind(this),
@@ -41,8 +42,23 @@ export class GatherBot {
     }
 
     private async promptForPartySize(step: WaterfallStepContext<{}>) : Promise<DialogTurnResult<any>> {
-        return step.endDialog();
+        return await step.prompt(
+            SIZE_RANGE_PROMPT, {
+                prompt: 'How many people is the reservation for?',
+                retryPrompt: 'How large is your party?',
+                validations: { min: 3, max: 8 },
+            });
     }
+
+    //private async promptForLocation(step: WaterfallStepContext<{}>) : Promise<DialogTurnResult<any>> {
+        //return await step.prompt(
+            //LOCATION_PROMPT, {
+                //prompt: 
+            //}
+        //)
+    //}
+
+
 
     async onTurn(context : TurnContext) {
     }
