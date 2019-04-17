@@ -1,10 +1,10 @@
 [
   {
     "conversation": {
-      "id": "G/wv9H1W7THa9TlMt/rXHv3nUoc="
+      "id": "/RVFS1+VPrem9Fx4UUY+GRqxZ04="
     },
     "id": "1",
-    "timestamp": "2019-04-11T06:32:04.100Z",
+    "timestamp": "2019-04-17T12:10:23.100Z",
     "type": "conversationUpdate",
     "channelId": "chatdown",
     "membersAdded": [
@@ -18,7 +18,7 @@
   },
   {
     "conversation": {
-      "id": "G/wv9H1W7THa9TlMt/rXHv3nUoc="
+      "id": "/RVFS1+VPrem9Fx4UUY+GRqxZ04="
     },
     "id": "2",
     "recipient": {
@@ -32,13 +32,13 @@
       "role": "user"
     },
     "text": "Hello",
-    "timestamp": "2019-04-11T06:32:06.100Z",
+    "timestamp": "2019-04-17T12:10:25.100Z",
     "type": "message",
     "channelId": "chatdown"
   },
   {
     "conversation": {
-      "id": "G/wv9H1W7THa9TlMt/rXHv3nUoc="
+      "id": "/RVFS1+VPrem9Fx4UUY+GRqxZ04="
     },
     "id": "3",
     "recipient": {
@@ -52,13 +52,13 @@
       "role": "bot"
     },
     "text": "Hi",
-    "timestamp": "2019-04-11T06:32:08.100Z",
+    "timestamp": "2019-04-17T12:10:27.100Z",
     "type": "message",
     "channelId": "chatdown"
   },
   {
     "conversation": {
-      "id": "G/wv9H1W7THa9TlMt/rXHv3nUoc="
+      "id": "/RVFS1+VPrem9Fx4UUY+GRqxZ04="
     },
     "id": "4",
     "recipient": {
@@ -72,13 +72,13 @@
       "role": "user"
     },
     "text": "How many vacation days do I get?",
-    "timestamp": "2019-04-11T06:32:10.100Z",
+    "timestamp": "2019-04-17T12:10:29.100Z",
     "type": "message",
     "channelId": "chatdown"
   },
   {
     "conversation": {
-      "id": "G/wv9H1W7THa9TlMt/rXHv3nUoc="
+      "id": "/RVFS1+VPrem9Fx4UUY+GRqxZ04="
     },
     "id": "5",
     "recipient": {
@@ -92,7 +92,127 @@
       "role": "bot"
     },
     "text": "According to section 3.(a) of the Company Policy and Guidelines document,\nthe number of vacation days is computed according to the formula f(d)\n= floor(log(d)),\nwhere d is the number of days since you joined as a full-time employee.",
-    "timestamp": "2019-04-11T06:32:12.100Z",
+    "timestamp": "2019-04-17T12:10:31.100Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "/RVFS1+VPrem9Fx4UUY+GRqxZ04="
+    },
+    "id": "6",
+    "recipient": {
+      "id": "SHeHhWv66/xytIeV4tpH4h6Zp4A=",
+      "name": "navtech",
+      "role": "bot"
+    },
+    "from": {
+      "id": "+MOLIWfAq218cg5HwhOUKNd9i2o=",
+      "name": "Michael",
+      "role": "user"
+    },
+    "text": "Thanks",
+    "timestamp": "2019-04-17T12:10:33.100Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "/RVFS1+VPrem9Fx4UUY+GRqxZ04="
+    },
+    "id": "7",
+    "recipient": {
+      "id": "+MOLIWfAq218cg5HwhOUKNd9i2o=",
+      "name": "Michael",
+      "role": "user"
+    },
+    "from": {
+      "id": "SHeHhWv66/xytIeV4tpH4h6Zp4A=",
+      "name": "navtech",
+      "role": "bot"
+    },
+    "text": "Was this information useful?",
+    "timestamp": "2019-04-17T12:10:35.100Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "/RVFS1+VPrem9Fx4UUY+GRqxZ04="
+    },
+    "id": "8",
+    "recipient": {
+      "id": "SHeHhWv66/xytIeV4tpH4h6Zp4A=",
+      "name": "navtech",
+      "role": "bot"
+    },
+    "from": {
+      "id": "+MOLIWfAq218cg5HwhOUKNd9i2o=",
+      "name": "Michael",
+      "role": "user"
+    },
+    "text": "Yes",
+    "timestamp": "2019-04-17T12:10:37.100Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "/RVFS1+VPrem9Fx4UUY+GRqxZ04="
+    },
+    "id": "9",
+    "recipient": {
+      "id": "+MOLIWfAq218cg5HwhOUKNd9i2o=",
+      "name": "Michael",
+      "role": "user"
+    },
+    "from": {
+      "id": "SHeHhWv66/xytIeV4tpH4h6Zp4A=",
+      "name": "navtech",
+      "role": "bot"
+    },
+    "text": "Do you have any comments?",
+    "timestamp": "2019-04-17T12:10:39.100Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "/RVFS1+VPrem9Fx4UUY+GRqxZ04="
+    },
+    "id": "10",
+    "recipient": {
+      "id": "SHeHhWv66/xytIeV4tpH4h6Zp4A=",
+      "name": "navtech",
+      "role": "bot"
+    },
+    "from": {
+      "id": "+MOLIWfAq218cg5HwhOUKNd9i2o=",
+      "name": "Michael",
+      "role": "user"
+    },
+    "text": "My favorite TV show is Frasier",
+    "timestamp": "2019-04-17T12:10:41.100Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "/RVFS1+VPrem9Fx4UUY+GRqxZ04="
+    },
+    "id": "11",
+    "recipient": {
+      "id": "+MOLIWfAq218cg5HwhOUKNd9i2o=",
+      "name": "Michael",
+      "role": "user"
+    },
+    "from": {
+      "id": "SHeHhWv66/xytIeV4tpH4h6Zp4A=",
+      "name": "navtech",
+      "role": "bot"
+    },
+    "text": "Thank you.",
+    "timestamp": "2019-04-17T12:10:43.100Z",
     "type": "message",
     "channelId": "chatdown"
   }

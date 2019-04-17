@@ -9,3 +9,13 @@ bot: According to section 3.(a) of the Company Policy and Guidelines document,
 the number of vacation days is computed according to the formula f(d)
 = floor(log(d)),
 where d is the number of days since you joined as a full-time employee.
+
+user: Thanks
+
+bot: Was this information useful?
+user: Yes
+
+bot: Do you have any comments?
+user: My favorite TV show is Frasier
+
+bot: Thank you.
