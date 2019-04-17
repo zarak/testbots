@@ -37,204 +37,121 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var botbuilder_1 = require("botbuilder");
 var botbuilder_dialogs_1 = require("botbuilder-dialogs");
-var DIALOG_STATE_PROPERTY = 'dialogState';
-var USER_PROFILE_PROPERTY = 'userProfile';
-// Dialog contexts
-var WHO_ARE_YOU = 'who_are_you';
-var HELLO_USER = 'hello_user';
-var NAME_PROMPT = 'name_prompt';
-var CONFIRM_PROMPT = 'confirm_prompt';
-var AGE_PROMPT = 'age_prompt';
+// Define identifiers for our state property accessors.
+var DIALOG_STATE_ACCESSOR = 'dialogStateAccessor';
+var RESERVATION_ACCESSOR = 'reservationAccessor';
+// Define identifiers for our dialogs and prompts.
+var RESERVATION_DIALOG = 'reservationDialog';
+var SIZE_RANGE_PROMPT = 'rangePrompt';
+var LOCATION_PROMPT = 'locationPrompt';
+var RESERVATION_DATE_PROMPT = 'reservationDatePrompt';
 ;
-var SequentialBot = /** @class */ (function () {
-    function SequentialBot(conversationState, userState) {
-        var _this = this;
+var GatherBot = /** @class */ (function () {
+    function GatherBot(conversationState) {
         this.conversationState = conversationState;
-        this.userState = userState;
-        this.dialogState = this.conversationState.createProperty(DIALOG_STATE_PROPERTY);
-        this.userProfile = this.userState.createProperty(USER_PROFILE_PROPERTY);
-        this.dialogs = new botbuilder_dialogs_1.DialogSet(this.dialogState);
-        this.dialogs.add(new botbuilder_dialogs_1.TextPrompt(NAME_PROMPT));
-        this.dialogs.add(new botbuilder_dialogs_1.ChoicePrompt(CONFIRM_PROMPT));
-        this.dialogs.add(new botbuilder_dialogs_1.NumberPrompt(AGE_PROMPT, function (prompt) { return __awaiter(_this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        if (!prompt.recognized.succeeded) return [3 /*break*/, 3];
-                        if (!(prompt.recognized.value && prompt.recognized.value <= 0)) return [3 /*break*/, 2];
-                        return [4 /*yield*/, prompt.context.sendActivity("Your age can't be less than zero.")];
-                    case 1:
-                        _a.sent();
-                        return [2 /*return*/, false];
-                    case 2: return [2 /*return*/, true];
-                    case 3: return [2 /*return*/, false];
-                }
-            });
-        }); }));
-        var whoAreYou = [
-            this.promptForName.bind(this),
-            this.confirmAgePrompt.bind(this),
-            this.promptForAge.bind(this),
-            this.captureAge.bind(this)
+        this.dialogStateAccessor = this.conversationState.createProperty(DIALOG_STATE_ACCESSOR);
+        this.reservationAccessor = this.conversationState.createProperty(RESERVATION_ACCESSOR);
+        this.dialogSet = new botbuilder_dialogs_1.DialogSet(this.dialogStateAccessor);
+        this.dialogSet.add(new botbuilder_dialogs_1.NumberPrompt(SIZE_RANGE_PROMPT));
+        this.dialogSet.add(new botbuilder_dialogs_1.ChoicePrompt(LOCATION_PROMPT));
+        this.dialogSet.add(new botbuilder_dialogs_1.DateTimePrompt(RESERVATION_DATE_PROMPT));
+        var reservations = [
+            this.promptForPartySize.bind(this),
+            this.promptForLocation.bind(this),
         ];
-        // Create a dialog that asks the user for their name.
-        this.dialogs.add(new botbuilder_dialogs_1.WaterfallDialog(WHO_ARE_YOU, whoAreYou));
-        // Create a dialog that displays a user name after it has been collected.
-        this.dialogs.add(new botbuilder_dialogs_1.WaterfallDialog(HELLO_USER, [
-            this.displayProfile.bind(this)
-        ]));
+        this.dialogSet.add(new botbuilder_dialogs_1.WaterfallDialog(RESERVATION_DIALOG, reservations));
     }
-    // This step in the dialog prompts the user for their name.
-    SequentialBot.prototype.promptForName = function (step) {
+    GatherBot.prototype.promptForPartySize = function (step) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, step.prompt(NAME_PROMPT, "What is your name, human?")];
+                    case 0: return [4 /*yield*/, step.prompt(SIZE_RANGE_PROMPT, {
+                            prompt: 'How many people is the reservation for?',
+                            retryPrompt: 'How large is your party?',
+                            validations: { min: 3, max: 8 },
+                        })];
                     case 1: return [2 /*return*/, _a.sent()];
                 }
             });
         });
     };
-    // This step captures the user's name, then prompts whether or not to collect an age.
-    SequentialBot.prototype.confirmAgePrompt = function (step) {
+    GatherBot.prototype.promptForLocation = function (step) {
         return __awaiter(this, void 0, void 0, function () {
-            var userData, user;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            var resData, _a, _b;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
                     case 0:
-                        userData = { name: '', age: 0 };
-                        return [4 /*yield*/, this.userProfile.get(step.context, userData)];
+                        resData = { size: step.result, location: '', date: {} };
+                        return [4 /*yield*/, this.reservationAccessor.set(step.context, resData)];
                     case 1:
-                        user = _a.sent();
-                        user.name = step.result;
-                        return [4 /*yield*/, this.userProfile.set(step.context, user)];
+                        _c.sent();
+                        _b = (_a = console).log;
+                        return [4 /*yield*/, this.reservationAccessor.get(step.context, resData)];
                     case 2:
-                        _a.sent();
-                        return [4 /*yield*/, step.prompt(CONFIRM_PROMPT, 'Do you want to give your age?', ['yes', 'no'])];
-                    case 3: return [2 /*return*/, _a.sent()];
+                        _b.apply(_a, [_c.sent()]);
+                        return [4 /*yield*/, step.prompt(LOCATION_PROMPT, {
+                                prompt: "Please choose a location",
+                                retryPrompt: 'Sorry, please choose a location from the list.',
+                                choices: ['Redmond', 'Bellevue', 'Seattle'],
+                            })];
+                    case 3: return [2 /*return*/, _c.sent()];
                 }
             });
         });
     };
-    // This step checks the user's response - if yes, the bot will proceed to prompt for age.
-    // Otherwise, the bot will skip the age step.
-    SequentialBot.prototype.promptForAge = function (step) {
+    GatherBot.prototype.onTurn = function (context) {
         return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            var _a, reservation, dc, dialogTurnResult;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
                     case 0:
-                        if (!(step.result && step.result.value === 'yes')) return [3 /*break*/, 2];
-                        return [4 /*yield*/, step.prompt(AGE_PROMPT, "What is your age?")];
-                    case 1: return [2 /*return*/, _a.sent()];
-                    case 2: return [4 /*yield*/, step.next(-1)];
-                    case 3: return [2 /*return*/, _a.sent()];
-                }
-            });
-        });
-    };
-    // This step captures the user's age.
-    SequentialBot.prototype.captureAge = function (step) {
-        return __awaiter(this, void 0, void 0, function () {
-            var userData, user;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        userData = { name: '', age: 0 };
-                        return [4 /*yield*/, this.userProfile.get(step.context, userData)];
-                    case 1:
-                        user = _a.sent();
-                        if (!(step.result !== -1)) return [3 /*break*/, 4];
-                        user.age = step.result;
-                        return [4 /*yield*/, this.userProfile.set(step.context, user)];
+                        _a = context.activity.type;
+                        switch (_a) {
+                            case botbuilder_1.ActivityTypes.Message: return [3 /*break*/, 1];
+                        }
+                        return [3 /*break*/, 14];
+                    case 1: return [4 /*yield*/, this.reservationAccessor.get(context, null)];
                     case 2:
-                        _a.sent();
-                        return [4 /*yield*/, step.context.sendActivity("I will remember that you are " + step.result + " years old.")];
+                        reservation = _b.sent();
+                        return [4 /*yield*/, this.dialogSet.createContext(context)];
                     case 3:
-                        _a.sent();
-                        return [3 /*break*/, 6];
-                    case 4: return [4 /*yield*/, step.context.sendActivity("No age given.")];
-                    case 5:
-                        _a.sent();
-                        _a.label = 6;
-                    case 6: return [4 /*yield*/, step.endDialog()];
-                    case 7: return [2 /*return*/, _a.sent()];
-                }
-            });
-        });
-    };
-    // This step displays the captured information back to the user.
-    SequentialBot.prototype.displayProfile = function (step) {
-        return __awaiter(this, void 0, void 0, function () {
-            var user;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.userProfile.get(step.context, {})];
-                    case 1:
-                        user = _a.sent();
-                        if (!user.age) return [3 /*break*/, 3];
-                        return [4 /*yield*/, step.context.sendActivity("Your name is " + user.name + " and you are " + user.age + " years old.")];
-                    case 2:
-                        _a.sent();
-                        return [3 /*break*/, 5];
-                    case 3: return [4 /*yield*/, step.context.sendActivity("Your name is " + user.name + " and you did not share your age.")];
+                        dc = _b.sent();
+                        if (!!dc.activeDialog) return [3 /*break*/, 8];
+                        if (!!reservation) return [3 /*break*/, 5];
+                        return [4 /*yield*/, dc.beginDialog(RESERVATION_DIALOG)];
                     case 4:
-                        _a.sent();
-                        _a.label = 5;
-                    case 5: return [4 /*yield*/, step.endDialog()];
-                    case 6: return [2 /*return*/, _a.sent()];
-                }
-            });
-        });
-    };
-    SequentialBot.prototype.onTurn = function (context) {
-        return __awaiter(this, void 0, void 0, function () {
-            var dc, user;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        if (!(context.activity.type === botbuilder_1.ActivityTypes.Message)) return [3 /*break*/, 7];
-                        return [4 /*yield*/, this.dialogs.createContext(context)];
-                    case 1:
-                        dc = _a.sent();
-                        //const utterance = (context.activity.text || '').trim().toLowerCase();
-                        // If the bot has not yet responded, continue processing the current
-                        // dialog.
-                        return [4 /*yield*/, dc.continueDialog()];
-                    case 2:
-                        //const utterance = (context.activity.text || '').trim().toLowerCase();
-                        // If the bot has not yet responded, continue processing the current
-                        // dialog.
-                        _a.sent();
-                        if (!!context.responded) return [3 /*break*/, 7];
-                        return [4 /*yield*/, this.userProfile.get(dc.context, {})];
-                    case 3:
-                        user = _a.sent();
-                        if (!user.name) return [3 /*break*/, 5];
-                        return [4 /*yield*/, dc.beginDialog(HELLO_USER)];
-                    case 4:
-                        _a.sent();
+                        _b.sent();
                         return [3 /*break*/, 7];
-                    case 5: return [4 /*yield*/, dc.beginDialog(WHO_ARE_YOU)];
+                    case 5: return [4 /*yield*/, context.sendActivity("We'll see you on " + reservation)];
                     case 6:
-                        _a.sent();
-                        _a.label = 7;
-                    case 7: 
-                    // Save changes to the user state.
-                    return [4 /*yield*/, this.userState.saveChanges(context)];
-                    case 8:
-                        // Save changes to the user state.
-                        _a.sent();
-                        // End this turn by saving changes to the conversation state.
-                        return [4 /*yield*/, this.conversationState.saveChanges(context)];
+                        _b.sent();
+                        _b.label = 7;
+                    case 7: return [3 /*break*/, 12];
+                    case 8: return [4 /*yield*/, dc.continueDialog()];
                     case 9:
-                        // End this turn by saving changes to the conversation state.
-                        _a.sent();
-                        return [2 /*return*/];
+                        dialogTurnResult = _b.sent();
+                        console.log(dialogTurnResult);
+                        if (!(dialogTurnResult.status === botbuilder_dialogs_1.DialogTurnStatus.complete)) return [3 /*break*/, 12];
+                        return [4 /*yield*/, this.reservationAccessor.set(context, dialogTurnResult.result)];
+                    case 10:
+                        _b.sent();
+                        return [4 /*yield*/, context.sendActivity("Your party of " + dialogTurnResult.result.size + " is " +
+                                ("confirmed for " + dialogTurnResult.result.date + " in ") +
+                                (dialogTurnResult.result.location + "."))];
+                    case 11:
+                        _b.sent();
+                        _b.label = 12;
+                    case 12: return [4 /*yield*/, this.conversationState.saveChanges(context, false)];
+                    case 13:
+                        _b.sent();
+                        return [3 /*break*/, 15];
+                    case 14: return [3 /*break*/, 15];
+                    case 15: return [2 /*return*/];
                 }
             });
         });
     };
-    return SequentialBot;
+    return GatherBot;
 }());
-exports.SequentialBot = SequentialBot;
+exports.GatherBot = GatherBot;
 //# sourceMappingURL=bot.js.map

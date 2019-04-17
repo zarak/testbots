@@ -1,5 +1,5 @@
-import { TurnContext, ActivityTypes, StatePropertyAccessor, ConversationState } from 'botbuilder';
-import { DateTimePrompt, DialogTurnResult, ChoicePrompt, DialogSet, WaterfallDialog, NumberPrompt, WaterfallStepContext } from 'botbuilder-dialogs';
+import { UserState, TurnContext, ActivityTypes, StatePropertyAccessor, ConversationState } from 'botbuilder';
+import { DialogTurnStatus, DateTimePrompt, DialogTurnResult, ChoicePrompt, DialogSet, WaterfallDialog, NumberPrompt, WaterfallStepContext } from 'botbuilder-dialogs';
 
 // Define identifiers for our state property accessors.
 const DIALOG_STATE_ACCESSOR = 'dialogStateAccessor';
@@ -11,11 +11,11 @@ const SIZE_RANGE_PROMPT = 'rangePrompt';
 const LOCATION_PROMPT = 'locationPrompt';
 const RESERVATION_DATE_PROMPT = 'reservationDatePrompt';
 
-interface LooseObject {
-    [key: string]: any
+interface IReservationData {
+    size? : number,
+    location? : string,
+    date? : object
 };
-
-var obj: LooseObject = {};
 
 export class GatherBot {
     private dialogStateAccessor : StatePropertyAccessor;
@@ -31,9 +31,9 @@ export class GatherBot {
         this.dialogSet.add(new ChoicePrompt(LOCATION_PROMPT));
         this.dialogSet.add(new DateTimePrompt(RESERVATION_DATE_PROMPT));
 
-        const reservations : ((sc: WaterfallStepContext<{}>) => Promise<DialogTurnResult<any>>)[] = [
+        const reservations : ((sc: WaterfallStepContext<IReservationData>) => Promise<DialogTurnResult<any>>)[] = [
             this.promptForPartySize.bind(this),
-            //this.promptForLocation.bind(this),
+            this.promptForLocation.bind(this),
             //this.promptForReservationDate.bind(this),
             //this.acknowledgeReservation.bind(this),
         ];
@@ -41,7 +41,7 @@ export class GatherBot {
         this.dialogSet.add(new WaterfallDialog(RESERVATION_DIALOG, reservations));
     }
 
-    private async promptForPartySize(step: WaterfallStepContext<{}>) : Promise<DialogTurnResult<any>> {
+    private async promptForPartySize(step: WaterfallStepContext<IReservationData>) : Promise<DialogTurnResult<any>> {
         return await step.prompt(
             SIZE_RANGE_PROMPT, {
                 prompt: 'How many people is the reservation for?',
@@ -50,16 +50,53 @@ export class GatherBot {
             });
     }
 
-    //private async promptForLocation(step: WaterfallStepContext<{}>) : Promise<DialogTurnResult<any>> {
-        //return await step.prompt(
-            //LOCATION_PROMPT, {
-                //prompt: 
-            //}
-        //)
-    //}
-
-
+    private async promptForLocation(step: WaterfallStepContext<IReservationData>) : Promise<DialogTurnResult<any>> {
+        const resData : IReservationData = { size: step.result, location: '', date: {} };
+        await this.reservationAccessor.set(step.context, resData);
+        console.log(await this.reservationAccessor.get(step.context, resData));
+        return await step.prompt(
+            LOCATION_PROMPT, {
+                prompt: "Please choose a location",
+                retryPrompt: 'Sorry, please choose a location from the list.',
+                choices: ['Redmond', 'Bellevue', 'Seattle'],
+        });
+    }
 
     async onTurn(context : TurnContext) {
+        switch (context.activity.type) {
+            case ActivityTypes.Message:
+                const reservation = await this.reservationAccessor.get(context, null);
+
+                const dc = await this.dialogSet.createContext(context);
+
+                if (!dc.activeDialog) {
+                    if (!reservation) {
+                        await dc.beginDialog(RESERVATION_DIALOG);
+                    } else {
+                        await context.sendActivity(`We'll see you on ${reservation}`);
+                    }
+                }
+
+                else {
+                    const dialogTurnResult = await dc.continueDialog();
+                    console.log(dialogTurnResult);
+
+                    if (dialogTurnResult.status === DialogTurnStatus.complete) {
+                        await this.reservationAccessor.set(
+                            context,
+                            dialogTurnResult.result);
+
+                        await context.sendActivity(
+                            `Your party of ${dialogTurnResult.result.size} is ` +
+                            `confirmed for ${dialogTurnResult.result.date} in ` +
+                            `${dialogTurnResult.result.location}.`);
+                    }
+                }
+
+                await this.conversationState.saveChanges(context, false);
+                break;
+            default:
+                break;
+        }
     }
 }
