@@ -34,8 +34,8 @@ export class GatherBot {
         const reservations : ((sc: WaterfallStepContext<IReservationData>) => Promise<DialogTurnResult<any>>)[] = [
             this.promptForPartySize.bind(this),
             this.promptForLocation.bind(this),
-            //this.promptForReservationDate.bind(this),
-            //this.acknowledgeReservation.bind(this),
+            this.promptForReservationDate.bind(this),
+            this.acknowledgeReservation.bind(this),
         ];
 
         this.dialogSet.add(new WaterfallDialog(RESERVATION_DIALOG, reservations));
@@ -59,6 +59,36 @@ export class GatherBot {
                 prompt: "Please choose a location",
                 retryPrompt: 'Sorry, please choose a location from the list.',
                 choices: ['Redmond', 'Bellevue', 'Seattle'],
+        });
+    }
+
+    // TODO: Persist data using interfaces instead of values object
+    async promptForReservationDate(stepContext: WaterfallStepContext) {
+        // Record the location information in the current dialog state.
+        stepContext.values.location = stepContext.result.value;
+
+        return await stepContext.prompt(
+            RESERVATION_DATE_PROMPT, {
+                prompt: 'Great. When will the reservation be for?',
+                retryPrompt: 'What time should we make your reservation for?'
+            });
+    }
+
+    // TODO: Persist data using interfaces instead of values object
+    async acknowledgeReservation(stepContext: WaterfallStepContext) {
+        // Retrieve the reservation date.
+        const resolution = stepContext.result[0];
+        const time = resolution.value || resolution.start;
+
+        // Send an acknowledgement to the user.
+        await stepContext.context.sendActivity(
+            'Thank you. We will confirm your reservation shortly.');
+
+        // Return the collected information to the parent context.
+        return await stepContext.endDialog({
+            date: time,
+            size: stepContext.values.size,
+            location: stepContext.values.location
         });
     }
 
