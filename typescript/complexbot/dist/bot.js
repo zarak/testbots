@@ -37,183 +37,163 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var botbuilder_1 = require("botbuilder");
 var botbuilder_dialogs_1 = require("botbuilder-dialogs");
-// Define identifiers for our state property accessors.
-var DIALOG_STATE_ACCESSOR = 'dialogStateAccessor';
-var RESERVATION_ACCESSOR = 'reservationAccessor';
-// Define identifiers for our dialogs and prompts.
-var RESERVATION_DIALOG = 'reservationDialog';
-var SIZE_RANGE_PROMPT = 'rangePrompt';
-var LOCATION_PROMPT = 'locationPrompt';
-var RESERVATION_DATE_PROMPT = 'reservationDatePrompt';
+// Define state property accessor names.
+var DIALOG_STATE_PROPERTY = 'dialogStateProperty';
+var USER_PROFILE_PROPERTY = 'userProfileProperty';
+var TOP_LEVEL_DIALOG = 'dialog-topLevel';
+var NAME_PROMPT = 'prompt-name';
+var AGE_PROMPT = 'prompt-age';
+var SELECTION_PROMPT = 'prompt-companySelection';
 ;
-var GatherBot = /** @class */ (function () {
-    function GatherBot(conversationState) {
+var ComplexBot = /** @class */ (function () {
+    function ComplexBot(conversationState, userState) {
         this.conversationState = conversationState;
-        this.dialogStateAccessor = this.conversationState.createProperty(DIALOG_STATE_ACCESSOR);
-        this.reservationAccessor = this.conversationState.createProperty(RESERVATION_ACCESSOR);
-        this.dialogSet = new botbuilder_dialogs_1.DialogSet(this.dialogStateAccessor);
-        this.dialogSet.add(new botbuilder_dialogs_1.NumberPrompt(SIZE_RANGE_PROMPT));
-        this.dialogSet.add(new botbuilder_dialogs_1.ChoicePrompt(LOCATION_PROMPT));
-        this.dialogSet.add(new botbuilder_dialogs_1.DateTimePrompt(RESERVATION_DATE_PROMPT));
-        var reservations = [
-            this.promptForPartySize.bind(this),
-            this.promptForLocation.bind(this),
-            this.promptForReservationDate.bind(this),
-            this.acknowledgeReservation.bind(this),
+        this.userState = userState;
+        this.dialogStateAccessor = this.conversationState.createProperty(DIALOG_STATE_PROPERTY);
+        this.userProfileAccessor = this.userState.createProperty(USER_PROFILE_PROPERTY);
+        this.dialogs = new botbuilder_dialogs_1.DialogSet(this.dialogStateAccessor);
+        this.dialogs
+            .add(new botbuilder_dialogs_1.TextPrompt(NAME_PROMPT))
+            .add(new botbuilder_dialogs_1.NumberPrompt(AGE_PROMPT))
+            .add(new botbuilder_dialogs_1.ChoicePrompt(SELECTION_PROMPT));
+        var toplevel = [
+            this.nameStep.bind(this),
+            this.ageStep.bind(this),
+            this.end.bind(this),
         ];
-        this.dialogSet.add(new botbuilder_dialogs_1.WaterfallDialog(RESERVATION_DIALOG, reservations));
+        this.dialogs.add(new botbuilder_dialogs_1.WaterfallDialog(TOP_LEVEL_DIALOG, toplevel));
     }
-    GatherBot.prototype.promptForPartySize = function (step) {
+    ComplexBot.prototype.nameStep = function (step) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, step.prompt(SIZE_RANGE_PROMPT, {
-                            prompt: 'How many people is the reservation for?',
-                            retryPrompt: 'How large is your party?',
-                            validations: { min: 3, max: 8 },
-                        })];
-                    case 1: return [2 /*return*/, _a.sent()];
+                    case 0: return [4 /*yield*/, step.prompt(NAME_PROMPT, "Please enter your name.")];
+                    case 1: 
+                    //const userData : IUserData = {
+                    //name: '',
+                    //age: 0,
+                    //company: '',
+                    //};
+                    //await this.userProfileAccessor.set(step.context, userData);
+                    return [2 /*return*/, _a.sent()];
                 }
             });
         });
     };
-    GatherBot.prototype.promptForLocation = function (step) {
+    ComplexBot.prototype.ageStep = function (step) {
         return __awaiter(this, void 0, void 0, function () {
-            var resData, _a, _b;
+            var userData, _a, _b;
             return __generator(this, function (_c) {
                 switch (_c.label) {
-                    case 0:
-                        resData = { size: step.result, location: '', date: '' };
-                        return [4 /*yield*/, this.reservationAccessor.set(step.context, resData)];
+                    case 0: return [4 /*yield*/, this.userProfileAccessor.get(step.context)];
                     case 1:
-                        _c.sent();
-                        _b = (_a = console).log;
-                        return [4 /*yield*/, this.reservationAccessor.get(step.context, resData)];
-                    case 2:
-                        _b.apply(_a, [_c.sent()]);
-                        return [4 /*yield*/, step.prompt(LOCATION_PROMPT, {
-                                prompt: "Please choose a location",
-                                retryPrompt: 'Sorry, please choose a location from the list.',
-                                choices: ['Redmond', 'Bellevue', 'Seattle'],
-                            })];
-                    case 3: return [2 /*return*/, _c.sent()];
-                }
-            });
-        });
-    };
-    GatherBot.prototype.promptForReservationDate = function (step) {
-        return __awaiter(this, void 0, void 0, function () {
-            var resData, _a, _b;
-            return __generator(this, function (_c) {
-                switch (_c.label) {
-                    case 0: return [4 /*yield*/, this.reservationAccessor.get(step.context)];
-                    case 1:
-                        resData = _c.sent();
-                        resData.location = step.result.value; // use value field for text prompt
-                        return [4 /*yield*/, this.reservationAccessor.set(step.context, resData)];
+                        userData = _c.sent();
+                        userData.name = step.result;
+                        console.log("NAME", step.result);
+                        return [4 /*yield*/, this.userProfileAccessor.set(step.context, userData)];
                     case 2:
                         _c.sent();
                         _b = (_a = console).log;
-                        return [4 /*yield*/, this.reservationAccessor.get(step.context, resData)];
+                        return [4 /*yield*/, this.userProfileAccessor.get(step.context)];
                     case 3:
                         _b.apply(_a, [_c.sent()]);
-                        return [4 /*yield*/, step.prompt(RESERVATION_DATE_PROMPT, {
-                                prompt: 'Great. When will the reservation be for?',
-                                retryPrompt: 'What time should we make your reservation for?'
-                            })];
+                        return [4 /*yield*/, step.prompt(AGE_PROMPT, "Please enter your age.")];
                     case 4: return [2 /*return*/, _c.sent()];
                 }
             });
         });
     };
-    GatherBot.prototype.acknowledgeReservation = function (step) {
+    ComplexBot.prototype.end = function (step) {
         return __awaiter(this, void 0, void 0, function () {
-            var resolution, time, resData, _a, _b;
+            var userData, _a, _b;
             return __generator(this, function (_c) {
                 switch (_c.label) {
-                    case 0:
-                        resolution = step.result[0];
-                        time = resolution.value || resolution.start;
-                        // Send an acknowledgement to the user.
-                        return [4 /*yield*/, step.context.sendActivity('Thank you. We will confirm your reservation shortly.')];
+                    case 0: return [4 /*yield*/, this.userProfileAccessor.get(step.context)];
                     case 1:
-                        // Send an acknowledgement to the user.
-                        _c.sent();
-                        return [4 /*yield*/, this.reservationAccessor.get(step.context)];
+                        userData = _c.sent();
+                        userData.age = step.result;
+                        return [4 /*yield*/, this.userProfileAccessor.set(step.context, userData)];
                     case 2:
-                        resData = _c.sent();
-                        resData.date = time;
-                        return [4 /*yield*/, this.reservationAccessor.set(step.context, resData)];
-                    case 3:
                         _c.sent();
                         _b = (_a = console).log;
-                        return [4 /*yield*/, this.reservationAccessor.get(step.context, resData)];
-                    case 4:
+                        return [4 /*yield*/, this.userProfileAccessor.get(step.context)];
+                    case 3:
                         _b.apply(_a, [_c.sent()]);
-                        return [4 /*yield*/, step.endDialog(resData)];
-                    case 5: 
-                    // Return the collected information to the parent context.
-                    return [2 /*return*/, _c.sent()];
+                        return [4 /*yield*/, step.endDialog()];
+                    case 4: return [2 /*return*/, _c.sent()];
                 }
             });
         });
     };
-    GatherBot.prototype.onTurn = function (context) {
+    ComplexBot.prototype.onTurn = function (context) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, reservation, dc, dialogTurnResult, resData;
+            var dc, results, userData, _a, emptyUserData;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
-                        _a = context.activity.type;
+                        if (!(context.activity.type === botbuilder_1.ActivityTypes.Message)) return [3 /*break*/, 17];
+                        return [4 /*yield*/, this.dialogs.createContext(context)];
+                    case 1:
+                        dc = _b.sent();
+                        return [4 /*yield*/, dc.continueDialog()];
+                    case 2:
+                        results = _b.sent();
+                        userData = void 0;
+                        _a = results.status;
                         switch (_a) {
-                            case botbuilder_1.ActivityTypes.Message: return [3 /*break*/, 1];
+                            case botbuilder_dialogs_1.DialogTurnStatus.cancelled: return [3 /*break*/, 3];
+                            case botbuilder_dialogs_1.DialogTurnStatus.empty: return [3 /*break*/, 3];
+                            case botbuilder_dialogs_1.DialogTurnStatus.complete: return [3 /*break*/, 7];
+                            case botbuilder_dialogs_1.DialogTurnStatus.waiting: return [3 /*break*/, 11];
                         }
                         return [3 /*break*/, 15];
-                    case 1: return [4 /*yield*/, this.reservationAccessor.get(context, null)];
-                    case 2:
-                        reservation = _b.sent();
-                        return [4 /*yield*/, this.dialogSet.createContext(context)];
                     case 3:
-                        dc = _b.sent();
-                        if (!!dc.activeDialog) return [3 /*break*/, 8];
-                        if (!!reservation) return [3 /*break*/, 5];
-                        return [4 /*yield*/, dc.beginDialog(RESERVATION_DIALOG)];
+                        emptyUserData = {
+                            name: '',
+                            age: 0,
+                            company: '',
+                        };
+                        return [4 /*yield*/, this.userProfileAccessor.set(context, emptyUserData)];
                     case 4:
                         _b.sent();
-                        return [3 /*break*/, 7];
-                    case 5: return [4 /*yield*/, context.sendActivity("We'll see you on " + reservation)];
+                        return [4 /*yield*/, this.userState.saveChanges(context)];
+                    case 5:
+                        _b.sent();
+                        return [4 /*yield*/, dc.beginDialog(TOP_LEVEL_DIALOG)];
                     case 6:
                         _b.sent();
-                        _b.label = 7;
-                    case 7: return [3 /*break*/, 13];
-                    case 8: return [4 /*yield*/, dc.continueDialog()];
+                        return [3 /*break*/, 15];
+                    case 7: return [4 /*yield*/, this.userProfileAccessor.get(context)];
+                    case 8:
+                        userData = _b.sent();
+                        return [4 /*yield*/, this.userProfileAccessor.set(context, userData)];
                     case 9:
-                        dialogTurnResult = _b.sent();
-                        console.log(dialogTurnResult);
-                        return [4 /*yield*/, this.reservationAccessor.get(context)];
+                        _b.sent();
+                        return [4 /*yield*/, this.userState.saveChanges(context)];
                     case 10:
-                        resData = _b.sent();
-                        if (!(dialogTurnResult.status === botbuilder_dialogs_1.DialogTurnStatus.complete)) return [3 /*break*/, 13];
-                        return [4 /*yield*/, this.reservationAccessor.set(context, resData)];
-                    case 11:
                         _b.sent();
-                        return [4 /*yield*/, context.sendActivity("Your party of " + resData.size + " is " +
-                                ("confirmed for " + resData.date + " in ") +
-                                (resData.location + "."))];
+                        console.log("Complete", userData);
+                        return [3 /*break*/, 15];
+                    case 11: return [4 /*yield*/, this.userProfileAccessor.get(context)];
                     case 12:
+                        userData = _b.sent();
+                        return [4 /*yield*/, this.userProfileAccessor.set(context, userData)];
+                    case 13:
                         _b.sent();
-                        _b.label = 13;
-                    case 13: return [4 /*yield*/, this.conversationState.saveChanges(context, false)];
+                        return [4 /*yield*/, this.userState.saveChanges(context)];
                     case 14:
                         _b.sent();
-                        return [3 /*break*/, 16];
-                    case 15: return [3 /*break*/, 16];
-                    case 16: return [2 /*return*/];
+                        return [3 /*break*/, 15];
+                    case 15: return [4 /*yield*/, this.conversationState.saveChanges(context)];
+                    case 16:
+                        _b.sent();
+                        _b.label = 17;
+                    case 17: return [2 /*return*/];
                 }
             });
         });
     };
-    return GatherBot;
+    return ComplexBot;
 }());
-exports.GatherBot = GatherBot;
+exports.ComplexBot = ComplexBot;
 //# sourceMappingURL=bot.js.map
