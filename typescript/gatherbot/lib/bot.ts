@@ -14,7 +14,7 @@ const RESERVATION_DATE_PROMPT = 'reservationDatePrompt';
 interface IReservationData {
     size? : number,
     location? : string,
-    date? : object
+    date? : string
 };
 
 export class GatherBot {
@@ -51,7 +51,7 @@ export class GatherBot {
     }
 
     private async promptForLocation(step: WaterfallStepContext<IReservationData>) : Promise<DialogTurnResult<any>> {
-        const resData : IReservationData = { size: step.result, location: '', date: {} };
+        const resData : IReservationData = { size: step.result, location: '', date: '' };
         await this.reservationAccessor.set(step.context, resData);
         console.log(await this.reservationAccessor.get(step.context, resData));
         return await step.prompt(
@@ -62,37 +62,38 @@ export class GatherBot {
         });
     }
 
-    // TODO: Persist data using interfaces instead of values object
-    async promptForReservationDate(stepContext: WaterfallStepContext) {
+    private async promptForReservationDate(step: WaterfallStepContext<IReservationData>) {
         // Record the location information in the current dialog state.
-        stepContext.values.location = stepContext.result.value;
+        const resData = await this.reservationAccessor.get(step.context);
+        resData.location = step.result.value; // use value field for text prompt
+        await this.reservationAccessor.set(step.context, resData);
+        console.log(await this.reservationAccessor.get(step.context, resData));
 
-        return await stepContext.prompt(
+        return await step.prompt(
             RESERVATION_DATE_PROMPT, {
                 prompt: 'Great. When will the reservation be for?',
                 retryPrompt: 'What time should we make your reservation for?'
             });
     }
 
-    // TODO: Persist data using interfaces instead of values object
-    async acknowledgeReservation(stepContext: WaterfallStepContext) {
+    async acknowledgeReservation(step: WaterfallStepContext) {
         // Retrieve the reservation date.
-        const resolution = stepContext.result[0];
+        const resolution = step.result[0];
         const time = resolution.value || resolution.start;
 
         // Send an acknowledgement to the user.
-        await stepContext.context.sendActivity(
+        await step.context.sendActivity(
             'Thank you. We will confirm your reservation shortly.');
 
+        const resData = await this.reservationAccessor.get(step.context);
+        resData.date = time;
+        await this.reservationAccessor.set(step.context, resData);
+        console.log(await this.reservationAccessor.get(step.context, resData));
         // Return the collected information to the parent context.
-        return await stepContext.endDialog({
-            date: time,
-            size: stepContext.values.size,
-            location: stepContext.values.location
-        });
+        return await step.endDialog(resData);
     }
 
-    async onTurn(context : TurnContext) {
+    async onTurn(context: TurnContext) {
         switch (context.activity.type) {
             case ActivityTypes.Message:
                 const reservation = await this.reservationAccessor.get(context, null);
@@ -110,16 +111,17 @@ export class GatherBot {
                 else {
                     const dialogTurnResult = await dc.continueDialog();
                     console.log(dialogTurnResult);
+                    const resData = await this.reservationAccessor.get(context);
 
                     if (dialogTurnResult.status === DialogTurnStatus.complete) {
                         await this.reservationAccessor.set(
                             context,
-                            dialogTurnResult.result);
+                            resData);
 
                         await context.sendActivity(
-                            `Your party of ${dialogTurnResult.result.size} is ` +
-                            `confirmed for ${dialogTurnResult.result.date} in ` +
-                            `${dialogTurnResult.result.location}.`);
+                            `Your party of ${resData.size} is ` +
+                            `confirmed for ${resData.date} in ` +
+                            `${resData.location}.`);
                     }
                 }
 
