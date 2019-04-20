@@ -16,7 +16,17 @@ interface IUserData {
     company? : string
 };
 
+// Define the company choices for the company selection prompt.
+const COMPANY_OPTIONS = [
+    'Adatum Corporation', 'Contoso Suites', 'Graphic Design Institute', 'Wide World Importers'
+];
+
 export class ComplexBot {
+    /**
+     *
+     * @param {ConversationState} conversation state object
+     * @param {UserState} user state object
+     */
     private dialogStateAccessor : StatePropertyAccessor;
     private dialogs : DialogSet;
     private userProfileAccessor : StatePropertyAccessor;
