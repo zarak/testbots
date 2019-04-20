@@ -10,7 +10,6 @@ const NAME_PROMPT = 'prompt-name';
 const AGE_PROMPT = 'prompt-age';
 const SELECTION_PROMPT = 'prompt-companySelection';
 
-
 interface IUserData {
     name? : string,
     age? : number,
@@ -37,7 +36,8 @@ export class ComplexBot {
         const toplevel : ((sc: WaterfallStepContext<IUserData>) => Promise<DialogTurnResult<any>>)[] = [
             this.nameStep.bind(this),
             this.ageStep.bind(this),
-            this.end.bind(this),
+            this.startSelectionStep.bind(this),
+            this.acknowledgementStep.bind(this),
         ];
 
         this.dialogs.add(new WaterfallDialog(TOP_LEVEL_DIALOG, toplevel));
@@ -64,10 +64,20 @@ export class ComplexBot {
         return await step.prompt(AGE_PROMPT, "Please enter your age.");
     }
 
-    private async end(step: WaterfallStepContext) {
+    private async startSelectionStep(step: WaterfallStepContext) {
         const userData : IUserData = await this.userProfileAccessor.get(step.context);
         userData.age = step.result;
         await this.userProfileAccessor.set(step.context, userData);
+        const age = step.result;
+        if (age < 20) {
+            await step.context.sendActivity("Oh noes lel");
+        } else {
+            await step.context.sendActivity("It's all good homie");
+        }
+        return await step.next();
+    }
+
+    private async acknowledgementStep(step: WaterfallStepContext) {
         console.log(await this.userProfileAccessor.get(step.context));
 
         return await step.endDialog();

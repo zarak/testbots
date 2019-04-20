@@ -59,7 +59,8 @@ var ComplexBot = /** @class */ (function () {
         var toplevel = [
             this.nameStep.bind(this),
             this.ageStep.bind(this),
-            this.end.bind(this),
+            this.startSelectionStep.bind(this),
+            this.acknowledgementStep.bind(this),
         ];
         this.dialogs.add(new botbuilder_dialogs_1.WaterfallDialog(TOP_LEVEL_DIALOG, toplevel));
     }
@@ -103,24 +104,46 @@ var ComplexBot = /** @class */ (function () {
             });
         });
     };
-    ComplexBot.prototype.end = function (step) {
+    ComplexBot.prototype.startSelectionStep = function (step) {
         return __awaiter(this, void 0, void 0, function () {
-            var userData, _a, _b;
-            return __generator(this, function (_c) {
-                switch (_c.label) {
+            var userData, age;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
                     case 0: return [4 /*yield*/, this.userProfileAccessor.get(step.context)];
                     case 1:
-                        userData = _c.sent();
+                        userData = _a.sent();
                         userData.age = step.result;
                         return [4 /*yield*/, this.userProfileAccessor.set(step.context, userData)];
                     case 2:
-                        _c.sent();
+                        _a.sent();
+                        age = step.result;
+                        if (!(age < 20)) return [3 /*break*/, 4];
+                        return [4 /*yield*/, step.context.sendActivity("Oh noes lel")];
+                    case 3:
+                        _a.sent();
+                        return [3 /*break*/, 6];
+                    case 4: return [4 /*yield*/, step.context.sendActivity("It's all good homie")];
+                    case 5:
+                        _a.sent();
+                        _a.label = 6;
+                    case 6: return [4 /*yield*/, step.next()];
+                    case 7: return [2 /*return*/, _a.sent()];
+                }
+            });
+        });
+    };
+    ComplexBot.prototype.acknowledgementStep = function (step) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, _b;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
+                    case 0:
                         _b = (_a = console).log;
                         return [4 /*yield*/, this.userProfileAccessor.get(step.context)];
-                    case 3:
+                    case 1:
                         _b.apply(_a, [_c.sent()]);
                         return [4 /*yield*/, step.endDialog()];
-                    case 4: return [2 /*return*/, _c.sent()];
+                    case 2: return [2 /*return*/, _c.sent()];
                 }
             });
         });
@@ -176,6 +199,7 @@ var ComplexBot = /** @class */ (function () {
                         return [3 /*break*/, 15];
                     case 11: return [4 /*yield*/, this.userProfileAccessor.get(context)];
                     case 12:
+                        // Need to persist data at each step
                         userData = _b.sent();
                         return [4 /*yield*/, this.userProfileAccessor.set(context, userData)];
                     case 13:
