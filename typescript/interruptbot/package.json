@@ -1,8 +1,12 @@
 {
   "dependencies": {
+    "@types/dotenv": "^6.1.1",
     "@types/restify": "^7.2.9",
     "botbuilder": "^4.3.4",
+    "botbuilder-ai": "^4.3.4",
     "botbuilder-dialogs": "^4.3.4",
+    "botframework-config": "^4.3.4",
+    "dotenv": "^7.0.0",
     "restify": "^8.2.0"
   },
   "name": "interruptbot",

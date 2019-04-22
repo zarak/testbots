@@ -1,12 +1,18 @@
 import { BotFrameworkAdapter, MemoryStorage, ConversationState } from 'botbuilder';
 import * as restify from 'restify';
 import { InterruptBot } from './bot';
+import { QnAMaker } from 'botbuilder-ai';
+import { DialogSet } from 'botbuilder-dialogs';
+import { IQnAService } from 'botframework-config';
+import { config } from 'dotenv';
+
+// Create env variables into process.env
+config();
 
 let server = restify.createServer();
 server.listen(process.env.port || process.env.PORT || 3978, () => {
     console.log(`Listening on ${server.url}`);
 });
-
 
 const adapter = new BotFrameworkAdapter({
     appId: process.env.MICROSOFT_APP_ID,
