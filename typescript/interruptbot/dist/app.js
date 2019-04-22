@@ -56,8 +56,7 @@ var adapter = new botbuilder_1.BotFrameworkAdapter({
 });
 var memoryStorage = new botbuilder_1.MemoryStorage();
 var conversationState = new botbuilder_1.ConversationState(memoryStorage);
-var userState = new botbuilder_1.UserState(memoryStorage);
-var bot = new bot_1.ComplexBot(conversationState, userState);
+var bot = new bot_1.InterruptBot(conversationState);
 server.post("/api/messages", function (req, res) {
     adapter.processActivity(req, res, function (context) { return __awaiter(_this, void 0, void 0, function () {
         return __generator(this, function (_a) {

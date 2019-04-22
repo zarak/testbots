@@ -39,185 +39,108 @@ var botbuilder_1 = require("botbuilder");
 var botbuilder_dialogs_1 = require("botbuilder-dialogs");
 // Define state property accessor names.
 var DIALOG_STATE_PROPERTY = 'dialogStateProperty';
-var USER_PROFILE_PROPERTY = 'userProfileProperty';
-var TOP_LEVEL_DIALOG = 'dialog-topLevel';
-var NAME_PROMPT = 'prompt-name';
-var AGE_PROMPT = 'prompt-age';
-var SELECTION_PROMPT = 'prompt-companySelection';
+var ORDER_STATE_PROPERTY = 'orderStateProperty';
+var ORDER_PROMPT = 'orderingDialog';
+var CHOICE_PROMPT = 'choicePrompt';
+// The options on the dinner menu, including commands for the bot.
+var dinnerMenu = {
+    choices: ["Potato Salad - $5.99", "Tuna Sandwich - $6.89", "Clam Chowder - $4.50",
+        "Process order", "Cancel", "More info", "Help"],
+    "Potato Salad - $5.99": {
+        description: "Potato Salad",
+        price: 5.99
+    },
+    "Tuna Sandwich - $6.89": {
+        description: "Tuna Sandwich",
+        price: 6.89
+    },
+    "Clam Chowder - $4.50": {
+        description: "Clam Chowder",
+        price: 4.50
+    }
+};
 ;
-var ComplexBot = /** @class */ (function () {
-    function ComplexBot(conversationState, userState) {
+var InterruptBot = /** @class */ (function () {
+    function InterruptBot(conversationState) {
         this.conversationState = conversationState;
-        this.userState = userState;
         this.dialogStateAccessor = this.conversationState.createProperty(DIALOG_STATE_PROPERTY);
-        this.userProfileAccessor = this.userState.createProperty(USER_PROFILE_PROPERTY);
+        this.orderStateAccessor = this.conversationState.createProperty(ORDER_STATE_PROPERTY);
         this.dialogs = new botbuilder_dialogs_1.DialogSet(this.dialogStateAccessor);
         this.dialogs
-            .add(new botbuilder_dialogs_1.TextPrompt(NAME_PROMPT))
-            .add(new botbuilder_dialogs_1.NumberPrompt(AGE_PROMPT))
-            .add(new botbuilder_dialogs_1.ChoicePrompt(SELECTION_PROMPT));
-        var toplevel = [
-            this.nameStep.bind(this),
-            this.ageStep.bind(this),
-            this.startSelectionStep.bind(this),
-            this.acknowledgementStep.bind(this),
+            .add(new botbuilder_dialogs_1.ChoicePrompt(CHOICE_PROMPT));
+        var order = [
+            this.orderStart.bind(this),
+            this.choiceStep.bind(this),
         ];
-        this.dialogs.add(new botbuilder_dialogs_1.WaterfallDialog(TOP_LEVEL_DIALOG, toplevel));
+        this.dialogs.add(new botbuilder_dialogs_1.WaterfallDialog(ORDER_PROMPT, order));
     }
-    ComplexBot.prototype.nameStep = function (step) {
+    InterruptBot.prototype.orderStart = function (step) {
         return __awaiter(this, void 0, void 0, function () {
+            var defaultOrderCart, orderCart;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, step.prompt(NAME_PROMPT, "Please enter your name.")];
-                    case 1: 
-                    //const userData : IUserData = {
-                    //name: '',
-                    //age: 0,
-                    //company: '',
-                    //};
-                    //await this.userProfileAccessor.set(step.context, userData);
-                    return [2 /*return*/, _a.sent()];
-                }
-            });
-        });
-    };
-    ComplexBot.prototype.ageStep = function (step) {
-        return __awaiter(this, void 0, void 0, function () {
-            var userData, _a, _b;
-            return __generator(this, function (_c) {
-                switch (_c.label) {
-                    case 0: return [4 /*yield*/, this.userProfileAccessor.get(step.context)];
+                    case 0:
+                        defaultOrderCart = { orders: [], total: 0 };
+                        return [4 /*yield*/, this.orderStateAccessor.get(step.context, defaultOrderCart)];
                     case 1:
-                        userData = _c.sent();
-                        userData.name = step.result;
-                        console.log("NAME", step.result);
-                        return [4 /*yield*/, this.userProfileAccessor.set(step.context, userData)];
-                    case 2:
-                        _c.sent();
-                        _b = (_a = console).log;
-                        return [4 /*yield*/, this.userProfileAccessor.get(step.context)];
-                    case 3:
-                        _b.apply(_a, [_c.sent()]);
-                        return [4 /*yield*/, step.prompt(AGE_PROMPT, "Please enter your age.")];
-                    case 4: return [2 /*return*/, _c.sent()];
+                        orderCart = _a.sent();
+                        console.log(orderCart);
+                        return [4 /*yield*/, step.prompt(CHOICE_PROMPT, "What would you like?", dinnerMenu.choices)];
+                    case 2: return [2 /*return*/, _a.sent()];
                 }
             });
         });
     };
-    ComplexBot.prototype.startSelectionStep = function (step) {
+    InterruptBot.prototype.choiceStep = function (step) {
         return __awaiter(this, void 0, void 0, function () {
-            var userData, age;
+            var choice, orderCart, item;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.userProfileAccessor.get(step.context)];
+                    case 0:
+                        choice = step.result;
+                        if (!choice.value.match(/process order/ig)) return [3 /*break*/, 2];
+                        return [4 /*yield*/, this.orderStateAccessor.get(step.context)];
                     case 1:
-                        userData = _a.sent();
-                        userData.age = step.result;
-                        return [4 /*yield*/, this.userProfileAccessor.set(step.context, userData)];
+                        // Get cart from state accessor
+                        orderCart = _a.sent();
+                        return [3 /*break*/, 4];
                     case 2:
-                        _a.sent();
-                        age = step.result;
-                        if (!(age < 20)) return [3 /*break*/, 4];
-                        return [4 /*yield*/, step.context.sendActivity("Oh noes lel")];
+                        item = dinnerMenu[choice.value];
+                        return [4 /*yield*/, this.orderStateAccessor.get(step.context)];
                     case 3:
-                        _a.sent();
-                        return [3 /*break*/, 6];
-                    case 4: return [4 /*yield*/, step.context.sendActivity("It's all good homie")];
-                    case 5:
-                        _a.sent();
-                        _a.label = 6;
-                    case 6: return [4 /*yield*/, step.next()];
-                    case 7: return [2 /*return*/, _a.sent()];
+                        orderCart = _a.sent();
+                        orderCart.orders.push(item.description);
+                        _a.label = 4;
+                    case 4:
+                        console.log(orderCart);
+                        return [2 /*return*/, step.endDialog()];
                 }
             });
         });
     };
-    ComplexBot.prototype.acknowledgementStep = function (step) {
+    InterruptBot.prototype.onTurn = function (context) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, _b;
-            return __generator(this, function (_c) {
-                switch (_c.label) {
+            var dc, results;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
                     case 0:
-                        _b = (_a = console).log;
-                        return [4 /*yield*/, this.userProfileAccessor.get(step.context)];
-                    case 1:
-                        _b.apply(_a, [_c.sent()]);
-                        return [4 /*yield*/, step.endDialog()];
-                    case 2: return [2 /*return*/, _c.sent()];
-                }
-            });
-        });
-    };
-    ComplexBot.prototype.onTurn = function (context) {
-        return __awaiter(this, void 0, void 0, function () {
-            var dc, results, userData, _a, emptyUserData;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
-                    case 0:
-                        if (!(context.activity.type === botbuilder_1.ActivityTypes.Message)) return [3 /*break*/, 17];
+                        if (!(context.activity.type === botbuilder_1.ActivityTypes.Message)) return [3 /*break*/, 4];
                         return [4 /*yield*/, this.dialogs.createContext(context)];
                     case 1:
-                        dc = _b.sent();
+                        dc = _a.sent();
                         return [4 /*yield*/, dc.continueDialog()];
                     case 2:
-                        results = _b.sent();
-                        userData = void 0;
-                        _a = results.status;
-                        switch (_a) {
-                            case botbuilder_dialogs_1.DialogTurnStatus.cancelled: return [3 /*break*/, 3];
-                            case botbuilder_dialogs_1.DialogTurnStatus.empty: return [3 /*break*/, 3];
-                            case botbuilder_dialogs_1.DialogTurnStatus.complete: return [3 /*break*/, 7];
-                            case botbuilder_dialogs_1.DialogTurnStatus.waiting: return [3 /*break*/, 11];
-                        }
-                        return [3 /*break*/, 15];
+                        results = _a.sent();
+                        return [4 /*yield*/, this.conversationState.saveChanges(context)];
                     case 3:
-                        emptyUserData = {
-                            name: '',
-                            age: 0,
-                            company: '',
-                        };
-                        return [4 /*yield*/, this.userProfileAccessor.set(context, emptyUserData)];
-                    case 4:
-                        _b.sent();
-                        return [4 /*yield*/, this.userState.saveChanges(context)];
-                    case 5:
-                        _b.sent();
-                        return [4 /*yield*/, dc.beginDialog(TOP_LEVEL_DIALOG)];
-                    case 6:
-                        _b.sent();
-                        return [3 /*break*/, 15];
-                    case 7: return [4 /*yield*/, this.userProfileAccessor.get(context)];
-                    case 8:
-                        userData = _b.sent();
-                        return [4 /*yield*/, this.userProfileAccessor.set(context, userData)];
-                    case 9:
-                        _b.sent();
-                        return [4 /*yield*/, this.userState.saveChanges(context)];
-                    case 10:
-                        _b.sent();
-                        console.log("Complete", userData);
-                        return [3 /*break*/, 15];
-                    case 11: return [4 /*yield*/, this.userProfileAccessor.get(context)];
-                    case 12:
-                        // Need to persist data at each step
-                        userData = _b.sent();
-                        return [4 /*yield*/, this.userProfileAccessor.set(context, userData)];
-                    case 13:
-                        _b.sent();
-                        return [4 /*yield*/, this.userState.saveChanges(context)];
-                    case 14:
-                        _b.sent();
-                        return [3 /*break*/, 15];
-                    case 15: return [4 /*yield*/, this.conversationState.saveChanges(context)];
-                    case 16:
-                        _b.sent();
-                        _b.label = 17;
-                    case 17: return [2 /*return*/];
+                        _a.sent();
+                        _a.label = 4;
+                    case 4: return [2 /*return*/];
                 }
             });
         });
     };
-    return ComplexBot;
+    return InterruptBot;
 }());
-exports.ComplexBot = ComplexBot;
+exports.InterruptBot = InterruptBot;
 //# sourceMappingURL=bot.js.map

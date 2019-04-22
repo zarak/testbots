@@ -1,24 +1,38 @@
 import { TurnContext, ActivityTypes, StatePropertyAccessor, ConversationState } from 'botbuilder';
-import { DialogTurnStatus, DialogTurnResult, TextPrompt, ChoicePrompt, DialogSet, WaterfallDialog, NumberPrompt, WaterfallStepContext } from 'botbuilder-dialogs';
+import { DialogTurnStatus, DialogTurnResult, ChoicePrompt, DialogSet, WaterfallDialog, WaterfallStepContext } from 'botbuilder-dialogs';
 
 // Define state property accessor names.
 const DIALOG_STATE_PROPERTY = 'dialogStateProperty';
+const ORDER_STATE_PROPERTY = 'orderStateProperty';
 
-const TOP_LEVEL_DIALOG = 'dialog-topLevel';
-const NAME_PROMPT = 'prompt-name';
-const AGE_PROMPT = 'prompt-age';
-const SELECTION_PROMPT = 'prompt-companySelection';
+const ORDER_PROMPT = 'orderingDialog';
+const CHOICE_PROMPT = 'choicePrompt';
 
-interface IUserData {
-    name? : string,
-    age? : number,
-    company? : string
+//type MenuItem = { description: string; price: number; };
+//type Menu = { choices: string[];  };
+
+// The options on the dinner menu, including commands for the bot.
+const dinnerMenu = {
+    choices: ["Potato Salad - $5.99", "Tuna Sandwich - $6.89", "Clam Chowder - $4.50",
+        "Process order", "Cancel", "More info", "Help"],
+    "Potato Salad - $5.99": {
+        description: "Potato Salad",
+        price: 5.99
+    },
+    "Tuna Sandwich - $6.89": {
+        description: "Tuna Sandwich",
+        price: 6.89
+    },
+    "Clam Chowder - $4.50": {
+        description: "Clam Chowder",
+        price: 4.50
+    }
+}
+
+interface IOrderCart {
+    orders: string[],
+    total: number
 };
-
-// Define the company choices for the company selection prompt.
-const COMPANY_OPTIONS = [
-    'Adatum Corporation', 'Contoso Suites', 'Graphic Design Institute', 'Wide World Importers'
-];
 
 export class InterruptBot {
     /**
@@ -26,22 +40,48 @@ export class InterruptBot {
      * @param {ConversationState} conversation state object
      */
     private dialogStateAccessor: StatePropertyAccessor;
+    private orderStateAccessor: StatePropertyAccessor;
     private dialogs: DialogSet;
 
     constructor(private conversationState: ConversationState) {
         this.dialogStateAccessor = this.conversationState.createProperty(DIALOG_STATE_PROPERTY);
+        this.orderStateAccessor = this.conversationState.createProperty(ORDER_STATE_PROPERTY);
 
         this.dialogs = new DialogSet(this.dialogStateAccessor);
 
         this.dialogs
-            .add(new TextPrompt(NAME_PROMPT))
-            .add(new NumberPrompt(AGE_PROMPT))
-            .add(new ChoicePrompt(SELECTION_PROMPT));
+            .add(new ChoicePrompt(CHOICE_PROMPT));
 
-        const toplevel : ((sc: WaterfallStepContext<IUserData>) => Promise<DialogTurnResult<any>>)[] = [
+        const order: ((sc: WaterfallStepContext<IOrderCart>) => Promise<DialogTurnResult<any>>)[] = [
+            this.orderStart.bind(this),
+            this.choiceStep.bind(this),
         ];
 
-        this.dialogs.add(new WaterfallDialog(TOP_LEVEL_DIALOG, toplevel));
+        this.dialogs.add(new WaterfallDialog(ORDER_PROMPT, order));
+    }
+
+    private async orderStart(step: WaterfallStepContext) {
+        const defaultOrderCart = { orders: [], total : 0 };
+        const orderCart = await this.orderStateAccessor.get(step.context, defaultOrderCart);
+        console.log(orderCart);
+
+        return await step.prompt(CHOICE_PROMPT, "What would you like?", dinnerMenu.choices);
+    }
+
+    private async choiceStep(step: WaterfallStepContext) {
+        const choice = step.result;
+        let orderCart: IOrderCart;
+        if (choice.value.match(/process order/ig)) {
+            // Get cart from state accessor
+            orderCart = await this.orderStateAccessor.get(step.context);
+        } else {
+            // @TODO: Need to create type for choice on menu
+            const item = dinnerMenu[choice.value];
+            orderCart = await this.orderStateAccessor.get(step.context);
+            orderCart.orders.push(item.description);
+        }
+        console.log(orderCart);
+        return step.endDialog();
     }
 
     async onTurn(context: TurnContext) {
