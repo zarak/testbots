@@ -1,5 +1,6 @@
 import { TurnContext, ActivityTypes, StatePropertyAccessor, ConversationState } from 'botbuilder';
 import { DialogTurnStatus, DialogTurnResult, ChoicePrompt, DialogSet, WaterfallDialog, WaterfallStepContext } from 'botbuilder-dialogs';
+import { QnAMaker } from 'botbuilder-ai';
 
 // Define state property accessor names.
 const DIALOG_STATE_PROPERTY = 'dialogStateProperty';
@@ -41,54 +42,60 @@ export class InterruptBot {
      */
     private dialogStateAccessor: StatePropertyAccessor;
     private orderStateAccessor: StatePropertyAccessor;
-    private dialogs: DialogSet;
+    //private dialogs: DialogSet;
 
-    constructor(private conversationState: ConversationState) {
+    constructor(private conversationState: ConversationState, private qnaMaker: QnAMaker) {
         this.dialogStateAccessor = this.conversationState.createProperty(DIALOG_STATE_PROPERTY);
         this.orderStateAccessor = this.conversationState.createProperty(ORDER_STATE_PROPERTY);
 
-        this.dialogs = new DialogSet(this.dialogStateAccessor);
+        //this.dialogs = new DialogSet(this.dialogStateAccessor);
 
-        this.dialogs
-            .add(new ChoicePrompt(CHOICE_PROMPT));
+        //this.dialogs
+            //.add(new ChoicePrompt(CHOICE_PROMPT));
 
-        const order: ((sc: WaterfallStepContext<IOrderCart>) => Promise<DialogTurnResult<any>>)[] = [
-            this.orderStart.bind(this),
-            this.choiceStep.bind(this),
-        ];
+        //const order: ((sc: WaterfallStepContext<IOrderCart>) => Promise<DialogTurnResult<any>>)[] = [
+            //this.orderStart.bind(this),
+            //this.choiceStep.bind(this),
+        //];
 
-        this.dialogs.add(new WaterfallDialog(ORDER_PROMPT, order));
+        //this.dialogs.add(new WaterfallDialog(ORDER_PROMPT, order));
     }
 
-    private async orderStart(step: WaterfallStepContext) {
-        const defaultOrderCart = { orders: [], total : 0 };
-        const orderCart = await this.orderStateAccessor.get(step.context, defaultOrderCart);
-        console.log(orderCart);
+    //private async orderStart(step: WaterfallStepContext) {
+        //const defaultOrderCart = { orders: [], total : 0 };
+        //const orderCart = await this.orderStateAccessor.get(step.context, defaultOrderCart);
+        //console.log(orderCart);
 
-        return await step.prompt(CHOICE_PROMPT, "What would you like?", dinnerMenu.choices);
-    }
+        //return await step.prompt(CHOICE_PROMPT, "What would you like?", dinnerMenu.choices);
+    //}
 
-    private async choiceStep(step: WaterfallStepContext) {
-        const choice = step.result;
-        let orderCart: IOrderCart;
-        if (choice.value.match(/process order/ig)) {
-            // Get cart from state accessor
-            orderCart = await this.orderStateAccessor.get(step.context);
-        } else {
-            // @TODO: Need to create type for choice on menu
-            const item = dinnerMenu[choice.value];
-            orderCart = await this.orderStateAccessor.get(step.context);
-            orderCart.orders.push(item.description);
-        }
-        console.log(orderCart);
-        return step.endDialog();
-    }
+    //private async choiceStep(step: WaterfallStepContext) {
+        //const choice = step.result;
+        //let orderCart: IOrderCart;
+        //if (choice.value.match(/process order/ig)) {
+            //// Get cart from state accessor
+            //orderCart = await this.orderStateAccessor.get(step.context);
+        //} else {
+            //// @TODO: Need to create type for choice on menu
+            //const item = dinnerMenu[choice.value];
+            //orderCart = await this.orderStateAccessor.get(step.context);
+            //orderCart.orders.push(item.description);
+        //}
+        //console.log(orderCart);
+        //return step.endDialog();
+    //}
 
     async onTurn(context: TurnContext) {
         if (context.activity.type === ActivityTypes.Message) {
-            const dc = await this.dialogs.createContext(context);
-            const results = await dc.continueDialog();
-            
+            //const dc = await this.dialogs.createContext(context);
+            //const results = await dc.continueDialog();
+            const qnaResults = await this.qnaMaker.generateAnswer(
+                context.activity.text);
+            if (qnaResults && qnaResults.length > 0) {
+                await context.sendActivity(qnaResults[0].answer);
+            } else {
+                await context.sendActivity(`No dice bro`);
+            }
             await this.conversationState.saveChanges(context);
         }
     }

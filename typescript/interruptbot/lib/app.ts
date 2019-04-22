@@ -19,10 +19,16 @@ const adapter = new BotFrameworkAdapter({
     appPassword: process.env.MICROSOFT_APP_PASSWORD
 });
 
+const qnaMaker = new QnAMaker({
+    knowledgeBaseId: <string>process.env.kbId,
+    endpointKey: <string>process.env.endpointKey,
+    host: <string>process.env.hostname,
+});
+
 const memoryStorage = new MemoryStorage();
 const conversationState = new ConversationState(memoryStorage);
 
-const bot = new InterruptBot(conversationState);
+const bot = new InterruptBot(conversationState, qnaMaker);
 
 server.post("/api/messages", (req, res) => {
     adapter.processActivity(req, res, async (context) => {
