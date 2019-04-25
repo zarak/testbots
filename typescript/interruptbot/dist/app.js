@@ -46,6 +46,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var botbuilder_1 = require("botbuilder");
 var restify = __importStar(require("restify"));
 var bot_1 = require("./bot");
+var botbuilder_ai_1 = require("botbuilder-ai");
+var dotenv_1 = require("dotenv");
+// Create env variables into process.env
+dotenv_1.config();
 var server = restify.createServer();
 server.listen(process.env.port || process.env.PORT || 3978, function () {
     console.log("Listening on " + server.url);
@@ -54,9 +58,14 @@ var adapter = new botbuilder_1.BotFrameworkAdapter({
     appId: process.env.MICROSOFT_APP_ID,
     appPassword: process.env.MICROSOFT_APP_PASSWORD
 });
+var qnaMaker = new botbuilder_ai_1.QnAMaker({
+    knowledgeBaseId: process.env.kbId,
+    endpointKey: process.env.endpointKey,
+    host: process.env.hostname,
+});
 var memoryStorage = new botbuilder_1.MemoryStorage();
 var conversationState = new botbuilder_1.ConversationState(memoryStorage);
-var bot = new bot_1.InterruptBot(conversationState);
+var bot = new bot_1.InterruptBot(conversationState, qnaMaker);
 server.post("/api/messages", function (req, res) {
     adapter.processActivity(req, res, function (context) { return __awaiter(_this, void 0, void 0, function () {
         return __generator(this, function (_a) {

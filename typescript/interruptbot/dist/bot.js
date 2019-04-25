@@ -36,12 +36,13 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var botbuilder_1 = require("botbuilder");
-var botbuilder_dialogs_1 = require("botbuilder-dialogs");
 // Define state property accessor names.
 var DIALOG_STATE_PROPERTY = 'dialogStateProperty';
 var ORDER_STATE_PROPERTY = 'orderStateProperty';
 var ORDER_PROMPT = 'orderingDialog';
 var CHOICE_PROMPT = 'choicePrompt';
+//type MenuItem = { description: string; price: number; };
+//type Menu = { choices: string[];  };
 // The options on the dinner menu, including commands for the bot.
 var dinnerMenu = {
     choices: ["Potato Salad - $5.99", "Tuna Sandwich - $6.89", "Clam Chowder - $4.50",
@@ -61,81 +62,66 @@ var dinnerMenu = {
 };
 ;
 var InterruptBot = /** @class */ (function () {
-    function InterruptBot(conversationState) {
+    //private dialogs: DialogSet;
+    function InterruptBot(conversationState, qnaMaker) {
         this.conversationState = conversationState;
+        this.qnaMaker = qnaMaker;
         this.dialogStateAccessor = this.conversationState.createProperty(DIALOG_STATE_PROPERTY);
         this.orderStateAccessor = this.conversationState.createProperty(ORDER_STATE_PROPERTY);
-        this.dialogs = new botbuilder_dialogs_1.DialogSet(this.dialogStateAccessor);
-        this.dialogs
-            .add(new botbuilder_dialogs_1.ChoicePrompt(CHOICE_PROMPT));
-        var order = [
-            this.orderStart.bind(this),
-            this.choiceStep.bind(this),
-        ];
-        this.dialogs.add(new botbuilder_dialogs_1.WaterfallDialog(ORDER_PROMPT, order));
+        //this.dialogs = new DialogSet(this.dialogStateAccessor);
+        //this.dialogs
+        //.add(new ChoicePrompt(CHOICE_PROMPT));
+        //const order: ((sc: WaterfallStepContext<IOrderCart>) => Promise<DialogTurnResult<any>>)[] = [
+        //this.orderStart.bind(this),
+        //this.choiceStep.bind(this),
+        //];
+        //this.dialogs.add(new WaterfallDialog(ORDER_PROMPT, order));
     }
-    InterruptBot.prototype.orderStart = function (step) {
-        return __awaiter(this, void 0, void 0, function () {
-            var defaultOrderCart, orderCart;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        defaultOrderCart = { orders: [], total: 0 };
-                        return [4 /*yield*/, this.orderStateAccessor.get(step.context, defaultOrderCart)];
-                    case 1:
-                        orderCart = _a.sent();
-                        console.log(orderCart);
-                        return [4 /*yield*/, step.prompt(CHOICE_PROMPT, "What would you like?", dinnerMenu.choices)];
-                    case 2: return [2 /*return*/, _a.sent()];
-                }
-            });
-        });
-    };
-    InterruptBot.prototype.choiceStep = function (step) {
-        return __awaiter(this, void 0, void 0, function () {
-            var choice, orderCart, item;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        choice = step.result;
-                        if (!choice.value.match(/process order/ig)) return [3 /*break*/, 2];
-                        return [4 /*yield*/, this.orderStateAccessor.get(step.context)];
-                    case 1:
-                        // Get cart from state accessor
-                        orderCart = _a.sent();
-                        return [3 /*break*/, 4];
-                    case 2:
-                        item = dinnerMenu[choice.value];
-                        return [4 /*yield*/, this.orderStateAccessor.get(step.context)];
-                    case 3:
-                        orderCart = _a.sent();
-                        orderCart.orders.push(item.description);
-                        _a.label = 4;
-                    case 4:
-                        console.log(orderCart);
-                        return [2 /*return*/, step.endDialog()];
-                }
-            });
-        });
-    };
+    //private async orderStart(step: WaterfallStepContext) {
+    //const defaultOrderCart = { orders: [], total : 0 };
+    //const orderCart = await this.orderStateAccessor.get(step.context, defaultOrderCart);
+    //console.log(orderCart);
+    //return await step.prompt(CHOICE_PROMPT, "What would you like?", dinnerMenu.choices);
+    //}
+    //private async choiceStep(step: WaterfallStepContext) {
+    //const choice = step.result;
+    //let orderCart: IOrderCart;
+    //if (choice.value.match(/process order/ig)) {
+    //// Get cart from state accessor
+    //orderCart = await this.orderStateAccessor.get(step.context);
+    //} else {
+    //// @TODO: Need to create type for choice on menu
+    //const item = dinnerMenu[choice.value];
+    //orderCart = await this.orderStateAccessor.get(step.context);
+    //orderCart.orders.push(item.description);
+    //}
+    //console.log(orderCart);
+    //return step.endDialog();
+    //}
     InterruptBot.prototype.onTurn = function (context) {
         return __awaiter(this, void 0, void 0, function () {
-            var dc, results;
+            var qnaResults;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        if (!(context.activity.type === botbuilder_1.ActivityTypes.Message)) return [3 /*break*/, 4];
-                        return [4 /*yield*/, this.dialogs.createContext(context)];
+                        if (!(context.activity.type === botbuilder_1.ActivityTypes.Message)) return [3 /*break*/, 7];
+                        return [4 /*yield*/, this.qnaMaker.generateAnswer(context.activity.text)];
                     case 1:
-                        dc = _a.sent();
-                        return [4 /*yield*/, dc.continueDialog()];
+                        qnaResults = _a.sent();
+                        if (!(qnaResults && qnaResults.length > 0)) return [3 /*break*/, 3];
+                        return [4 /*yield*/, context.sendActivity(qnaResults[0].answer)];
                     case 2:
-                        results = _a.sent();
-                        return [4 /*yield*/, this.conversationState.saveChanges(context)];
-                    case 3:
                         _a.sent();
-                        _a.label = 4;
-                    case 4: return [2 /*return*/];
+                        return [3 /*break*/, 5];
+                    case 3: return [4 /*yield*/, context.sendActivity("No dice bro")];
+                    case 4:
+                        _a.sent();
+                        _a.label = 5;
+                    case 5: return [4 /*yield*/, this.conversationState.saveChanges(context)];
+                    case 6:
+                        _a.sent();
+                        _a.label = 7;
+                    case 7: return [2 /*return*/];
                 }
             });
         });
