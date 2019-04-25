@@ -43,10 +43,10 @@ class ReserveTableDialog extends botbuilder_dialogs_1.ComponentDialog {
     acknowledgementStep(step) {
         return __awaiter(this, void 0, void 0, function* () {
             const checkInData = yield this.accessor.get(step.context);
-            checkInData.tableSize = step.result;
-            yield step.context.sendActivity(`Sounds great, we will reserve a table for you for ${step.result} diners.`);
+            checkInData.tableSize = step.result.value;
+            yield step.context.sendActivity(`Sounds great, we will reserve a table for you for ${checkInData.tableSize} diners.`);
             yield this.accessor.set(step.context, checkInData);
-            return step.endDialog(checkInData);
+            return step.endDialog();
         });
     }
 }

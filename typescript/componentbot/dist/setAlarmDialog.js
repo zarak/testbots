@@ -38,10 +38,12 @@ class SetAlarmDialog extends botbuilder_dialogs_1.ComponentDialog {
     acknowledgementStep(step) {
         return __awaiter(this, void 0, void 0, function* () {
             const checkInData = yield this.accessor.get(step.context);
-            checkInData.alarm = step.result[0];
+            //console.log("checkInData", checkInData);
+            checkInData.alarm = step.result[0].value;
+            //console.log("RESULT", step.result);
             yield step.context.sendActivity(`Your alarm is set to ${checkInData.alarm} for room ${checkInData.roomNumber}.`);
             yield this.accessor.set(step.context, checkInData);
-            return step.endDialog(checkInData);
+            return step.endDialog();
         });
     }
 }

@@ -43,9 +43,9 @@ export class ReserveTableDialog extends ComponentDialog {
 
     private async acknowledgementStep(step: WaterfallStepContext) {
         const checkInData = await this.accessor.get(step.context);
-        checkInData.tableSize = step.result;
-        await step.context.sendActivity(`Sounds great, we will reserve a table for you for ${step.result} diners.`);
+        checkInData.tableSize = step.result.value;
+        await step.context.sendActivity(`Sounds great, we will reserve a table for you for ${checkInData.tableSize} diners.`);
         await this.accessor.set(step.context, checkInData);
-        return step.endDialog(checkInData);
+        return step.endDialog();
     }
 }

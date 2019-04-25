@@ -36,9 +36,11 @@ export class SetAlarmDialog extends ComponentDialog {
 
     private async acknowledgementStep(step: WaterfallStepContext) {
         const checkInData = await this.accessor.get(step.context);
-        checkInData.alarm = step.result[0];
+        //console.log("checkInData", checkInData);
+        checkInData.alarm = step.result[0].value;
+        //console.log("RESULT", step.result);
         await step.context.sendActivity(`Your alarm is set to ${checkInData.alarm} for room ${checkInData.roomNumber}.`);
         await this.accessor.set(step.context, checkInData);
-        return step.endDialog(checkInData);
+        return step.endDialog();
     }
 }

@@ -34,9 +34,9 @@ export class CheckInDialog extends ComponentDialog {
     }
 
     private async acknowledgementStep(step: WaterfallStepContext) {
-        const checkInData = await this.accessor.get(step.context);
+        const checkInData: IUserInfo = await this.accessor.get(step.context);
         checkInData.roomNumber = step.result;
         await this.accessor.set(step.context, checkInData);
-        return step.endDialog(checkInData);
+        return step.endDialog();
     }
 }

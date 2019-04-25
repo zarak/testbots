@@ -41,7 +41,7 @@ class CheckInDialog extends botbuilder_dialogs_1.ComponentDialog {
             const checkInData = yield this.accessor.get(step.context);
             checkInData.roomNumber = step.result;
             yield this.accessor.set(step.context, checkInData);
-            return step.endDialog(checkInData);
+            return step.endDialog();
         });
     }
 }
