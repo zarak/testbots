@@ -15,8 +15,9 @@ const adapter = new BotFrameworkAdapter({
 
 const memoryStorage = new MemoryStorage();
 const conversationState = new ConversationState(memoryStorage);
+const userState = new UserState(memoryStorage);
 
-const bot = new AuthBot(conversationState);
+const bot = new AuthBot(conversationState, userState);
 
 server.post("/api/messages", (req, res) => {
     adapter.processActivity(req, res, async (context) => {
