@@ -1,8 +1,9 @@
 import { BotFrameworkAdapter, UserState, TurnContext, ActivityTypes, StatePropertyAccessor, ConversationState } from 'botbuilder';
-import { OAuthPrompt, DialogTurnStatus, DialogTurnResult, ChoicePrompt, DialogSet, WaterfallDialog, WaterfallStepContext } from 'botbuilder-dialogs';
+import { OAuthPrompt, DialogTurnResult, ChoicePrompt, DialogSet, WaterfallDialog, WaterfallStepContext } from 'botbuilder-dialogs';
 
 // Define state property accessor names.
 const DIALOG_STATE_PROPERTY = 'dialogStateProperty';
+const USER_INFO_PROPERTY = 'userInfoProperty';
 
 // Names of the prompts the bot uses.
 const OAUTH_PROMPT = 'oAuth_prompt';
@@ -17,7 +18,7 @@ const HELP_TEXT = ' Type anything to get logged in. Type \'logout\' to signout.'
 
 // The connection name here must match the one from
 // your Bot Channels Registration on the settings blade in Azure.
-const CONNECTION_NAME = '';
+const CONNECTION_NAME = 'test';
 
 // Create the settings for the OAuthPrompt.
 const OAUTH_SETTINGS = {
@@ -34,12 +35,14 @@ export class AuthBot {
      * @param {UserState} user state object
      */
     private dialogState: StatePropertyAccessor;
+    private userAccessor: StatePropertyAccessor;
     private dialogs: DialogSet;
 
     constructor(private conversationState: ConversationState, private userState: UserState) {
         
         // Create a new state accessor property.
         this.dialogState = this.conversationState.createProperty(DIALOG_STATE_PROPERTY);
+        this.userAccessor = this.userState.createProperty(USER_INFO_PROPERTY);
         this.dialogs = new DialogSet(this.dialogState);
 
         // Add prompts that will be used by the bot.
