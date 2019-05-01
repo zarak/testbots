@@ -75,6 +75,7 @@ export class AuthBot {
      */
     async loginResults(step: WaterfallStepContext) {
         let tokenResponse = step.result;
+        console.log(tokenResponse);
         if (tokenResponse != null) {
             await step.context.sendActivity('You are now logged in.');
             return await step.prompt(CONFIRM_PROMPT, 'Do you want to view your token?', ['yes', 'no']);
@@ -104,6 +105,7 @@ export class AuthBot {
             // the OAuth prompt to get the token or get a new token if needed.
             let prompt = await step.prompt(OAUTH_PROMPT, {});
             var tokenResponse = prompt.result;
+            console.log("token", tokenResponse);
             if (tokenResponse != null) {
                 await step.context.sendActivity(`Here is your token: ${ tokenResponse.token }`);
                 await step.context.sendActivity(HELP_TEXT);

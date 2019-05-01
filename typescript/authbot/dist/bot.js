@@ -67,6 +67,7 @@ class AuthBot {
     loginResults(step) {
         return __awaiter(this, void 0, void 0, function* () {
             let tokenResponse = step.result;
+            console.log(tokenResponse);
             if (tokenResponse != null) {
                 yield step.context.sendActivity('You are now logged in.');
                 return yield step.prompt(CONFIRM_PROMPT, 'Do you want to view your token?', ['yes', 'no']);
@@ -96,6 +97,7 @@ class AuthBot {
                 // the OAuth prompt to get the token or get a new token if needed.
                 let prompt = yield step.prompt(OAUTH_PROMPT, {});
                 var tokenResponse = prompt.result;
+                console.log("token", tokenResponse);
                 if (tokenResponse != null) {
                     yield step.context.sendActivity(`Here is your token: ${tokenResponse.token}`);
                     yield step.context.sendActivity(HELP_TEXT);
