@@ -12,6 +12,7 @@ const botbuilder_1 = require("botbuilder");
 const botbuilder_dialogs_1 = require("botbuilder-dialogs");
 // Define state property accessor names.
 const DIALOG_STATE_PROPERTY = 'dialogStateProperty';
+const USER_INFO_PROPERTY = 'userInfoProperty';
 // Names of the prompts the bot uses.
 const OAUTH_PROMPT = 'oAuth_prompt';
 const CONFIRM_PROMPT = 'confirm_prompt';
@@ -22,7 +23,7 @@ const HELP_TEXT = ' Type anything to get logged in. Type \'logout\' to signout.'
     ' Type \'help\' to view this message again';
 // The connection name here must match the one from
 // your Bot Channels Registration on the settings blade in Azure.
-const CONNECTION_NAME = '';
+const CONNECTION_NAME = 'test';
 // Create the settings for the OAuthPrompt.
 const OAUTH_SETTINGS = {
     connectionName: CONNECTION_NAME,
@@ -36,6 +37,7 @@ class AuthBot {
         this.userState = userState;
         // Create a new state accessor property.
         this.dialogState = this.conversationState.createProperty(DIALOG_STATE_PROPERTY);
+        this.userAccessor = this.userState.createProperty(USER_INFO_PROPERTY);
         this.dialogs = new botbuilder_dialogs_1.DialogSet(this.dialogState);
         // Add prompts that will be used by the bot.
         this.dialogs.add(new botbuilder_dialogs_1.ChoicePrompt(CONFIRM_PROMPT));
@@ -46,7 +48,7 @@ class AuthBot {
             this.displayToken.bind(this)
         ];
         // The WaterfallDialog that controls the flow of the conversation.
-        this.dialogs.add(new botbuilder_dialogs_1.WaterfallDialog(AUTH_DIALOG, []));
+        this.dialogs.add(new botbuilder_dialogs_1.WaterfallDialog(AUTH_DIALOG, toplevel));
     }
     /**
      * Waterfall step that prompts the user to login if they have not already or their token has expired.

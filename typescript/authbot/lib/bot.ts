@@ -56,8 +56,7 @@ export class AuthBot {
         ];
 
         // The WaterfallDialog that controls the flow of the conversation.
-        this.dialogs.add(new WaterfallDialog(AUTH_DIALOG, [
-        ]));
+        this.dialogs.add(new WaterfallDialog(AUTH_DIALOG, toplevel));
 
     }
 
