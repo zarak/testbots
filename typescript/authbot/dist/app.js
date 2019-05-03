@@ -18,14 +18,17 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const botbuilder_1 = require("botbuilder");
 const restify = __importStar(require("restify"));
 const bot_1 = require("./bot");
+const dotenv_1 = require("dotenv");
+dotenv_1.config();
 let server = restify.createServer();
 server.listen(process.env.port || process.env.PORT || 3978, () => {
     console.log(`Listening on ${server.url}`);
 });
 const adapter = new botbuilder_1.BotFrameworkAdapter({
-    appId: process.env.MICROSOFT_APP_ID,
-    appPassword: process.env.MICROSOFT_APP_PASSWORD
+    appId: process.env.MicrosoftAppId,
+    appPassword: process.env.MicrosoftAppPassword,
 });
+console.log(adapter);
 const memoryStorage = new botbuilder_1.MemoryStorage();
 const conversationState = new botbuilder_1.ConversationState(memoryStorage);
 const userState = new botbuilder_1.UserState(memoryStorage);
