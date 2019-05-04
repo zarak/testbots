@@ -100,25 +100,34 @@ class AuthBot {
                 if (dialogTurnResult.status === botbuilder_dialogs_1.DialogTurnStatus.empty) {
                     yield dc.beginDialog('authenticationDialog');
                 }
-                if (dialogTurnResult.status === botbuilder_dialogs_1.DialogTurnStatus.complete) {
-                    // If user is coming from login dialog then do the checkin
-                    if (!dialogTurnResult.result) {
-                        yield dc.beginDialog('checkInDialog');
+                const token = dialogTurnResult.result ? dialogTurnResult.result.token : null;
+                console.log(token);
+                // User must be authenticated
+                if (token) {
+                    if (dialogTurnResult.status === botbuilder_dialogs_1.DialogTurnStatus.complete) {
+                        if (!user.name) {
+                            yield dc.beginDialog('checkInDialog');
+                        }
+                        else {
+                            user.name = dialogTurnResult.result.name;
+                            user.roomNumber = dialogTurnResult.result.roomNumber;
+                            yield this.userInfoAccessor.set(turnContext, user);
+                            yield dc.beginDialog('mainDialog');
+                        }
                     }
-                    else {
-                        user.name = dialogTurnResult.result.name;
-                        user.roomNumber = dialogTurnResult.result.roomNumber;
-                        yield this.userInfoAccessor.set(turnContext, user);
-                        yield dc.beginDialog('mainDialog');
+                    else if (!turnContext.responded) {
+                        // If name hasn't been set, then do checkin to get name and
+                        // room number
+                        if (!user.name) {
+                            yield dc.beginDialog('checkInDialog');
+                        }
+                        else {
+                            yield dc.beginDialog('mainDialog');
+                        }
                     }
                 }
                 else if (!turnContext.responded) {
-                    if (!user.name) {
-                        yield dc.beginDialog('checkInDialog');
-                    }
-                    else {
-                        yield dc.beginDialog('mainDialog');
-                    }
+                    yield dc.context.sendActivity(`Consider signing in bro`);
                 }
                 // Save state changes
                 yield this.conversationState.saveChanges(turnContext);

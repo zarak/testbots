@@ -76,6 +76,8 @@ class AuthenticationDialog extends botbuilder_dialogs_1.ComponentDialog {
     displayToken(step) {
         return __awaiter(this, void 0, void 0, function* () {
             const result = step.result.value;
+            let prompt = yield step.prompt(OAUTH_PROMPT, {});
+            var tokenResponse = prompt.result;
             if (result === 'yes') {
                 // Call the prompt again because we need the token. The reasons for this are:
                 // 1. If the user is already logged in we do not need to store the token locally in the bot and worry
@@ -85,17 +87,15 @@ class AuthenticationDialog extends botbuilder_dialogs_1.ComponentDialog {
                 //
                 // There is no reason to store the token locally in the bot because we can always just call
                 // the OAuth prompt to get the token or get a new token if needed.
-                let prompt = yield step.prompt(OAUTH_PROMPT, {});
-                var tokenResponse = prompt.result;
                 console.log("token", tokenResponse);
                 if (tokenResponse != null) {
                     yield step.context.sendActivity(`Here is your token: ${tokenResponse.token}`);
                     yield step.context.sendActivity(HELP_TEXT);
-                    return yield step.endDialog();
+                    return yield step.endDialog(tokenResponse);
                 }
             }
             yield step.context.sendActivity(HELP_TEXT);
-            return yield step.endDialog();
+            return yield step.endDialog(tokenResponse);
         });
     }
 }

@@ -100,8 +100,12 @@ export class AuthBot {
                 await dc.beginDialog('authenticationDialog');
             }
 
+            const token = dialogTurnResult.result ? dialogTurnResult.result.token : null;
+            console.log(token);
+
             if (dialogTurnResult.status === DialogTurnStatus.complete) {
-                // If user is coming from login dialog then do the checkin
+                // If user is coming from login dialog then
+                // dialogTurnResult.result will be null, so go to check-in
                 if (!dialogTurnResult.result) {
                     await dc.beginDialog('checkInDialog');
                 } else {
@@ -111,6 +115,8 @@ export class AuthBot {
                     await dc.beginDialog('mainDialog');
                 }
             } else if (!turnContext.responded) {
+                // If name hasn't been set, then do checkin to get name and
+                // room number
                 if (!user.name) {
                     await dc.beginDialog('checkInDialog');
                 } else {
