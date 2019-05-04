@@ -28,15 +28,20 @@ export class AuthBot {
         this.dialogs = new DialogSet(this.dialogStateAccessor);
 
         this.dialogs = new DialogSet(this.dialogStateAccessor)
-            .add(new AuthenticationDialog('test', this.userInfoAccessor))
+            .add(new AuthenticationDialog('authenticationDialog', this.userInfoAccessor))
             .add(new CheckInDialog('checkInDialog', this.userInfoAccessor))
             .add(new ReserveTableDialog('reserveTableDialog', this.userInfoAccessor))
             .add(new SetAlarmDialog('setAlarmDialog', this.userInfoAccessor))
             .add(new WaterfallDialog('mainDialog', [
+                //this.loginPrompt.bind(this),
                 this.promptForChoice.bind(this),
                 this.startChildDialog.bind(this),
                 this.saveResult.bind(this)
         ]));
+    }
+
+    async loginPrompt(step: WaterfallStepContext) {
+        return await step.beginDialog('authenticationDialog');
     }
 
     async promptForChoice(step: WaterfallStepContext) {
@@ -44,7 +49,6 @@ export class AuthBot {
         await step.context.sendActivity(MessageFactory.suggestedActions(menu, 'How can I help you?'));
         return Dialog.EndOfTurn;
     }
-
 
     async startChildDialog(step: WaterfallStepContext) {
         // Get the user's info.
@@ -90,8 +94,9 @@ export class AuthBot {
             const dialogTurnResult = await dc.continueDialog();
             const text = turnContext.activity.text;
 
-            if (text === 'login') {
-                await dc.beginDialog('AuthenticationDialog');
+            console.log("Dialog", dialogTurnResult);
+            if (dialogTurnResult.status === DialogTurnStatus.empty) {
+                await dc.beginDialog('authenticationDialog');
             }
 
             if (dialogTurnResult.status === DialogTurnStatus.complete) {

@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const botbuilder_dialogs_1 = require("botbuilder-dialogs");
+const initialId = 'mainDialog';
 // Names of the prompts the bot uses.
 const OAUTH_PROMPT = 'oAuth_prompt';
 const CONFIRM_PROMPT = 'confirm_prompt';
@@ -26,12 +27,10 @@ const OAUTH_SETTINGS = {
     timeout: 300000 // User has 5 minutes to log in.
 };
 class AuthenticationDialog extends botbuilder_dialogs_1.ComponentDialog {
-    constructor(connectionName, accessor) {
-        super(AuthenticationDialog.name);
-        this.connectionName = connectionName;
+    constructor(id, accessor) {
+        super(id);
         this.accessor = accessor;
-        this.initialDialogId = AuthenticationDialog.name;
-        this.connectionName = connectionName;
+        this.initialDialogId = initialId;
         const authenticate = [
             this.oauthPrompt.bind(this),
             this.loginResults.bind(this),
@@ -58,7 +57,7 @@ class AuthenticationDialog extends botbuilder_dialogs_1.ComponentDialog {
     loginResults(step) {
         return __awaiter(this, void 0, void 0, function* () {
             let tokenResponse = step.result;
-            console.log(tokenResponse);
+            //console.log(tokenResponse);
             if (tokenResponse != null) {
                 yield step.context.sendActivity('You are now logged in.');
                 return yield step.prompt(CONFIRM_PROMPT, 'Do you want to view your token?', ['yes', 'no']);

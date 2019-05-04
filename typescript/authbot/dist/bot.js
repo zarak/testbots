@@ -26,15 +26,21 @@ class AuthBot {
         this.userInfoAccessor = this.userState.createProperty(USER_INFO_PROPERTY);
         this.dialogs = new botbuilder_dialogs_1.DialogSet(this.dialogStateAccessor);
         this.dialogs = new botbuilder_dialogs_1.DialogSet(this.dialogStateAccessor)
-            .add(new authDialog_1.AuthenticationDialog('test', this.userInfoAccessor))
+            .add(new authDialog_1.AuthenticationDialog('authenticationDialog', this.userInfoAccessor))
             .add(new checkInDialog_1.CheckInDialog('checkInDialog', this.userInfoAccessor))
             .add(new reserveTableDialog_1.ReserveTableDialog('reserveTableDialog', this.userInfoAccessor))
             .add(new setAlarmDialog_1.SetAlarmDialog('setAlarmDialog', this.userInfoAccessor))
             .add(new botbuilder_dialogs_1.WaterfallDialog('mainDialog', [
+            //this.loginPrompt.bind(this),
             this.promptForChoice.bind(this),
             this.startChildDialog.bind(this),
             this.saveResult.bind(this)
         ]));
+    }
+    loginPrompt(step) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield step.beginDialog('authenticationDialog');
+        });
     }
     promptForChoice(step) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -89,8 +95,9 @@ class AuthBot {
                 const dc = yield this.dialogs.createContext(turnContext);
                 const dialogTurnResult = yield dc.continueDialog();
                 const text = turnContext.activity.text;
-                if (text === 'login') {
-                    yield dc.beginDialog('AuthenticationDialog');
+                console.log("Dialog", dialogTurnResult);
+                if (dialogTurnResult.status === botbuilder_dialogs_1.DialogTurnStatus.empty) {
+                    yield dc.beginDialog('authenticationDialog');
                 }
                 if (dialogTurnResult.status === botbuilder_dialogs_1.DialogTurnStatus.complete) {
                     user.guestInfo = dialogTurnResult.result;

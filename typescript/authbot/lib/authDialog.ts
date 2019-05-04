@@ -2,6 +2,8 @@ import * as i18n from 'i18n';
 import { TurnContext, ActivityTypes, StatePropertyAccessor } from 'botbuilder';
 import { ChoicePrompt, ComponentDialog, OAuthPrompt, DialogTurnResult, WaterfallDialog, WaterfallStepContext } from 'botbuilder-dialogs';
 
+const initialId = 'mainDialog';
+
 // Names of the prompts the bot uses.
 const OAUTH_PROMPT = 'oAuth_prompt';
 const CONFIRM_PROMPT = 'confirm_prompt';
@@ -23,11 +25,9 @@ const OAUTH_SETTINGS = {
 };
 
 export class AuthenticationDialog extends ComponentDialog {
-    constructor(private connectionName: string, private accessor: StatePropertyAccessor) {
-        super(AuthenticationDialog.name);
-        
-        this.initialDialogId = AuthenticationDialog.name;
-        this.connectionName = connectionName;
+    constructor(id: string, private accessor: StatePropertyAccessor) {
+        super(id);
+        this.initialDialogId = initialId;
 
         const authenticate : ((sc: WaterfallStepContext<{}>) => Promise<DialogTurnResult<any>>)[] = [
             this.oauthPrompt.bind(this),
@@ -55,7 +55,7 @@ export class AuthenticationDialog extends ComponentDialog {
      */
     async loginResults(step: WaterfallStepContext) {
         let tokenResponse = step.result;
-        console.log(tokenResponse);
+        //console.log(tokenResponse);
         if (tokenResponse != null) {
             await step.context.sendActivity('You are now logged in.');
             return await step.prompt(CONFIRM_PROMPT, 'Do you want to view your token?', ['yes', 'no']);
