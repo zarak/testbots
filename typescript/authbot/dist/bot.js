@@ -96,16 +96,24 @@ class AuthBot {
                 const dialogTurnResult = yield dc.continueDialog();
                 const text = turnContext.activity.text;
                 console.log("Dialog", dialogTurnResult);
+                console.log("User", user);
                 if (dialogTurnResult.status === botbuilder_dialogs_1.DialogTurnStatus.empty) {
                     yield dc.beginDialog('authenticationDialog');
                 }
                 if (dialogTurnResult.status === botbuilder_dialogs_1.DialogTurnStatus.complete) {
-                    user.guestInfo = dialogTurnResult.result;
-                    yield this.userInfoAccessor.set(turnContext, user);
-                    yield dc.beginDialog('mainDialog');
+                    // If user is coming from login dialog then do the checkin
+                    if (!dialogTurnResult.result) {
+                        yield dc.beginDialog('checkInDialog');
+                    }
+                    else {
+                        user.name = dialogTurnResult.result.name;
+                        user.roomNumber = dialogTurnResult.result.roomNumber;
+                        yield this.userInfoAccessor.set(turnContext, user);
+                        yield dc.beginDialog('mainDialog');
+                    }
                 }
                 else if (!turnContext.responded) {
-                    if (!user.guestInfo) {
+                    if (!user.name) {
                         yield dc.beginDialog('checkInDialog');
                     }
                     else {

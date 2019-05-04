@@ -89,22 +89,29 @@ export class AuthBot {
 
     async onTurn(turnContext: TurnContext) {
         if (turnContext.activity.type === ActivityTypes.Message) {
-            const user = await this.userInfoAccessor.get(turnContext, {});
+            const user: IUserInfo = await this.userInfoAccessor.get(turnContext, {});
             const dc = await this.dialogs.createContext(turnContext);
             const dialogTurnResult = await dc.continueDialog();
             const text = turnContext.activity.text;
 
             console.log("Dialog", dialogTurnResult);
+            console.log("User", user);
             if (dialogTurnResult.status === DialogTurnStatus.empty) {
                 await dc.beginDialog('authenticationDialog');
             }
 
             if (dialogTurnResult.status === DialogTurnStatus.complete) {
-                user.guestInfo = dialogTurnResult.result;
-                await this.userInfoAccessor.set(turnContext, user);
-                await dc.beginDialog('mainDialog');
+                // If user is coming from login dialog then do the checkin
+                if (!dialogTurnResult.result) {
+                    await dc.beginDialog('checkInDialog');
+                } else {
+                    user.name = dialogTurnResult.result.name;
+                    user.roomNumber = dialogTurnResult.result.roomNumber;
+                    await this.userInfoAccessor.set(turnContext, user);
+                    await dc.beginDialog('mainDialog');
+                }
             } else if (!turnContext.responded) {
-                if (!user.guestInfo) {
+                if (!user.name) {
                     await dc.beginDialog('checkInDialog');
                 } else {
                     await dc.beginDialog('mainDialog');

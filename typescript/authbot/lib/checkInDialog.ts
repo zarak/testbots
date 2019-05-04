@@ -37,6 +37,6 @@ export class CheckInDialog extends ComponentDialog {
         const checkInData: IUserInfo = await this.accessor.get(step.context);
         checkInData.roomNumber = step.result;
         await this.accessor.set(step.context, checkInData);
-        return step.endDialog();
+        return step.endDialog(checkInData);
     }
 }
