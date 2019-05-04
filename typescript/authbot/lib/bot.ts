@@ -28,7 +28,7 @@ export class AuthBot {
         this.dialogs = new DialogSet(this.dialogStateAccessor);
 
         this.dialogs = new DialogSet(this.dialogStateAccessor)
-        .add(new AuthenticationDialog('test', this.userInfoAccessor))
+            .add(new AuthenticationDialog('test', this.userInfoAccessor))
             .add(new CheckInDialog('checkInDialog', this.userInfoAccessor))
             .add(new ReserveTableDialog('reserveTableDialog', this.userInfoAccessor))
             .add(new SetAlarmDialog('setAlarmDialog', this.userInfoAccessor))
@@ -88,6 +88,12 @@ export class AuthBot {
             const user = await this.userInfoAccessor.get(turnContext, {});
             const dc = await this.dialogs.createContext(turnContext);
             const dialogTurnResult = await dc.continueDialog();
+            const text = turnContext.activity.text;
+
+            if (text === 'login') {
+                await dc.beginDialog('AuthenticationDialog');
+            }
+
             if (dialogTurnResult.status === DialogTurnStatus.complete) {
                 user.guestInfo = dialogTurnResult.result;
                 await this.userInfoAccessor.set(turnContext, user);

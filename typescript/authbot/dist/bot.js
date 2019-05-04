@@ -88,6 +88,10 @@ class AuthBot {
                 const user = yield this.userInfoAccessor.get(turnContext, {});
                 const dc = yield this.dialogs.createContext(turnContext);
                 const dialogTurnResult = yield dc.continueDialog();
+                const text = turnContext.activity.text;
+                if (text === 'login') {
+                    yield dc.beginDialog('AuthenticationDialog');
+                }
                 if (dialogTurnResult.status === botbuilder_dialogs_1.DialogTurnStatus.complete) {
                     user.guestInfo = dialogTurnResult.result;
                     yield this.userInfoAccessor.set(turnContext, user);
