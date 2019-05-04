@@ -5,6 +5,7 @@
     "botbuilder": "^4.3.4",
     "botbuilder-dialogs": "^4.3.4",
     "dotenv": "^8.0.0",
+    "i18n": "^0.8.3",
     "restify": "^8.2.0"
   },
   "name": "authbot",

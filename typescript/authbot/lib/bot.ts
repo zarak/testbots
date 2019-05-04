@@ -138,6 +138,9 @@ export class AuthBot {
                     let botAdapter = turnContext.adapter; // But BotAdaptor does not have signOutUser method?
 
                     //await botAdapter.signOutUser(turnContext, CONNECTION_NAME);
+                    //
+                    //
+
                     await turnContext.sendActivity('You have been signed out.');
                     await turnContext.sendActivity(HELP_TEXT);
                 }
