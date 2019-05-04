@@ -131,6 +131,11 @@
   dependencies:
     filenamify "*"
 
+"@types/i18n@^0.8.5":
+  version "0.8.5"
+  resolved "https://registry.yarnpkg.com/@types/i18n/-/i18n-0.8.5.tgz#fd55b7abb4085faa013f0ce27c3fec85e27ff7c3"
+  integrity sha512-8fZUrwtP8nk0JWDujsx5JdrF4RuLyAD/yb9qgnFuBZgR6rI1afLP66Vytx//Bp6sROY/+kdRjopdq+HwNlHgrQ==
+
 "@types/jsonwebtoken@7.2.8":
   version "7.2.8"
   resolved "https://registry.yarnpkg.com/@types/jsonwebtoken/-/jsonwebtoken-7.2.8.tgz#8d199dab4ddb5bba3234f8311b804d2027af2b3a"
