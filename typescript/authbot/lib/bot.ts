@@ -1,32 +1,14 @@
-import { BotFrameworkAdapter, UserState, TurnContext, ActivityTypes, StatePropertyAccessor, ConversationState } from 'botbuilder';
-import { OAuthPrompt, DialogTurnResult, ChoicePrompt, DialogSet, WaterfallDialog, WaterfallStepContext } from 'botbuilder-dialogs';
+import { MessageFactory, BotFrameworkAdapter, UserState, TurnContext, ActivityTypes, StatePropertyAccessor, ConversationState } from 'botbuilder';
+import { DialogTurnStatus, Dialog, DialogSet, WaterfallDialog, WaterfallStepContext } from 'botbuilder-dialogs';
+import { IUserInfo } from './userInfoState';
+import { CheckInDialog } from './checkInDialog';
+import { ReserveTableDialog } from './reserveTableDialog';
+import { SetAlarmDialog } from './setAlarmDialog';
+import { AuthenticationDialog } from './authDialog';
 
 // Define state property accessor names.
 const DIALOG_STATE_PROPERTY = 'dialogStateProperty';
 const USER_INFO_PROPERTY = 'userInfoProperty';
-
-// Names of the prompts the bot uses.
-const OAUTH_PROMPT = 'oAuth_prompt';
-const CONFIRM_PROMPT = 'confirm_prompt';
-
-// Name of the WaterfallDialog the bot uses.
-const AUTH_DIALOG = 'auth_dialog';
-
-// Text to help guide the user through using the bot.
-const HELP_TEXT = ' Type anything to get logged in. Type \'logout\' to signout.' +
-    ' Type \'help\' to view this message again';
-
-// The connection name here must match the one from
-// your Bot Channels Registration on the settings blade in Azure.
-const CONNECTION_NAME = 'test';
-
-// Create the settings for the OAuthPrompt.
-const OAUTH_SETTINGS = {
-    connectionName: CONNECTION_NAME,
-    title: 'Sign In',
-    text: 'Please Sign In',
-    timeout: 300000 // User has 5 minutes to log in.
-};
 
 export class AuthBot {
     /**
@@ -34,140 +16,108 @@ export class AuthBot {
      * @param {ConversationState} conversation state object
      * @param {UserState} user state object
      */
-    private dialogState: StatePropertyAccessor;
-    private userAccessor: StatePropertyAccessor;
+    private dialogStateAccessor: StatePropertyAccessor;
+    private userInfoAccessor: StatePropertyAccessor;
     private dialogs: DialogSet;
 
     constructor(private conversationState: ConversationState, private userState: UserState) {
         
         // Create a new state accessor property.
-        this.dialogState = this.conversationState.createProperty(DIALOG_STATE_PROPERTY);
-        this.userAccessor = this.userState.createProperty(USER_INFO_PROPERTY);
-        this.dialogs = new DialogSet(this.dialogState);
+        this.dialogStateAccessor = this.conversationState.createProperty(DIALOG_STATE_PROPERTY);
+        this.userInfoAccessor = this.userState.createProperty(USER_INFO_PROPERTY);
+        this.dialogs = new DialogSet(this.dialogStateAccessor);
 
-        // Add prompts that will be used by the bot.
-        this.dialogs.add(new ChoicePrompt(CONFIRM_PROMPT));
-        this.dialogs.add(new OAuthPrompt(OAUTH_PROMPT, OAUTH_SETTINGS));
-
-        const toplevel : ((sc: WaterfallStepContext<{}>) => Promise<DialogTurnResult<any>>)[] = [
-            this.oauthPrompt.bind(this),
-            this.loginResults.bind(this),
-            this.displayToken.bind(this)
-        ];
-
-        // The WaterfallDialog that controls the flow of the conversation.
-        this.dialogs.add(new WaterfallDialog(AUTH_DIALOG, toplevel));
-
+        this.dialogs = new DialogSet(this.dialogStateAccessor)
+        .add(new AuthenticationDialog('test', this.userInfoAccessor))
+            .add(new CheckInDialog('checkInDialog', this.userInfoAccessor))
+            .add(new ReserveTableDialog('reserveTableDialog', this.userInfoAccessor))
+            .add(new SetAlarmDialog('setAlarmDialog', this.userInfoAccessor))
+            .add(new WaterfallDialog('mainDialog', [
+                this.promptForChoice.bind(this),
+                this.startChildDialog.bind(this),
+                this.saveResult.bind(this)
+        ]));
     }
 
-    /**
-     * Waterfall step that prompts the user to login if they have not already or their token has expired.
-     * @param {WaterfallStepContext} step
-     */
-    async oauthPrompt(step: WaterfallStepContext) {
-        return await step.prompt(OAUTH_PROMPT, {});
+    async promptForChoice(step: WaterfallStepContext) {
+        const menu = ["Reserve Table", "Wake Up"];
+        await step.context.sendActivity(MessageFactory.suggestedActions(menu, 'How can I help you?'));
+        return Dialog.EndOfTurn;
     }
 
-    /**
-     * Waterfall step that informs the user that they are logged in and asks
-     * the user if they would like to see their token via a prompt
-     * @param {WaterfallStepContext} step
-     */
-    async loginResults(step: WaterfallStepContext) {
-        let tokenResponse = step.result;
-        console.log(tokenResponse);
-        if (tokenResponse != null) {
-            await step.context.sendActivity('You are now logged in.');
-            return await step.prompt(CONFIRM_PROMPT, 'Do you want to view your token?', ['yes', 'no']);
+
+    async startChildDialog(step: WaterfallStepContext) {
+        // Get the user's info.
+        const user = await this.userInfoAccessor.get(step.context);
+        // Check the user's input and decide which dialog to start.
+        // Pass in the guest info when starting either of the child dialogs.
+        switch (step.result) {
+            case "Reserve Table":
+                return await step.beginDialog('reserveTableDialog', user.guestInfo);
+                break;
+            case "Wake Up":
+                return await step.beginDialog('setAlarmDialog', user.guestInfo);
+                break;
+            default:
+                await step.context.sendActivity("Sorry, I don't understand that command. Please choose an option from the list.");
+                return await step.replaceDialog('mainDialog');
+                break;
         }
-
-        // Something went wrong, inform the user they were not logged in
-        await step.context.sendActivity('Login was not sucessful please try again');
-        return await step.endDialog();
     }
 
-    /**
-     *
-     * Waterfall step that will display the user's token. If the user's token is expired
-     * or they are not logged in this will prompt them to log in first.
-     * @param {WaterfallStepContext} step
-     */
-    async displayToken(step: WaterfallStepContext) {
-        const result = step.result.value;
-        if (result === 'yes') {
-            // Call the prompt again because we need the token. The reasons for this are:
-            // 1. If the user is already logged in we do not need to store the token locally in the bot and worry
-            // about refreshing it. We can always just call the prompt again to get the token.
-            // 2. We never know how long it will take a user to respond. By the time the
-            // user responds the token may have expired. The user would then be prompted to login again.
-            //
-            // There is no reason to store the token locally in the bot because we can always just call
-            // the OAuth prompt to get the token or get a new token if needed.
-            let prompt = await step.prompt(OAUTH_PROMPT, {});
-            var tokenResponse = prompt.result;
-            console.log("token", tokenResponse);
-            if (tokenResponse != null) {
-                await step.context.sendActivity(`Here is your token: ${ tokenResponse.token }`);
-                await step.context.sendActivity(HELP_TEXT);
-                return await step.endDialog();
+    async saveResult(step: WaterfallStepContext) {
+        // Process the return value from the child dialog.
+        if (step.result) {
+            const user = await this.userInfoAccessor.get(step.context);
+            if (step.result.table) {
+                // Store the results of the reserve-table dialog.
+                user.table = step.result.table;
+            } else if (step.result.alarm) {
+                // Store the results of the set-wake-up-call dialog.
+                user.alarm = step.result.alarm;
             }
+            await this.userInfoAccessor.set(step.context, user);
         }
-
-        await step.context.sendActivity(HELP_TEXT);
-        return await step.endDialog();
+        // Restart the main menu dialog.
+        return await step.replaceDialog('mainDialog'); // Show the menu again
     }
+
 
     async onTurn(turnContext: TurnContext) {
-        // See https://aka.ms/about-bot-activity-message to learn more about the message and other activity types.
         if (turnContext.activity.type === ActivityTypes.Message) {
-            // Create a dialog context object.
+            const user = await this.userInfoAccessor.get(turnContext, {});
             const dc = await this.dialogs.createContext(turnContext);
-            const text = turnContext.activity.text;
-
-            // Create an array with the valid options.
-            const validCommands = ['logout', 'help'];
-            await dc.continueDialog();
-
-            // If the user asks for help, send a message to them informing them of the operations they can perform.
-            if (validCommands.includes(text)) {
-                if (text === 'help') {
-                    await turnContext.sendActivity(HELP_TEXT);
+            const dialogTurnResult = await dc.continueDialog();
+            if (dialogTurnResult.status === DialogTurnStatus.complete) {
+                user.guestInfo = dialogTurnResult.result;
+                await this.userInfoAccessor.set(turnContext, user);
+                await dc.beginDialog('mainDialog');
+            } else if (!turnContext.responded) {
+                if (!user.guestInfo) {
+                    await dc.beginDialog('checkInDialog');
+                } else {
+                    await dc.beginDialog('mainDialog');
                 }
-                // Log the user out
-                if (text === 'logout') {
-                    let botAdapter = turnContext.adapter; // But BotAdaptor does not have signOutUser method?
-
-                    //await botAdapter.signOutUser(turnContext, CONNECTION_NAME);
-                    //
-                    //
-
-                    await turnContext.sendActivity('You have been signed out.');
-                    await turnContext.sendActivity(HELP_TEXT);
-                }
-            } else {
-                if (!turnContext.responded) {
-                    await dc.beginDialog(AUTH_DIALOG);
-                }
-            };
-        } else if (turnContext.activity.type === ActivityTypes.ConversationUpdate) {
-                const welcomeMessage = `Welcome to AuthenticationBot. ` + HELP_TEXT;
-                await turnContext.sendActivity(welcomeMessage);
-        } else if (turnContext.activity.type === ActivityTypes.Invoke || turnContext.activity.type === ActivityTypes.Event) {
-            // This handles the MS Teams Invoke Activity sent when magic code is not used.
-            // See: https://docs.microsoft.com/en-us/microsoftteams/platform/concepts/authentication/auth-oauth-card#getting-started-with-oauthcard-in-teams
-            // The Teams manifest schema is found here: https://docs.microsoft.com/en-us/microsoftteams/platform/resources/schema/manifest-schema
-            // It also handles the Event Activity sent from the emulator when the magic code is not used.
-            // See: https://blog.botframework.com/2018/08/28/testing-authentication-to-your-bot-using-the-bot-framework-emulator/
-            const dc = await this.dialogs.createContext(turnContext);
-            await dc.continueDialog();
-            if (!turnContext.responded) {
-                await dc.beginDialog(AUTH_DIALOG);
             }
-        } else {
-            await turnContext.sendActivity(`[${ turnContext.activity.type } event detected.]`);
+            // Save state changes
+            await this.conversationState.saveChanges(turnContext);
+            await this.userState.saveChanges(turnContext);
         }
-
-        // Update the conversation state before ending the turn.
-        await this.conversationState.saveChanges(turnContext);
     }
+
+    //async onTurn(turnContext: TurnContext) {
+        //// See https://aka.ms/about-bot-activity-message to learn more about the message and other activity types.
+        //if (turnContext.activity.type === ActivityTypes.Message) {
+            //// Create a dialog context object.
+            //const user = await this.userInfoAccessor.get(turnContext, {});
+            //const dc = await this.dialogs.createContext(turnContext);
+            //const text = turnContext.activity.text;
+
+        //} else {
+            //await turnContext.sendActivity(`[${ turnContext.activity.type } event detected.]`);
+        //}
+
+        //// Update the conversation state before ending the turn.
+        //await this.conversationState.saveChanges(turnContext);
+    //}
 }
