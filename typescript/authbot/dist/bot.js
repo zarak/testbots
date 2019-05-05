@@ -35,11 +35,21 @@ class AuthBot {
             this.promptForChoice.bind(this),
             this.startChildDialog.bind(this),
             this.saveResult.bind(this)
+        ]))
+            .add(new botbuilder_dialogs_1.WaterfallDialog('reserveTableAuth', [
+            this.loginPrompt.bind(this),
+            this.reserveTable.bind(this)
         ]));
     }
     loginPrompt(step) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield step.beginDialog('authenticationDialog');
+        });
+    }
+    reserveTable(step) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const user = yield this.userInfoAccessor.get(step.context);
+            return yield step.beginDialog('reserveTableDialog', user);
         });
     }
     promptForChoice(step) {
@@ -57,7 +67,8 @@ class AuthBot {
             // Pass in the guest info when starting either of the child dialogs.
             switch (step.result) {
                 case "Reserve Table":
-                    return yield step.beginDialog('reserveTableDialog', user.guestInfo);
+                    //return await step.beginDialog('reserveTableDialog', user.guestInfo);
+                    return yield step.beginDialog('reserveTableAuth', user);
                     break;
                 case "Wake Up":
                     return yield step.beginDialog('setAlarmDialog', user.guestInfo);
@@ -100,6 +111,7 @@ class AuthBot {
                 //if (dialogTurnResult.status === DialogTurnStatus.empty) {
                 //await dc.beginDialog('authenticationDialog');
                 //}
+                //
                 if (dialogTurnResult.status === botbuilder_dialogs_1.DialogTurnStatus.complete) {
                     // If user is coming from login dialog then
                     // dialogTurnResult.result will be null, so go to check-in

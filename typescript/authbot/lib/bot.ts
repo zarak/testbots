@@ -36,12 +36,20 @@ export class AuthBot {
                 //this.loginPrompt.bind(this),
                 this.promptForChoice.bind(this),
                 this.startChildDialog.bind(this),
-                this.saveResult.bind(this)
-        ]));
+                this.saveResult.bind(this)]))
+            .add(new WaterfallDialog('reserveTableAuth', [
+                this.loginPrompt.bind(this),
+                this.reserveTable.bind(this)
+            ]));
     }
 
     async loginPrompt(step: WaterfallStepContext) {
         return await step.beginDialog('authenticationDialog');
+    }
+
+    async reserveTable(step: WaterfallStepContext) {
+        const user = await this.userInfoAccessor.get(step.context);
+        return await step.beginDialog('reserveTableDialog', user);
     }
 
     async promptForChoice(step: WaterfallStepContext) {
@@ -57,7 +65,8 @@ export class AuthBot {
         // Pass in the guest info when starting either of the child dialogs.
         switch (step.result) {
             case "Reserve Table":
-                return await step.beginDialog('reserveTableDialog', user.guestInfo);
+                //return await step.beginDialog('reserveTableDialog', user.guestInfo);
+                return await step.beginDialog('reserveTableAuth', user);
                 break;
             case "Wake Up":
                 return await step.beginDialog('setAlarmDialog', user.guestInfo);
@@ -100,6 +109,7 @@ export class AuthBot {
             //if (dialogTurnResult.status === DialogTurnStatus.empty) {
                 //await dc.beginDialog('authenticationDialog');
             //}
+            //
 
             if (dialogTurnResult.status === DialogTurnStatus.complete) {
                 // If user is coming from login dialog then
