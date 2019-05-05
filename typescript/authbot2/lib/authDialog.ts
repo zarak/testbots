@@ -1,12 +1,10 @@
-import * as i18n from 'i18n';
-import { TurnContext, ActivityTypes, StatePropertyAccessor } from 'botbuilder';
-import { ChoicePrompt, ComponentDialog, OAuthPrompt, DialogTurnResult, WaterfallDialog, WaterfallStepContext } from 'botbuilder-dialogs';
+import { TokenResponse, StatePropertyAccessor } from 'botbuilder';
+import { ComponentDialog, OAuthPrompt, DialogTurnResult, WaterfallDialog, WaterfallStepContext } from 'botbuilder-dialogs';
 
 const initialId = 'mainDialog';
 
 // Names of the prompts the bot uses.
 const OAUTH_PROMPT = 'oAuth_prompt';
-const CONFIRM_PROMPT = 'confirm_prompt';
 
 // The connection name here must match the one from
 // your Bot Channels Registration on the settings blade in Azure.
@@ -26,13 +24,37 @@ export class AuthenticationDialog extends ComponentDialog {
         this.initialDialogId = initialId;
 
         const authenticate : ((sc: WaterfallStepContext<{}>) => Promise<DialogTurnResult<any>>)[] = [
+            this.promptToLogin.bind(this),
+            this.finishLoginDialog.bind(this)
         ];
 
-        this.addDialog(new ChoicePrompt(CONFIRM_PROMPT));
         this.addDialog(new OAuthPrompt(OAUTH_PROMPT, OAUTH_SETTINGS));
         this.addDialog(new WaterfallDialog(this.initialDialogId, authenticate));
     }
 
+    private async promptToLogin(step: WaterfallStepContext) {
+        return await step.prompt(OAUTH_PROMPT, {});
+    }
+
+    private async finishLoginDialog(step: WaterfallStepContext) {
+        if (step.result) {
+            const tokenResponse: TokenResponse = step.result;
+
+            if (tokenResponse.token) {
+                await step.context.sendActivity(`You are now logged in.`);
+            }
+
+            return step.endDialog(tokenResponse);
+        } else {
+            await step.context.sendActivity(`Login failed`);
+        }
+
+        return step.endDialog();
+    }
+
+    //private async getProfile(step: WaterfallStepContext) {
+
+    //}
 }
 
 

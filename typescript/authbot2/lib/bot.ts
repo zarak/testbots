@@ -1,4 +1,4 @@
-import { MessageFactory, BotFrameworkAdapter, UserState, TurnContext, ActivityTypes, StatePropertyAccessor, ConversationState } from 'botbuilder';
+import { MessageFactory, UserState, TurnContext, ActivityTypes, StatePropertyAccessor, ConversationState } from 'botbuilder';
 import { DialogTurnStatus, Dialog, DialogSet, WaterfallDialog, WaterfallStepContext } from 'botbuilder-dialogs';
 import { IUserInfo } from './userInfoState';
 import { CheckInDialog } from './checkInDialog';
@@ -109,7 +109,11 @@ export class AuthBot {
             //if (dialogTurnResult.status === DialogTurnStatus.empty) {
                 //await dc.beginDialog('authenticationDialog');
             //}
-            //
+
+            if (text === 'login') {
+                await dc.cancelAllDialogs();
+                await dc.beginDialog('authenticationDialog');
+            }
 
             if (dialogTurnResult.status === DialogTurnStatus.complete) {
                 // If user is coming from login dialog then
@@ -136,20 +140,4 @@ export class AuthBot {
             await this.userState.saveChanges(turnContext);
         }
     }
-
-    //async onTurn(turnContext: TurnContext) {
-        //// See https://aka.ms/about-bot-activity-message to learn more about the message and other activity types.
-        //if (turnContext.activity.type === ActivityTypes.Message) {
-            //// Create a dialog context object.
-            //const user = await this.userInfoAccessor.get(turnContext, {});
-            //const dc = await this.dialogs.createContext(turnContext);
-            //const text = turnContext.activity.text;
-
-        //} else {
-            //await turnContext.sendActivity(`[${ turnContext.activity.type } event detected.]`);
-        //}
-
-        //// Update the conversation state before ending the turn.
-        //await this.conversationState.saveChanges(turnContext);
-    //}
 }
