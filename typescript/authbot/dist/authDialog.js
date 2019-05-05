@@ -91,11 +91,11 @@ class AuthenticationDialog extends botbuilder_dialogs_1.ComponentDialog {
                 if (tokenResponse != null) {
                     yield step.context.sendActivity(`Here is your token: ${tokenResponse.token}`);
                     yield step.context.sendActivity(HELP_TEXT);
-                    return yield step.endDialog(tokenResponse);
+                    return yield step.endDialog();
                 }
             }
             yield step.context.sendActivity(HELP_TEXT);
-            return yield step.endDialog(tokenResponse);
+            return yield step.endDialog();
         });
     }
 }

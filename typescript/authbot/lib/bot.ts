@@ -96,12 +96,10 @@ export class AuthBot {
 
             console.log("Dialog", dialogTurnResult);
             console.log("User", user);
-            if (dialogTurnResult.status === DialogTurnStatus.empty) {
-                await dc.beginDialog('authenticationDialog');
-            }
 
-            const token = dialogTurnResult.result ? dialogTurnResult.result.token : null;
-            console.log(token);
+            //if (dialogTurnResult.status === DialogTurnStatus.empty) {
+                //await dc.beginDialog('authenticationDialog');
+            //}
 
             if (dialogTurnResult.status === DialogTurnStatus.complete) {
                 // If user is coming from login dialog then

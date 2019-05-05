@@ -89,12 +89,12 @@ export class AuthenticationDialog extends ComponentDialog {
             if (tokenResponse != null) {
                 await step.context.sendActivity(`Here is your token: ${ tokenResponse.token }`);
                 await step.context.sendActivity(HELP_TEXT);
-                return await step.endDialog(tokenResponse);
+                return await step.endDialog();
             }
         }
 
         await step.context.sendActivity(HELP_TEXT);
-        return await step.endDialog(tokenResponse);
+        return await step.endDialog();
     }
 }
 
