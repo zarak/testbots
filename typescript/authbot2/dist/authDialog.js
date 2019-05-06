@@ -41,6 +41,7 @@ class AuthenticationDialog extends botbuilder_dialogs_1.ComponentDialog {
     }
     finishLoginDialog(step) {
         return __awaiter(this, void 0, void 0, function* () {
+            console.log("step result", step.result);
             if (step.result) {
                 const tokenResponse = step.result;
                 if (tokenResponse.token) {

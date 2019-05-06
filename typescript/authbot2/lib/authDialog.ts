@@ -37,6 +37,7 @@ export class AuthenticationDialog extends ComponentDialog {
     }
 
     private async finishLoginDialog(step: WaterfallStepContext) {
+        console.log("step result", step.result);
         if (step.result) {
             const tokenResponse: TokenResponse = step.result;
 
