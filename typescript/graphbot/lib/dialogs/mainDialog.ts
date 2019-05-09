@@ -13,7 +13,7 @@ const TEXT_PROMPT = 'textPrompt';
 
 export class MainDialog extends LogoutDialog {
     public commandStateAccessor: StatePropertyAccessor;
-    constructor(public commandState: ConversationState) {
+    constructor(private commandState: ConversationState) {
         super('MainDialog');
 
         this.commandStateAccessor = commandState.createProperty('commandState');
@@ -105,7 +105,7 @@ export class MainDialog extends LogoutDialog {
                     await OAuthHelpers.sendMail(step.context, tokenResponse, parts[1]);
                     break;
                 case 'recent':
-                    await OAuthHelpers.listRecentMail(step.context, tokenResponse);
+                    //await OAuthHelpers.listRecentMail(step.context, tokenResponse);
                     break;
                 default:
                     await step.context.sendActivity(`Your token is ${ tokenResponse.token }`);

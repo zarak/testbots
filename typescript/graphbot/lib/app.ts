@@ -22,9 +22,10 @@ console.log(adapter);
 
 const memoryStorage = new MemoryStorage();
 const conversationState = new ConversationState(memoryStorage);
+const commandState = new ConversationState(memoryStorage);
 const userState = new UserState(memoryStorage);
 
-const dialog = new MainDialog();
+const dialog = new MainDialog(commandState);
 const bot = new AuthBot(conversationState, userState, dialog);
 
 server.post("/api/messages", (req, res) => {

@@ -32,7 +32,7 @@ export class SimpleGraphClient {
      * @param {string} subject Subject of the email to be sent to the recipient.
      * @param {string} content Email message to be sent to the recipient.
      */
-    async sendMail(toAddress, subject, content) {
+    async sendMail(toAddress: string, subject: string, content: string) {
         if (!toAddress || !toAddress.trim()) {
             throw new Error('SimpleGraphClient.sendMail(): Invalid `toAddress` parameter received.');
         }

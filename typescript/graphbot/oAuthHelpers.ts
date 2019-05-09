@@ -5,8 +5,8 @@ import { User } from '@microsoft/microsoft-graph-types';
 import {
     TokenResponse,
     TurnContext } from 'botbuilder';
-const { AttachmentLayoutTypes, CardFactory } = require('botbuilder');
-const { SimpleGraphClient } = require('./simple-graph-client');
+import { AttachmentLayoutTypes, CardFactory } from 'botbuilder';
+import { SimpleGraphClient } from './simple-graph-client';
 
 /**
  * These methods call the Microsoft Graph API. The following OAuth scopes are used:
@@ -21,7 +21,7 @@ export class OAuthHelpers {
      * @param {TokenResponse} tokenResponse A response that includes a user token.
      * @param {string} emailAddress The email address of the recipient.
      */
-    static async sendMail(context, tokenResponse, emailAddress) {
+    static async sendMail(context: TurnContext, tokenResponse: TokenResponse, emailAddress: string) {
         if (!context) {
             throw new Error('OAuthHelpers.sendMail(): `context` cannot be undefined.');
         }
@@ -45,7 +45,7 @@ export class OAuthHelpers {
      * @param {TurnContext} context A TurnContext instance containing all the data needed for processing this conversation turn.
      * @param {TokenResponse} tokenResponse A response that includes a user token.
      */
-    static async listMe(context, tokenResponse) {
+    static async listMe(context: TurnContext, tokenResponse: TokenResponse) {
         if (!context) {
             throw new Error('OAuthHelpers.listMe(): `context` cannot be undefined.');
         }
@@ -70,37 +70,37 @@ export class OAuthHelpers {
      * @param {TurnContext} context A TurnContext instance containing all the data needed for processing this conversation turn.
      * @param {TokenResponse} tokenResponse A response that includes a user token.
      */
-    static async listRecentMail(context, tokenResponse) {
-        if (!context) {
-            throw new Error('OAuthHelpers.listRecentMail(): `context` cannot be undefined.');
-        }
-        if (!tokenResponse) {
-            throw new Error('OAuthHelpers.listRecentMail(): `tokenResponse` cannot be undefined.');
-        }
+    //static async listRecentMail(context: TurnContext, tokenResponse: TokenResponse) {
+        //if (!context) {
+            //throw new Error('OAuthHelpers.listRecentMail(): `context` cannot be undefined.');
+        //}
+        //if (!tokenResponse) {
+            //throw new Error('OAuthHelpers.listRecentMail(): `tokenResponse` cannot be undefined.');
+        //}
 
-        var client = new SimpleGraphClient(tokenResponse.token);
-        var messages = await client.getRecentMail();
-        if (Array.isArray(messages)) {
-            let numberOfMessages = 0;
-            if (messages.length > 5) {
-                numberOfMessages = 5;
-            }
+        //var client = new SimpleGraphClient(tokenResponse.token);
+        //var messages = await client.getRecentMail();
+        //if (Array.isArray(messages)) {
+            //let numberOfMessages = 0;
+            //if (messages.length > 5) {
+                //numberOfMessages = 5;
+            //}
 
-            const reply = { attachments: [], attachmentLayout: AttachmentLayoutTypes.Carousel };
-            for (let cnt = 0; cnt < numberOfMessages; cnt++) {
-                const mail = messages[cnt];
-                const card = CardFactory.heroCard(
-                    mail.subject,
-                    mail.bodyPreview,
-                    [{ alt: 'Outlook Logo', url: 'https://botframeworksamples.blob.core.windows.net/samples/OutlookLogo.jpg' }],
-                    [],
-                    { subtitle: `${ mail.from.emailAddress.name } <${ mail.from.emailAddress.address }>` }
-                );
-                reply.attachments.push(card);
-            }
-            await context.sendActivity(reply);
-        } else {
-            await context.sendActivity('Unable to find any recent unread mail.');
-        }
-    }
+            //const reply = { attachments: [], attachmentLayout: AttachmentLayoutTypes.Carousel };
+            //for (let cnt = 0; cnt < numberOfMessages; cnt++) {
+                //const mail = messages[cnt];
+                //const card = CardFactory.heroCard(
+                    //mail.subject,
+                    //mail.bodyPreview,
+                    //[{ alt: 'Outlook Logo', url: 'https://botframeworksamples.blob.core.windows.net/samples/OutlookLogo.jpg' }],
+                    //[],
+                    //{ subtitle: `${ mail.from.emailAddress.name } <${ mail.from.emailAddress.address }>` }
+                //);
+                //reply.attachments.push(card);
+            //}
+            //await context.sendActivity(reply);
+        //} else {
+            //await context.sendActivity('Unable to find any recent unread mail.');
+        //}
+    //}
 }
