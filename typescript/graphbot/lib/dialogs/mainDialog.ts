@@ -3,8 +3,8 @@
 
 import { WaterfallStepContext, ChoicePrompt, DialogSet, DialogTurnStatus, OAuthPrompt, TextPrompt, WaterfallDialog } from 'botbuilder-dialogs';
 import { TurnContext, StatePropertyAccessor } from 'botbuilder';
-const { LogoutDialog } = require('./logoutDialog');
-const { OAuthHelpers } = require('../oAuthHelpers');
+import { LogoutDialog } from './logoutDialog';
+import { OAuthHelpers } from '../../oAuthHelpers';
 
 const MAIN_WATERFALL_DIALOG = 'mainWaterfallDialog';
 const OAUTH_PROMPT = 'oAuthPrompt';

@@ -29,6 +29,6 @@ const bot = new AuthBot(conversationState, userState, dialog);
 
 server.post("/api/messages", (req, res) => {
     adapter.processActivity(req, res, async (context) => {
-        await bot.onTurn(context);
+        await bot.run(context, );
     });
 });
