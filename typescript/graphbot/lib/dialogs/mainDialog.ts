@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 import { WaterfallStepContext, ChoicePrompt, DialogSet, DialogTurnStatus, OAuthPrompt, TextPrompt, WaterfallDialog } from 'botbuilder-dialogs';
-import { TurnContext, StatePropertyAccessor } from 'botbuilder';
+import { ConversationState, TurnContext, StatePropertyAccessor } from 'botbuilder';
 import { LogoutDialog } from './logoutDialog';
 import { OAuthHelpers } from '../../oAuthHelpers';
 
@@ -12,8 +12,12 @@ const CHOICE_PROMPT = 'choicePrompt';
 const TEXT_PROMPT = 'textPrompt';
 
 export class MainDialog extends LogoutDialog {
-    constructor() {
+    public commandStateAccessor: StatePropertyAccessor;
+    constructor(public commandState: ConversationState) {
         super('MainDialog');
+
+        this.commandStateAccessor = commandState.createProperty('commandState');
+
         this.addDialog(new ChoicePrompt(CHOICE_PROMPT))
             .addDialog(new OAuthPrompt(OAUTH_PROMPT, {
                 connectionName: 'test',
@@ -66,7 +70,8 @@ export class MainDialog extends LogoutDialog {
     }
 
     async commandStep(step: WaterfallStepContext) {
-        step.values['command'] = step.result;
+        //step.values['command'] = step.result;
+        await this.commandStateAccessor.set(step.context, { command: step.result });
 
         // Call the prompt again because we need the token. The reasons for this are:
         // 1. If the user is already logged in we do not need to store the token locally in the bot and worry
@@ -88,7 +93,7 @@ export class MainDialog extends LogoutDialog {
 
             // If we have the token use the user is authenticated so we may use it to make API calls.
             if (tokenResponse && tokenResponse.token) {
-                const parts = (step.values['command'] || '').toLowerCase().split(' ');
+                const parts = (await this.commandStateAccessor.get(step.context, { command: '' })).command.toLowerCase().split(' ');
 
                 const command = parts[0];
 
