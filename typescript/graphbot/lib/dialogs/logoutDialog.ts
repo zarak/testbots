@@ -1,10 +1,10 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-const { ActivityTypes } = require('botbuilder');
-const { ComponentDialog } = require('botbuilder-dialogs');
+import { ActivityTypes } from 'botbuilder';
+import { ComponentDialog } from 'botbuilder-dialogs';
 
-class LogoutDialog extends ComponentDialog {
+export class LogoutDialog extends ComponentDialog {
     async onBeginDialog(innerDc, options) {
         const result = await this.interrupt(innerDc);
         if (result) {
@@ -36,5 +36,3 @@ class LogoutDialog extends ComponentDialog {
         }
     }
 }
-
-module.exports.LogoutDialog = LogoutDialog;

@@ -1,7 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-const { ChoicePrompt, DialogSet, DialogTurnStatus, OAuthPrompt, TextPrompt, WaterfallDialog } = require('botbuilder-dialogs');
+import { WaterfallStepContext, ChoicePrompt, DialogSet, DialogTurnStatus, OAuthPrompt, TextPrompt, WaterfallDialog } from 'botbuilder-dialogs';
+import { TurnContext, StatePropertyAccessor } from 'botbuilder';
 const { LogoutDialog } = require('./logoutDialog');
 const { OAuthHelpers } = require('../oAuthHelpers');
 
@@ -10,12 +11,12 @@ const OAUTH_PROMPT = 'oAuthPrompt';
 const CHOICE_PROMPT = 'choicePrompt';
 const TEXT_PROMPT = 'textPrompt';
 
-class MainDialog extends LogoutDialog {
+export class MainDialog extends LogoutDialog {
     constructor() {
         super('MainDialog');
         this.addDialog(new ChoicePrompt(CHOICE_PROMPT))
             .addDialog(new OAuthPrompt(OAUTH_PROMPT, {
-                connectionName: process.env.ConnectionName,
+                connectionName: 'test',
                 text: 'Please login',
                 title: 'Login',
                 timeout: 300000
@@ -37,8 +38,8 @@ class MainDialog extends LogoutDialog {
      * @param {*} turnContext
      * @param {*} accessor
      */
-    async run(turnContext, accessor) {
-        const dialogSet = new DialogSet(accessor);
+    async run(turnContext: TurnContext, accessor: StatePropertyAccessor) {
+        const dialogSet: DialogSet = new DialogSet(accessor);
         dialogSet.add(this);
 
         const dialogContext = await dialogSet.createContext(turnContext);
@@ -48,11 +49,11 @@ class MainDialog extends LogoutDialog {
         }
     }
 
-    async promptStep(step) {
+    async promptStep(step: WaterfallStepContext) {
         return step.beginDialog(OAUTH_PROMPT);
     }
 
-    async loginStep(step) {
+    async loginStep(step: WaterfallStepContext) {
         // Get the token from the previous step. Note that we could also have gotten the
         // token directly from the prompt itself. There is an example of this in the next method.
         const tokenResponse = step.result;
@@ -64,7 +65,7 @@ class MainDialog extends LogoutDialog {
         return await step.endDialog();
     }
 
-    async commandStep(step) {
+    async commandStep(step: WaterfallStepContext) {
         step.values['command'] = step.result;
 
         // Call the prompt again because we need the token. The reasons for this are:
@@ -78,7 +79,7 @@ class MainDialog extends LogoutDialog {
         return await step.beginDialog(OAUTH_PROMPT);
     }
 
-    async processStep(step) {
+    async processStep(step: WaterfallStepContext) {
         if (step.result) {
             // We do not need to store the token in the bot. When we need the token we can
             // send another prompt. If the token is valid the user will not need to log back in.
@@ -112,5 +113,3 @@ class MainDialog extends LogoutDialog {
         return await step.endDialog();
     }
 }
-
-module.exports.MainDialog = MainDialog;

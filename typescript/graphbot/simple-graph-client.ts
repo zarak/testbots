@@ -1,24 +1,27 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-const { Client } = require('@microsoft/microsoft-graph-client');
+import {
+    AuthProviderCallback,
+    Client,
+    GraphError } from '@microsoft/microsoft-graph-client';
+import { User } from '@microsoft/microsoft-graph-types';
 
 /**
  * This class is a wrapper for the Microsoft Graph API.
  * See: https://developer.microsoft.com/en-us/graph for more information.
  */
-class SimpleGraphClient {
-    constructor(token) {
+export class SimpleGraphClient {
+    private graphClient: Client;
+    constructor(private token: string) {
         if (!token || !token.trim()) {
             throw new Error('SimpleGraphClient: Invalid token received.');
         }
 
-        this._token = token;
-
         // Get an Authenticated Microsoft Graph client using the token issued to the user.
         this.graphClient = Client.init({
             authProvider: (done) => {
-                done(null, this._token); // First parameter takes an error if you can't get an access token.
+                done(null, this.token); // First parameter takes an error if you can't get an access token.
             }
         });
     }
@@ -82,7 +85,7 @@ class SimpleGraphClient {
     /**
      * Collects information about the user in the bot.
      */
-    async getMe() {
+    async getMe(): Promise<User> {
         return await this.graphClient
             .api('/me')
             .get().then((res) => {
@@ -103,5 +106,3 @@ class SimpleGraphClient {
             });
     }
 }
-
-exports.SimpleGraphClient = SimpleGraphClient;

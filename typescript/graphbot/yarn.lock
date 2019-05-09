@@ -14,6 +14,20 @@
     uuid "^3.2.1"
     xml2js "^0.4.19"
 
+"@microsoft/microsoft-graph-client@^1.6.0":
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/@microsoft/microsoft-graph-client/-/microsoft-graph-client-1.6.0.tgz#a5678eabf1dd5c25a70b55da9d89f1478325f29d"
+  integrity sha512-jgOgWZOyrmFbeyiddCUOQ0Kd42JUz7x3F6de0iLlSxP2yT2xJlnhZGAtHPnJZgDS2KRBbPwuRd+dmiJdpOBMWQ==
+  dependencies:
+    es6-promise "^4.2.6"
+    isomorphic-fetch "^2.2.1"
+    tslib "^1.9.3"
+
+"@microsoft/microsoft-graph-types@^1.8.0":
+  version "1.8.0"
+  resolved "https://registry.yarnpkg.com/@microsoft/microsoft-graph-types/-/microsoft-graph-types-1.8.0.tgz#b818d8f65bf9a93e4ac728fdfe0df86704363d1f"
+  integrity sha512-FJt1O2lIHUazcmh+ROZaD2mAea6q6UkZCPbTCIlYwskyQJL+il+x+fJbIPLHy1c+xSh6HvZUV0R8O8RKDS3KAg==
+
 "@microsoft/recognizers-text-choice@1.1.2":
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/@microsoft/recognizers-text-choice/-/recognizers-text-choice-1.1.2.tgz#f4759bc1214cdac677d87402208069cbc0c60f88"
@@ -512,12 +526,24 @@ encodeurl@~1.0.2:
   resolved "https://registry.yarnpkg.com/encodeurl/-/encodeurl-1.0.2.tgz#ad3ff4c86ec2d029322f5a02c3a9a606c95b3f59"
   integrity sha1-rT/0yG7C0CkyL1oCw6mmBslbP1k=
 
+encoding@^0.1.11:
+  version "0.1.12"
+  resolved "https://registry.yarnpkg.com/encoding/-/encoding-0.1.12.tgz#538b66f3ee62cd1ab51ec323829d1f9480c74beb"
+  integrity sha1-U4tm8+5izRq1HsMjgp0flIDHS+s=
+  dependencies:
+    iconv-lite "~0.4.13"
+
 errlop@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/errlop/-/errlop-1.1.1.tgz#d9ae4c76c3e64956c5d79e6e035d6343bfd62250"
   integrity sha512-WX7QjiPHhsny7/PQvrhS5VMizXXKoKCS3udaBp8gjlARdbn+XmK300eKBAAN0hGyRaTCtRpOaxK+xFVPUJ3zkw==
   dependencies:
     editions "^2.1.2"
+
+es6-promise@^4.2.6:
+  version "4.2.6"
+  resolved "https://registry.yarnpkg.com/es6-promise/-/es6-promise-4.2.6.tgz#b685edd8258886365ea62b57d30de28fadcd974f"
+  integrity sha512-aRVgGdnmW2OiySVPUC9e6m+plolMAJKjZnQlCwNSuK5yQ0JN61DZSO1X1Ufd1foqWRAlig0rhduTCHe7sVtK5Q==
 
 escape-html@~1.0.3:
   version "1.0.3"
@@ -734,6 +760,13 @@ i18n@^0.8.3:
     mustache "*"
     sprintf-js ">=1.0.3"
 
+iconv-lite@~0.4.13:
+  version "0.4.24"
+  resolved "https://registry.yarnpkg.com/iconv-lite/-/iconv-lite-0.4.24.tgz#2022b4b25fbddc21d2f524974a474aafe733908b"
+  integrity sha512-v3MXnZAcvnywkTUEZomIActle7RXXeedOR31wwl7VlyoXO4Qi9arvSenNQWne1TcRwhCL1HwLI21bEqdpj8/rA==
+  dependencies:
+    safer-buffer ">= 2.1.2 < 3"
+
 ignorefs@^1.0.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/ignorefs/-/ignorefs-1.2.0.tgz#da59fb858976e4a5e43702ccd1f282fdbc9e5756"
@@ -770,10 +803,23 @@ is-buffer@^1.1.5:
   resolved "https://registry.yarnpkg.com/is-buffer/-/is-buffer-1.1.6.tgz#efaa2ea9daa0d7ab2ea13a97b2b8ad51fefbe8be"
   integrity sha512-NcdALwpXkTm5Zvvbk7owOUSvVvBKDgKP5/ewfXEznmQFfs4ZRmanOeKBTjRVjka3QFoN6XJ+9F3USqfHqTaU5w==
 
+is-stream@^1.0.1:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/is-stream/-/is-stream-1.1.0.tgz#12d4a3dd4e68e0b79ceb8dbc84173ae80d91ca44"
+  integrity sha1-EtSj3U5o4Lec6428hBc66A2RykQ=
+
 isarray@~1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/isarray/-/isarray-1.0.0.tgz#bb935d48582cba168c06834957a54a3e07124f11"
   integrity sha1-u5NdSFgsuhaMBoNJV6VKPgcSTxE=
+
+isomorphic-fetch@^2.2.1:
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/isomorphic-fetch/-/isomorphic-fetch-2.2.1.tgz#611ae1acf14f5e81f729507472819fe9733558a9"
+  integrity sha1-YRrhrPFPXoH3KVB0coGf6XM1WKk=
+  dependencies:
+    node-fetch "^1.0.1"
+    whatwg-fetch ">=0.10.0"
 
 jsbn@~0.1.0:
   version "0.1.1"
@@ -1055,6 +1101,14 @@ nock@^10.0.3:
     qs "^6.5.1"
     semver "^5.5.0"
 
+node-fetch@^1.0.1:
+  version "1.7.3"
+  resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-1.7.3.tgz#980f6f72d85211a5347c6b2bc18c5b84c3eb47ef"
+  integrity sha512-NhZ4CsKx7cYm2vSrBAr2PvFOe6sWDf0UYLRqA6svUYg7+/TSfVAu49jYC4BvQ4Sms9SZgdqGBgroqfDhJdTyKQ==
+  dependencies:
+    encoding "^0.1.11"
+    is-stream "^1.0.1"
+
 node-fetch@^2.2.1:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.3.0.tgz#1a1d940bbfb916a1d3e0219f037e89e71f8c5fa5"
@@ -1244,7 +1298,7 @@ safefs@^3.1.2:
   dependencies:
     graceful-fs "*"
 
-safer-buffer@^2.0.2, safer-buffer@^2.1.0, safer-buffer@~2.1.0:
+"safer-buffer@>= 2.1.2 < 3", safer-buffer@^2.0.2, safer-buffer@^2.1.0, safer-buffer@~2.1.0:
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/safer-buffer/-/safer-buffer-2.1.2.tgz#44fa161b0187b9549dd84bb91802f9bd8385cd6a"
   integrity sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==
@@ -1404,7 +1458,7 @@ trim-repeated@^1.0.0:
   dependencies:
     escape-string-regexp "^1.0.2"
 
-tslib@^1.9.2:
+tslib@^1.9.2, tslib@^1.9.3:
   version "1.9.3"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.9.3.tgz#d7e4dd79245d85428c4d7e4822a79917954ca286"
   integrity sha512-4krF8scpejhaOgqzBEcGM7yDIEfi0/8+8zDRZhNZZ2kjmHJ4hv3zCbQWxoJGz1iw5U0Jl0nma13xzHXcncMavQ==
@@ -1489,6 +1543,11 @@ wbuf@^1.1.0, wbuf@^1.7.3:
   integrity sha512-O84QOnr0icsbFGLS0O3bI5FswxzRr8/gHwWkDlQFskhSPryQXvrTMxjxGP4+iWYoauLoBvfDpkrOauZ+0iZpDA==
   dependencies:
     minimalistic-assert "^1.0.0"
+
+whatwg-fetch@>=0.10.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/whatwg-fetch/-/whatwg-fetch-3.0.0.tgz#fc804e458cc460009b1a2b966bc8817d2578aefb"
+  integrity sha512-9GSJUgz1D4MfyKU7KRqwOjXCXTqWdFNvEr7eUBYchQiVc744mqK/MzXPNR2WsPkmkOa4ywfg8C2n8h+13Bey1Q==
 
 wrappy@1:
   version "1.0.2"

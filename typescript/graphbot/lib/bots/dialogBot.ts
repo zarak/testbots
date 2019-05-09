@@ -1,16 +1,18 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-const { ActivityHandler } = require('botbuilder');
+import { StatePropertyAccessor, ActivityHandler, UserState, ConversationState } from 'botbuilder';
+import { MainDialog } from '../dialogs/mainDialog';
 
-class DialogBot extends ActivityHandler {
+export class DialogBot extends ActivityHandler {
     /**
      *
      * @param {ConversationState} conversationState
      * @param {UserState} userState
      * @param {Dialog} dialog
      */
-    constructor(conversationState, userState, dialog) {
+    public dialogState: StatePropertyAccessor;
+    constructor(private conversationState: ConversationState, private userState: UserState, public dialog: MainDialog) {
         super();
         if (!conversationState) throw new Error('[DialogBot]: Missing parameter. conversationState is required');
         if (!userState) throw new Error('[DialogBot]: Missing parameter. userState is required');
@@ -41,5 +43,3 @@ class DialogBot extends ActivityHandler {
         });
     }
 }
-
-module.exports.DialogBot = DialogBot;

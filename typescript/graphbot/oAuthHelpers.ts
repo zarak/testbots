@@ -1,6 +1,10 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+import { User } from '@microsoft/microsoft-graph-types';
+import {
+    TokenResponse,
+    TurnContext } from 'botbuilder';
 const { AttachmentLayoutTypes, CardFactory } = require('botbuilder');
 const { SimpleGraphClient } = require('./simple-graph-client');
 
@@ -10,7 +14,7 @@ const { SimpleGraphClient } = require('./simple-graph-client');
  * for more information about scopes see:
  * https://developer.microsoft.com/en-us/graph/docs/concepts/permissions_reference
  */
-class OAuthHelpers {
+export class OAuthHelpers {
     /**
      * Enable the user to send an email via the bot.
      * @param {TurnContext} context A TurnContext instance containing all the data needed for processing this conversation turn.
@@ -100,5 +104,3 @@ class OAuthHelpers {
         }
     }
 }
-
-exports.OAuthHelpers = OAuthHelpers;

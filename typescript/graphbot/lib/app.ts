@@ -1,7 +1,9 @@
 import { UserState, BotFrameworkAdapter, MemoryStorage, ConversationState } from 'botbuilder';
 import * as restify from 'restify';
-import { GraphBot } from './bot';
 import { config } from 'dotenv';
+
+import { AuthBot } from './bots/authBot';
+import { MainDialog } from './dialogs/mainDialog';
 
 config();
 
@@ -22,7 +24,8 @@ const memoryStorage = new MemoryStorage();
 const conversationState = new ConversationState(memoryStorage);
 const userState = new UserState(memoryStorage);
 
-const bot = new GraphBot(conversationState, userState);
+const dialog = new MainDialog();
+const bot = new AuthBot(conversationState, userState, dialog);
 
 server.post("/api/messages", (req, res) => {
     adapter.processActivity(req, res, async (context) => {
