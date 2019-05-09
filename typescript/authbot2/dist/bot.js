@@ -27,6 +27,7 @@ class AuthBot {
         this.dialogs = new botbuilder_dialogs_1.DialogSet(this.dialogStateAccessor);
         this.dialogs = new botbuilder_dialogs_1.DialogSet(this.dialogStateAccessor)
             .add(new authDialog_1.AuthenticationDialog('authenticationDialog', this.userInfoAccessor))
+            //.add(new OAuthPrompt('signOut', {connectionName: 'test', title: 'Sign Out'}))
             .add(new checkInDialog_1.CheckInDialog('checkInDialog', this.userInfoAccessor))
             .add(new reserveTableDialog_1.ReserveTableDialog('reserveTableDialog', this.userInfoAccessor))
             .add(new setAlarmDialog_1.SetAlarmDialog('setAlarmDialog', this.userInfoAccessor))
@@ -101,6 +102,7 @@ class AuthBot {
     }
     onTurn(turnContext) {
         return __awaiter(this, void 0, void 0, function* () {
+            console.log(turnContext);
             if (turnContext.activity.type === botbuilder_1.ActivityTypes.Message) {
                 const user = yield this.userInfoAccessor.get(turnContext, {});
                 const dc = yield this.dialogs.createContext(turnContext);
@@ -114,6 +116,11 @@ class AuthBot {
                 if (text === 'login') {
                     yield dc.cancelAllDialogs();
                     yield dc.beginDialog('authenticationDialog');
+                }
+                if (text === 'logout') {
+                    const prompt = new botbuilder_dialogs_1.OAuthPrompt('signOut', { connectionName: 'test', title: 'Sign Out' });
+                    turnContext.sendActivity(`You have been logged out`);
+                    yield prompt.signOutUser(turnContext);
                 }
                 if (dialogTurnResult.status === botbuilder_dialogs_1.DialogTurnStatus.complete) {
                     // If user is coming from login dialog then

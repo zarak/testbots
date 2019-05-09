@@ -1,0 +1,16 @@
+{
+  "dependencies": {
+    "@types/dotenv": "^6.1.1",
+    "@types/i18n": "^0.8.5",
+    "@types/restify": "^7.2.9",
+    "botbuilder": "^4.3.4",
+    "botbuilder-dialogs": "^4.3.4",
+    "dotenv": "^8.0.0",
+    "i18n": "^0.8.3",
+    "restify": "^8.2.0"
+  },
+  "name": "authbot2",
+  "version": "1.0.0",
+  "main": "server.js",
+  "license": "MIT"
+}
