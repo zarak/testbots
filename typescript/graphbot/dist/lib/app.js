@@ -38,7 +38,12 @@ const dialog = new mainDialog_1.MainDialog(commandState);
 const bot = new authBot_1.AuthBot(conversationState, userState, dialog);
 server.post("/api/messages", (req, res) => {
     adapter.processActivity(req, res, (context) => __awaiter(this, void 0, void 0, function* () {
-        yield bot.run(context);
+        try {
+            yield bot.run(context);
+        }
+        catch (err) {
+            console.error(err);
+        }
     }));
 });
 //# sourceMappingURL=app.js.map
