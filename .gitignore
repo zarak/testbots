@@ -3,4 +3,4 @@ node_modules
 .luisrc
 .qnamakerrc
 *.bot
-.env
+.env*
