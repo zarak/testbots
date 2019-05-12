@@ -20,7 +20,7 @@ export class MainDialog extends LogoutDialog {
 
         this.addDialog(new ChoicePrompt(CHOICE_PROMPT))
             .addDialog(new OAuthPrompt(OAUTH_PROMPT, {
-                connectionName: 'test',
+                connectionName: 'testhr',
                 text: 'Please login',
                 title: 'Login',
                 timeout: 300000
