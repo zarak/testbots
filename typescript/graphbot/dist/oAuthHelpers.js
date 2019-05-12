@@ -55,8 +55,8 @@ class OAuthHelpers {
                 // Pull in the data from Microsoft Graph.
                 const client = new simple_graph_client_1.SimpleGraphClient(tokenResponse.token);
                 const me = yield client.getMe();
-                const manager = yield client.getManager();
-                yield context.sendActivity(`You are ${me.displayName} and you report to ${manager.displayName}.`);
+                //const manager = await client.getManager();
+                yield context.sendActivity(`You are ${me.displayName} and you report to nobody.`);
             }
             catch (error) {
                 throw error;
