@@ -24,7 +24,7 @@ class MainDialog extends logoutDialog_1.LogoutDialog {
         this.commandStateAccessor = commandState.createProperty('commandState');
         this.addDialog(new botbuilder_dialogs_1.ChoicePrompt(CHOICE_PROMPT))
             .addDialog(new botbuilder_dialogs_1.OAuthPrompt(OAUTH_PROMPT, {
-            connectionName: 'test',
+            connectionName: 'testhr',
             text: 'Please login',
             title: 'Login',
             timeout: 300000
