@@ -90,6 +90,7 @@ export class MainDialog extends LogoutDialog {
             // send another prompt. If the token is valid the user will not need to log back in.
             // The token will be available in the Result property of the task.
             const tokenResponse = step.result;
+            console.log('tokenresponse', tokenResponse);
 
             // If we have the token use the user is authenticated so we may use it to make API calls.
             if (tokenResponse && tokenResponse.token) {
@@ -99,7 +100,12 @@ export class MainDialog extends LogoutDialog {
 
                 switch (command) {
                 case 'me':
-                    await OAuthHelpers.listMe(step.context, tokenResponse);
+                    try {
+                        await OAuthHelpers.listMe(step.context, tokenResponse);
+                    } catch (err) {
+                        throw err;
+                    }
+
                     break;
                 case 'send':
                     await OAuthHelpers.sendMail(step.context, tokenResponse, parts[1]);

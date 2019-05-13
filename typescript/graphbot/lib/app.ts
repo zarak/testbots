@@ -18,7 +18,7 @@ const adapter = new BotFrameworkAdapter({
     appPassword: process.env.MicrosoftAppPassword,
 });
 
-console.log(adapter);
+console.log("ADAPTER", adapter);
 
 const memoryStorage = new MemoryStorage();
 const conversationState = new ConversationState(memoryStorage);
