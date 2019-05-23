@@ -29,7 +29,7 @@ const adapter = new botbuilder_1.BotFrameworkAdapter({
     appId: process.env.MicrosoftAppId,
     appPassword: process.env.MicrosoftAppPassword,
 });
-console.log(adapter);
+console.log("ADAPTER", adapter);
 const memoryStorage = new botbuilder_1.MemoryStorage();
 const conversationState = new botbuilder_1.ConversationState(memoryStorage);
 const commandState = new botbuilder_1.ConversationState(memoryStorage);

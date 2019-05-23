@@ -5,7 +5,9 @@ import { WaterfallStepContext, ChoicePrompt, DialogSet, DialogTurnStatus, OAuthP
 import { ConversationState, TurnContext, StatePropertyAccessor } from 'botbuilder';
 import { LogoutDialog } from './logoutDialog';
 import { OAuthHelpers } from '../../oAuthHelpers';
+import { ReserveTableDialog } from './reserveTableDialog';
 
+const RESERVE_TABLE_DIALOG = 'reserveTableDialog';
 const MAIN_WATERFALL_DIALOG = 'mainWaterfallDialog';
 const OAUTH_PROMPT = 'oAuthPrompt';
 const CHOICE_PROMPT = 'choicePrompt';
@@ -20,12 +22,13 @@ export class MainDialog extends LogoutDialog {
 
         this.addDialog(new ChoicePrompt(CHOICE_PROMPT))
             .addDialog(new OAuthPrompt(OAUTH_PROMPT, {
-                connectionName: 'testhr',
+                connectionName: 'test',
                 text: 'Please login',
                 title: 'Login',
                 timeout: 300000
             }))
             .addDialog(new TextPrompt(TEXT_PROMPT))
+            .addDialog(new ReserveTableDialog(RESERVE_TABLE_DIALOG, this.commandStateAccessor))
             .addDialog(new WaterfallDialog(MAIN_WATERFALL_DIALOG, [
                 this.promptStep.bind(this),
                 this.loginStep.bind(this),
@@ -112,6 +115,7 @@ export class MainDialog extends LogoutDialog {
                     break;
                 case 'recent':
                     //await OAuthHelpers.listRecentMail(step.context, tokenResponse);
+                    await step.beginDialog('reserveTableDialog');
                     break;
                 default:
                     await step.context.sendActivity(`Your token is ${ tokenResponse.token }`);

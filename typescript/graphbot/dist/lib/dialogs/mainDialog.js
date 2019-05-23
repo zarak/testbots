@@ -13,6 +13,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const botbuilder_dialogs_1 = require("botbuilder-dialogs");
 const logoutDialog_1 = require("./logoutDialog");
 const oAuthHelpers_1 = require("../../oAuthHelpers");
+const reserveTableDialog_1 = require("./reserveTableDialog");
+const RESERVE_TABLE_DIALOG = 'reserveTableDialog';
 const MAIN_WATERFALL_DIALOG = 'mainWaterfallDialog';
 const OAUTH_PROMPT = 'oAuthPrompt';
 const CHOICE_PROMPT = 'choicePrompt';
@@ -24,12 +26,13 @@ class MainDialog extends logoutDialog_1.LogoutDialog {
         this.commandStateAccessor = commandState.createProperty('commandState');
         this.addDialog(new botbuilder_dialogs_1.ChoicePrompt(CHOICE_PROMPT))
             .addDialog(new botbuilder_dialogs_1.OAuthPrompt(OAUTH_PROMPT, {
-            connectionName: 'testhr',
+            connectionName: 'test',
             text: 'Please login',
             title: 'Login',
             timeout: 300000
         }))
             .addDialog(new botbuilder_dialogs_1.TextPrompt(TEXT_PROMPT))
+            .addDialog(new reserveTableDialog_1.ReserveTableDialog(RESERVE_TABLE_DIALOG, this.commandStateAccessor))
             .addDialog(new botbuilder_dialogs_1.WaterfallDialog(MAIN_WATERFALL_DIALOG, [
             this.promptStep.bind(this),
             this.loginStep.bind(this),
@@ -114,6 +117,7 @@ class MainDialog extends logoutDialog_1.LogoutDialog {
                             break;
                         case 'recent':
                             //await OAuthHelpers.listRecentMail(step.context, tokenResponse);
+                            yield step.beginDialog('reserveTableDialog');
                             break;
                         default:
                             yield step.context.sendActivity(`Your token is ${tokenResponse.token}`);
