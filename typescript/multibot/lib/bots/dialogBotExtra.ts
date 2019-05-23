@@ -4,8 +4,9 @@
 import { StatePropertyAccessor, ConversationState, UserState, ActivityHandler } from 'botbuilder';
 //import { WaterfallStepContext, DialogSet, Dialog } from 'botbuilder-dialogs';
 import { UserProfileDialog } from '../dialogs/userProfileDialog';
+import { DialogBot } from './dialogBot';
 
-export class DialogBot extends ActivityHandler {
+export class DialogBotExtra extends DialogBot {
     /**
      *
      * @param {ConversationState} conversationState
@@ -13,28 +14,16 @@ export class DialogBot extends ActivityHandler {
      * @param {Dialog} dialog
      * @param {any} logger object for logging events, defaults to console if none is provided
      */
-    protected dialogState: StatePropertyAccessor;
-    constructor(protected conversationState: ConversationState, protected userState: UserState, public dialog: UserProfileDialog, public logger: any) {
-        super();
-        if (!conversationState) throw new Error('[DialogBot]: Missing parameter. conversationState is required');
-        if (!userState) throw new Error('[DialogBot]: Missing parameter. userState is required');
-        if (!dialog) throw new Error('[DialogBot]: Missing parameter. dialog is required');
-        if (!logger) {
-            logger = console;
-            logger.log('[DialogBot]: logger not passed in, defaulting to console');
-        }
-
-        this.userState = userState;
-        this.dialog = dialog;
-        this.logger = logger;
-        this.dialogState = this.conversationState.createProperty('DialogState');
+    constructor(conversationState: ConversationState, userState: UserState, dialog: UserProfileDialog, logger: any) {
+        super(conversationState, userState, dialog, logger);
 
         this.onMessage(async (context, next) => {
             this.logger.log('Running dialog with Message Activity.');
 
             // Run the Dialog with the new message Activity.
             //await this.dialog.run(context, this.dialogState);
-            await context.sendActivity(`dialogBot first lel`);
+
+            await context.sendActivity(`Now it's my turn lel`);
 
             await next();
         });
