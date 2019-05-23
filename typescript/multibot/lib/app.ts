@@ -1,15 +1,15 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-const restify = require('restify');
-const path = require('path');
+import * as restify from 'restify';
+import * as path from 'path';
 
 // Import required bot services. See https://aka.ms/bot-services to learn more about the different part of a bot.
-const { BotFrameworkAdapter, ConversationState, MemoryStorage, UserState } = require('botbuilder');
+import { BotFrameworkAdapter, ConversationState, MemoryStorage, UserState } from 'botbuilder';
 
 // Import our custom bot class that provides a turn handling function.
-const { DialogBot } = require('./bots/dialogBot');
-const { UserProfileDialog } = require('./dialogs/userProfileDialog');
+import { DialogBot } from './bots/dialogBot';
+import { UserProfileDialog } from './dialogs/userProfileDialog';
 
 // Read environment variables from .env file
 const ENV_FILE = path.join(__dirname, '.env');

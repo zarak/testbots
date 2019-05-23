@@ -16,6 +16,7 @@
         "url": "https://github.com/Microsoft/BotBuilder-Samples.git"
     },
     "dependencies": {
+        "@types/restify": "^7.2.10",
         "botbuilder": "~4.4.0",
         "botbuilder-dialogs": "~4.4.0",
         "dotenv": "^6.1.0",

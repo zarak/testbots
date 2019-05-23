@@ -1,9 +1,11 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-const { ActivityHandler } = require('botbuilder');
+import { StatePropertyAccessor, ConversationState, UserState, ActivityHandler } from 'botbuilder';
+//import { WaterfallStepContext, DialogSet, Dialog } from 'botbuilder-dialogs';
+import { UserProfileDialog } from '../dialogs/userProfileDialog';
 
-class DialogBot extends ActivityHandler {
+export class DialogBot extends ActivityHandler {
     /**
      *
      * @param {ConversationState} conversationState
@@ -11,7 +13,8 @@ class DialogBot extends ActivityHandler {
      * @param {Dialog} dialog
      * @param {any} logger object for logging events, defaults to console if none is provided
      */
-    constructor(conversationState, userState, dialog, logger) {
+    private dialogState: StatePropertyAccessor;
+    constructor(private conversationState: ConversationState, private userState: UserState, public dialog: UserProfileDialog, public logger: any) {
         super();
         if (!conversationState) throw new Error('[DialogBot]: Missing parameter. conversationState is required');
         if (!userState) throw new Error('[DialogBot]: Missing parameter. userState is required');
@@ -21,7 +24,6 @@ class DialogBot extends ActivityHandler {
             logger.log('[DialogBot]: logger not passed in, defaulting to console');
         }
 
-        this.conversationState = conversationState;
         this.userState = userState;
         this.dialog = dialog;
         this.logger = logger;
@@ -44,5 +46,3 @@ class DialogBot extends ActivityHandler {
         });
     }
 }
-
-module.exports.DialogBot = DialogBot;
