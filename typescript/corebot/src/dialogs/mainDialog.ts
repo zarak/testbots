@@ -1,7 +1,3 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License.
-
-import { BookingDetails } from './bookingDetails';
 import { ClusteringDialog } from './clusteringDialog';
 
 import { ConversationState, StatePropertyAccessor, TurnContext } from 'botbuilder';
@@ -74,8 +70,6 @@ export class MainDialog extends ComponentDialog {
      * Then, it hands off to the bookingDialog child dialog to collect any remaining details.
      */
     private async actStep(stepContext: WaterfallStepContext): Promise<DialogTurnResult> {
-        const bookingDetails = new BookingDetails();
-
         // In this sample we only have a single intent we are concerned with. However, typically a scenario
         // will have multiple different intents each corresponding to starting a different child dialog.
 
@@ -89,13 +83,12 @@ export class MainDialog extends ComponentDialog {
     private async finalStep(stepContext: WaterfallStepContext): Promise<DialogTurnResult> {
         // If the child dialog ("bookingDialog") was cancelled or the user failed to confirm, the Result here will be null.
         if (stepContext.result) {
-            const result = stepContext.result as BookingDetails;
             // Now we have all the booking details.
 
             // This is where calls to the booking AOU service or database would go.
 
             // If the call to the booking service was successful tell the user.
-            const msg = `I have you booked to ${ result.destination } from ${ result.origin }.`;
+            const msg = `I have you booked to ${ stepContext.result.destination } from ${ stepContext.result.origin }.`;
             await stepContext.context.sendActivity(msg);
         } else {
             await stepContext.context.sendActivity('Thank you.');
