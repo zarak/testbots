@@ -20,7 +20,7 @@ const WATERFALL_DIALOG = 'waterfallDialog';
 class ClusteringDialog extends cancelAndHelpDialog_1.CancelAndHelpDialog {
     // private qnaPropertyAccessor: StatePropertyAccessor;
     constructor(id, endpoint, qnaPropertyAccessor) {
-        super(id || 'activeLearningDialog');
+        super(id || 'clusteringDialog');
         this.endpoint = endpoint;
         this.qnaPropertyAccessor = qnaPropertyAccessor;
         this.initialDialogId = WATERFALL_DIALOG;
@@ -37,13 +37,14 @@ class ClusteringDialog extends cancelAndHelpDialog_1.CancelAndHelpDialog {
     callGenerateAnswer(stepContext) {
         return __awaiter(this, void 0, void 0, function* () {
             // Default QnAMakerOptions
-            let qnaMakerOptions = {
+            const qnaMakerOptions = {
                 scoreThreshold: 0.03,
                 top: 3,
             };
-            if (stepContext.activeDialog && stepContext.activeDialog.state.options != null) {
-                qnaMakerOptions = stepContext.activeDialog.state.options;
-            }
+            // if (stepContext.activeDialog && stepContext.activeDialog.state.options !== null) {
+            // console.log(stepContext.activeDialog.state);
+            // qnaMakerOptions = stepContext.activeDialog.state.options;
+            // }
             // Perform a call to the QnA Maker service to retrieve matching Question and Answer pairs.
             const telResults = new telemetryQnAMaker_1.TelemetryQnAMaker(this.endpoint, qnaMakerOptions, true, true);
             let qnaResults;
@@ -67,11 +68,11 @@ class ClusteringDialog extends cancelAndHelpDialog_1.CancelAndHelpDialog {
         return __awaiter(this, void 0, void 0, function* () {
             const qnaPropertyData = yield this.qnaPropertyAccessor.get(stepContext.context);
             const responses = qnaPropertyData.qnaData;
+            // console.log('\n\n\nQnAPROPERTYDATA2', qnaPropertyData);
             if (qnaPropertyData.source === 'qna_chitchat_witty.tsv') {
                 return yield stepContext.next(responses);
             }
             const filteredResponses = this.activeLearningHelper.getLowScoreVariation(responses);
-            console.log('\n\nFILTERED RESPONSES', filteredResponses);
             qnaPropertyData.qnaData = filteredResponses;
             yield this.qnaPropertyAccessor.set(stepContext.context, qnaPropertyData);
             if (filteredResponses.length > 1) {
@@ -141,7 +142,7 @@ class ClusteringDialog extends cancelAndHelpDialog_1.CancelAndHelpDialog {
                 }
             }
             yield stepContext.context.sendActivity(message);
-            console.log('\n\n\nSTEPCONTEXT: ', (stepContext));
+            // console.log('\n\n\nSTEPCONTEXT: ', (stepContext));
             const feedbackInfo = {
                 botResponse: message,
                 calledTrain: qnaPropertyData.calledTrain,
@@ -149,7 +150,7 @@ class ClusteringDialog extends cancelAndHelpDialog_1.CancelAndHelpDialog {
                 currentQuery: qnaPropertyData.currentQuery,
                 source: qnaPropertyData.source,
             };
-            console.log('\n\n\nFEEDBACK INFO: ', feedbackInfo);
+            // console.log('\n\n\nFEEDBACK INFO: ', feedbackInfo);
             return yield stepContext.endDialog(feedbackInfo);
         });
     }

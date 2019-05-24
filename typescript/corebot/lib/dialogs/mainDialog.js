@@ -8,12 +8,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const clusteringDialog_1 = require("./clusteringDialog");
 const botbuilder_dialogs_1 = require("botbuilder-dialogs");
+const clusteringDialog_1 = require("./clusteringDialog");
+const feedbackDialog_1 = require("./feedbackDialog");
 const MAIN_WATERFALL_DIALOG = 'mainWaterfallDialog';
 const CLUSTERING_DIALOG = 'clusteringDialog';
+const FEEDBACK_DIALOG = 'feedbackDialog';
 class MainDialog extends botbuilder_dialogs_1.ComponentDialog {
-    constructor(logger, endpoint, conversationState) {
+    constructor(logger, endpoint, conversationState, userState, storage) {
         super('MainDialog');
         this.logger = logger;
         if (!logger) {
@@ -25,8 +27,10 @@ class MainDialog extends botbuilder_dialogs_1.ComponentDialog {
         // This is a sample "book a flight" dialog.
         this.addDialog(new botbuilder_dialogs_1.TextPrompt('TextPrompt'))
             .addDialog(new clusteringDialog_1.ClusteringDialog(CLUSTERING_DIALOG, endpoint, this.qnaPropertyAccessor))
+            .addDialog(new feedbackDialog_1.FeedbackDialog(FEEDBACK_DIALOG, userState, storage))
             .addDialog(new botbuilder_dialogs_1.WaterfallDialog(MAIN_WATERFALL_DIALOG, [
-            this.actStep.bind(this),
+            this.clusteringStep.bind(this),
+            this.feedbackStep.bind(this),
         ]));
         this.initialDialogId = MAIN_WATERFALL_DIALOG;
     }
@@ -50,11 +54,26 @@ class MainDialog extends botbuilder_dialogs_1.ComponentDialog {
      * Second step in the waterall.  This will use LUIS to attempt to extract the origin, destination and travel dates.
      * Then, it hands off to the bookingDialog child dialog to collect any remaining details.
      */
-    actStep(stepContext) {
+    clusteringStep(stepContext) {
         return __awaiter(this, void 0, void 0, function* () {
             // In this sample we only have a single intent we are concerned with. However, typically a scenario
             // will have multiple different intents each corresponding to starting a different child dialog.
             return yield stepContext.beginDialog('clusteringDialog');
+        });
+    }
+    feedbackStep(stepContext) {
+        return __awaiter(this, void 0, void 0, function* () {
+            // if (stepContext.)
+            console.log('FEEDBACKSTEP CONTEXT RESULT', stepContext.result);
+            // In this sample we only have a single intent we are concerned with. However, typically a scenario
+            // will have multiple different intents each corresponding to starting a different child dialog.
+            if (stepContext.result &&
+                !stepContext.result.calledTrain &&
+                stepContext.result.source === 'AI chat bot QnA.docx') {
+                const feedbackRes = yield stepContext.beginDialog('feedbackDialog', stepContext.result);
+                return feedbackRes;
+            }
+            return yield stepContext.endDialog();
         });
     }
 }

@@ -1,9 +1,10 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License.
-
+import { TelemetryClient } from 'applicationinsights';
+import { CosmosDbStorage } from 'botbuilder-azure';
+import { IAppInsightsService } from 'botframework-config';
 import { config } from 'dotenv';
 import * as path from 'path';
 import * as restify from 'restify';
+import { TelemetryLoggerMiddleware } from './middleware/telemetry/TelemetryLoggerMiddleware';
 
 // Import required bot services.
 // See https://aka.ms/bot-services to learn more about the different parts of a bot.
@@ -16,6 +17,10 @@ import { MainDialog } from './dialogs/mainDialog';
 // Note: Ensure you have a .env file and include LuisAppId, LuisAPIKey and LuisAPIHostName.
 const ENV_FILE = path.join(__dirname, '..', '.env');
 const loadFromEnv = config({ path: ENV_FILE });
+
+const APPINSIGHTS_CONFIG: IAppInsightsService = { instrumentationKey: process.env.instrumentationKey } as IAppInsightsService;
+const TELEMETRY_CLIENT: TelemetryClient = new TelemetryClient(APPINSIGHTS_CONFIG.instrumentationKey);
+const MAIN_DIALOG = 'mainDialog';
 
 // Create adapter.
 // See https://aka.ms/about-bot-adapter to learn more about adapters.
@@ -44,7 +49,21 @@ let userState: UserState;
 // For local development, in-memory storage is used.
 // CAUTION: The Memory Storage used here is for local bot debugging only. When the bot
 // is restarted, anything stored in memory will be gone.
-const memoryStorage = new MemoryStorage();
+// const memoryStorage = new MemoryStorage();
+const memoryStorage = new CosmosDbStorage({
+    authKey: process.env.AUTH_KEY as string,
+    collectionId: process.env.COLLECTION as string,
+    databaseId: process.env.DATABASE as string,
+    serviceEndpoint: process.env.DB_SERVICE_ENDPOINT as string,
+});
+
+const feedbackStorage = new CosmosDbStorage({
+    authKey: process.env.AUTH_KEY as string,
+    collectionId: 'feedback',
+    databaseId: process.env.DATABASE as string,
+    serviceEndpoint: process.env.DB_SERVICE_ENDPOINT as string,
+});
+
 conversationState = new ConversationState(memoryStorage);
 userState = new UserState(memoryStorage);
 
@@ -58,7 +77,7 @@ const qnaMakerEndpoint = {
 };
 
 // Create the main dialog.
-const dialog = new MainDialog(logger, qnaMakerEndpoint, conversationState);
+const dialog = new MainDialog(logger, qnaMakerEndpoint, conversationState, userState, feedbackStorage);
 const bot = new DialogBot(conversationState, userState, dialog, logger);
 
 // Create HTTP server

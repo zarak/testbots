@@ -51,7 +51,7 @@ export class ClusteringDialog extends CancelAndHelpDialog {
     // private qnaPropertyAccessor: StatePropertyAccessor;
 
     constructor(id: string, public endpoint: QnAMakerEndpoint, public qnaPropertyAccessor: StatePropertyAccessor) {
-        super(id || 'activeLearningDialog');
+        super(id || 'clusteringDialog');
 
         this.initialDialogId = WATERFALL_DIALOG;
 
@@ -68,16 +68,16 @@ export class ClusteringDialog extends CancelAndHelpDialog {
     }
 
     public async callGenerateAnswer(stepContext: WaterfallStepContext) {
-
         // Default QnAMakerOptions
-        let qnaMakerOptions: QnAMakerOptions = {
+        const qnaMakerOptions: QnAMakerOptions = {
             scoreThreshold: 0.03,
             top: 3,
         };
 
-        if (stepContext.activeDialog && stepContext.activeDialog.state.options != null) {
-            qnaMakerOptions = stepContext.activeDialog.state.options;
-        }
+        // if (stepContext.activeDialog && stepContext.activeDialog.state.options !== null) {
+            // console.log(stepContext.activeDialog.state);
+            // qnaMakerOptions = stepContext.activeDialog.state.options;
+        // }
 
         // Perform a call to the QnA Maker service to retrieve matching Question and Answer pairs.
         const telResults: any = new TelemetryQnAMaker(this.endpoint, qnaMakerOptions, true, true);
@@ -106,13 +106,13 @@ export class ClusteringDialog extends CancelAndHelpDialog {
 
         const qnaPropertyData: QnAProperty = await this.qnaPropertyAccessor.get(stepContext.context);
         const responses: QnAMakerResult[] = qnaPropertyData.qnaData;
+        // console.log('\n\n\nQnAPROPERTYDATA2', qnaPropertyData);
 
         if (qnaPropertyData.source === 'qna_chitchat_witty.tsv') {
             return await stepContext.next(responses);
         }
 
         const filteredResponses: QnAMakerResult[] = this.activeLearningHelper.getLowScoreVariation(responses);
-        console.log('\n\nFILTERED RESPONSES', filteredResponses);
 
         qnaPropertyData.qnaData = filteredResponses;
         await this.qnaPropertyAccessor.set(stepContext.context, qnaPropertyData);
@@ -190,7 +190,7 @@ export class ClusteringDialog extends CancelAndHelpDialog {
             }
         }
         await stepContext.context.sendActivity(message);
-        console.log('\n\n\nSTEPCONTEXT: ', (stepContext));
+        // console.log('\n\n\nSTEPCONTEXT: ', (stepContext));
 
         const feedbackInfo: FeedbackInfo = {
             botResponse: message,
@@ -199,7 +199,7 @@ export class ClusteringDialog extends CancelAndHelpDialog {
             currentQuery: qnaPropertyData.currentQuery,
             source: qnaPropertyData.source,
         };
-        console.log('\n\n\nFEEDBACK INFO: ', feedbackInfo);
+        // console.log('\n\n\nFEEDBACK INFO: ', feedbackInfo);
         return await stepContext.endDialog(feedbackInfo);
     }
 }

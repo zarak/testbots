@@ -1,6 +1,4 @@
 "use strict";
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License.
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -10,6 +8,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const applicationinsights_1 = require("applicationinsights");
+const botbuilder_azure_1 = require("botbuilder-azure");
 const dotenv_1 = require("dotenv");
 const path = require("path");
 const restify = require("restify");
@@ -21,6 +21,9 @@ const mainDialog_1 = require("./dialogs/mainDialog");
 // Note: Ensure you have a .env file and include LuisAppId, LuisAPIKey and LuisAPIHostName.
 const ENV_FILE = path.join(__dirname, '..', '.env');
 const loadFromEnv = dotenv_1.config({ path: ENV_FILE });
+const APPINSIGHTS_CONFIG = { instrumentationKey: process.env.instrumentationKey };
+const TELEMETRY_CLIENT = new applicationinsights_1.TelemetryClient(APPINSIGHTS_CONFIG.instrumentationKey);
+const MAIN_DIALOG = 'mainDialog';
 // Create adapter.
 // See https://aka.ms/about-bot-adapter to learn more about adapters.
 const adapter = new botbuilder_1.BotFrameworkAdapter({
@@ -45,7 +48,19 @@ let userState;
 // For local development, in-memory storage is used.
 // CAUTION: The Memory Storage used here is for local bot debugging only. When the bot
 // is restarted, anything stored in memory will be gone.
-const memoryStorage = new botbuilder_1.MemoryStorage();
+// const memoryStorage = new MemoryStorage();
+const memoryStorage = new botbuilder_azure_1.CosmosDbStorage({
+    authKey: process.env.AUTH_KEY,
+    collectionId: process.env.COLLECTION,
+    databaseId: process.env.DATABASE,
+    serviceEndpoint: process.env.DB_SERVICE_ENDPOINT,
+});
+const feedbackStorage = new botbuilder_azure_1.CosmosDbStorage({
+    authKey: process.env.AUTH_KEY,
+    collectionId: 'feedback',
+    databaseId: process.env.DATABASE,
+    serviceEndpoint: process.env.DB_SERVICE_ENDPOINT,
+});
 conversationState = new botbuilder_1.ConversationState(memoryStorage);
 userState = new botbuilder_1.UserState(memoryStorage);
 // Pass in a logger to the bot. For this sample, the logger is the console, but alternatives such as Application Insights and Event Hub exist for storing the logs of the bot.
@@ -56,7 +71,7 @@ const qnaMakerEndpoint = {
     knowledgeBaseId: process.env.kbId,
 };
 // Create the main dialog.
-const dialog = new mainDialog_1.MainDialog(logger, qnaMakerEndpoint, conversationState);
+const dialog = new mainDialog_1.MainDialog(logger, qnaMakerEndpoint, conversationState, userState, feedbackStorage);
 const bot = new dialogBot_1.DialogBot(conversationState, userState, dialog, logger);
 // Create HTTP server
 const server = restify.createServer();

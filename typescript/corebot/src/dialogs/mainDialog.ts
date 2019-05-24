@@ -1,7 +1,6 @@
-import { ClusteringDialog } from './clusteringDialog';
-
-import { ConversationState, StatePropertyAccessor, TurnContext } from 'botbuilder';
-
+import { ConversationState, StatePropertyAccessor, TurnContext, UserState } from 'botbuilder';
+import { QnAMakerEndpoint } from 'botbuilder-ai';
+import { CosmosDbStorage } from 'botbuilder-azure';
 import {
     ComponentDialog,
     DialogSet,
@@ -12,16 +11,23 @@ import {
     WaterfallDialog,
     WaterfallStepContext,
 } from 'botbuilder-dialogs';
-
-import { QnAMakerEndpoint } from 'botbuilder-ai';
 import { Logger } from '../logger';
+import { ClusteringDialog } from './clusteringDialog';
+import { FeedbackDialog } from './feedbackDialog';
 
 const MAIN_WATERFALL_DIALOG = 'mainWaterfallDialog';
 const CLUSTERING_DIALOG = 'clusteringDialog';
+const FEEDBACK_DIALOG = 'feedbackDialog';
 
 export class MainDialog extends ComponentDialog {
     private qnaPropertyAccessor: StatePropertyAccessor;
-    constructor(private logger: Logger, endpoint: QnAMakerEndpoint, conversationState: ConversationState) {
+    constructor(
+        private logger: Logger,
+        endpoint: QnAMakerEndpoint,
+        conversationState: ConversationState,
+        userState: UserState,
+        storage: CosmosDbStorage,
+    ) {
         super('MainDialog');
         if (!logger) {
             logger = console as Logger;
@@ -34,8 +40,10 @@ export class MainDialog extends ComponentDialog {
         // This is a sample "book a flight" dialog.
         this.addDialog(new TextPrompt('TextPrompt'))
             .addDialog(new ClusteringDialog(CLUSTERING_DIALOG, endpoint, this.qnaPropertyAccessor))
+            .addDialog(new FeedbackDialog(FEEDBACK_DIALOG, userState, storage))
             .addDialog(new WaterfallDialog(MAIN_WATERFALL_DIALOG, [
-                this.actStep.bind(this),
+                this.clusteringStep.bind(this),
+                this.feedbackStep.bind(this),
             ]));
 
         this.initialDialogId = MAIN_WATERFALL_DIALOG;
@@ -61,9 +69,25 @@ export class MainDialog extends ComponentDialog {
      * Second step in the waterall.  This will use LUIS to attempt to extract the origin, destination and travel dates.
      * Then, it hands off to the bookingDialog child dialog to collect any remaining details.
      */
-    private async actStep(stepContext: WaterfallStepContext): Promise<DialogTurnResult> {
+    private async clusteringStep(stepContext: WaterfallStepContext): Promise<DialogTurnResult> {
         // In this sample we only have a single intent we are concerned with. However, typically a scenario
         // will have multiple different intents each corresponding to starting a different child dialog.
         return await stepContext.beginDialog('clusteringDialog');
+    }
+
+    private async feedbackStep(stepContext: WaterfallStepContext): Promise<DialogTurnResult> {
+        // if (stepContext.)
+        console.log('FEEDBACKSTEP CONTEXT RESULT', stepContext.result);
+        // In this sample we only have a single intent we are concerned with. However, typically a scenario
+        // will have multiple different intents each corresponding to starting a different child dialog.
+        if ( stepContext.result &&
+            !stepContext.result.calledTrain &&
+             stepContext.result.source === 'AI chat bot QnA.docx'
+        ) {
+            const feedbackRes: DialogTurnResult =
+                await stepContext.beginDialog('feedbackDialog', stepContext.result);
+            return feedbackRes;
+        }
+        return await stepContext.endDialog();
     }
 }

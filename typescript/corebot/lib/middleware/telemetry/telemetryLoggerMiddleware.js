@@ -209,4 +209,4 @@ TelemetryLoggerMiddleware.botMsgUpdateEvent = 'BotMessageUpdate';
  */
 TelemetryLoggerMiddleware.botMsgDeleteEvent = 'BotMessageDelete';
 exports.TelemetryLoggerMiddleware = TelemetryLoggerMiddleware;
-//# sourceMappingURL=telemetryLoggerMiddleware.js.map
+//# sourceMappingURL=TelemetryLoggerMiddleware.js.map
