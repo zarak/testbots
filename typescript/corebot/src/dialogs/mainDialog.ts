@@ -87,7 +87,8 @@ export class MainDialog extends ComponentDialog {
             const feedbackRes: DialogTurnResult =
                 await stepContext.beginDialog('feedbackDialog', stepContext.result);
             return feedbackRes;
+        } else {
+            return await stepContext.endDialog();
         }
-        return await stepContext.endDialog();
     }
 }

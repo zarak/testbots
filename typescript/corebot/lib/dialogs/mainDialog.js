@@ -73,7 +73,9 @@ class MainDialog extends botbuilder_dialogs_1.ComponentDialog {
                 const feedbackRes = yield stepContext.beginDialog('feedbackDialog', stepContext.result);
                 return feedbackRes;
             }
-            return yield stepContext.endDialog();
+            else {
+                return yield stepContext.endDialog();
+            }
         });
     }
 }
