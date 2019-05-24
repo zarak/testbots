@@ -16,7 +16,8 @@ const restify = require("restify");
 // Import required bot services.
 // See https://aka.ms/bot-services to learn more about the different parts of a bot.
 const botbuilder_1 = require("botbuilder");
-const dialogAndWelcomeBot_1 = require("./bots/dialogAndWelcomeBot");
+const botbuilder_ai_1 = require("botbuilder-ai");
+const dialogBot_1 = require("./bots/dialogBot");
 const mainDialog_1 = require("./dialogs/mainDialog");
 // Note: Ensure you have a .env file and include LuisAppId, LuisAPIKey and LuisAPIHostName.
 const ENV_FILE = path.join(__dirname, '..', '.env');
@@ -50,9 +51,15 @@ conversationState = new botbuilder_1.ConversationState(memoryStorage);
 userState = new botbuilder_1.UserState(memoryStorage);
 // Pass in a logger to the bot. For this sample, the logger is the console, but alternatives such as Application Insights and Event Hub exist for storing the logs of the bot.
 const logger = console;
+const qnaMakerEndpoint = {
+    endpointKey: process.env.endpointKey,
+    host: process.env.hostname,
+    knowledgeBaseId: process.env.kbId,
+};
+const qnaMaker = new botbuilder_ai_1.QnAMaker(qnaMakerEndpoint);
 // Create the main dialog.
-const dialog = new mainDialog_1.MainDialog(logger);
-const bot = new dialogAndWelcomeBot_1.DialogAndWelcomeBot(conversationState, userState, dialog, logger);
+const dialog = new mainDialog_1.MainDialog(logger, qnaMakerEndpoint, conversationState);
+const bot = new dialogBot_1.DialogBot(conversationState, userState, dialog, logger);
 // Create HTTP server
 const server = restify.createServer();
 server.listen(process.env.port || process.env.PORT || 3978, () => {

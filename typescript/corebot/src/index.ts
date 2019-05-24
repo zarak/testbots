@@ -9,6 +9,7 @@ import * as restify from 'restify';
 // See https://aka.ms/bot-services to learn more about the different parts of a bot.
 import { BotFrameworkAdapter, ConversationState, MemoryStorage, UserState } from 'botbuilder';
 
+import { QnAMaker } from 'botbuilder-ai';
 import { DialogBot } from './bots/dialogBot';
 import { MainDialog } from './dialogs/mainDialog';
 
@@ -50,8 +51,16 @@ userState = new UserState(memoryStorage);
 // Pass in a logger to the bot. For this sample, the logger is the console, but alternatives such as Application Insights and Event Hub exist for storing the logs of the bot.
 const logger = console;
 
+const qnaMakerEndpoint = {
+    endpointKey: process.env.endpointKey as string,
+    host: process.env.hostname as string,
+    knowledgeBaseId: process.env.kbId as string,
+};
+
+const qnaMaker = new QnAMaker(qnaMakerEndpoint);
+
 // Create the main dialog.
-const dialog = new MainDialog(logger);
+const dialog = new MainDialog(logger, qnaMakerEndpoint, conversationState);
 const bot = new DialogBot(conversationState, userState, dialog, logger);
 
 // Create HTTP server

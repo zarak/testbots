@@ -1,9 +1,10 @@
-import { StatePropertyAccessor, TurnContext } from 'botbuilder';
+import { ConversationState, StatePropertyAccessor, TurnContext } from 'botbuilder';
 import { ComponentDialog, DialogState } from 'botbuilder-dialogs';
+import { QnAMakerEndpoint } from 'botbuilder-ai';
 import { Logger } from '../logger';
 export declare class MainDialog extends ComponentDialog {
     private logger;
-    constructor(logger: Logger);
+    constructor(logger: Logger, endpoint: QnAMakerEndpoint, conversationState: ConversationState);
     /**
      * The run method handles the incoming activity (in the form of a DialogContext) and passes it through the dialog system.
      * If no dialog is active, it will start the default dialog.
