@@ -19,9 +19,9 @@ export class LuisHelper {
 
         try {
             const recognizer = new LuisRecognizer({
-                applicationId: process.env.LuisAppId,
+                applicationId: process.env.LuisAppId as string,
                 endpoint: `https://${ process.env.LuisAPIHostName }`,
-                endpointKey: process.env.LuisAPIKey,
+                endpointKey: process.env.LuisAPIKey as string,
             }, {}, true);
 
             const recognizerResult = await recognizer.recognize(context);
@@ -46,7 +46,7 @@ export class LuisHelper {
         return bookingDetails;
     }
 
-    private static parseCompositeEntity(result: RecognizerResult, compositeName: string, entityName: string): string {
+    private static parseCompositeEntity(result: RecognizerResult, compositeName: string, entityName: string): string | undefined {
         const compositeEntity = result.entities[compositeName];
         if (!compositeEntity || !compositeEntity[0]) {
             return undefined;

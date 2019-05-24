@@ -9,7 +9,7 @@ import * as restify from 'restify';
 // See https://aka.ms/bot-services to learn more about the different parts of a bot.
 import { BotFrameworkAdapter, ConversationState, MemoryStorage, UserState } from 'botbuilder';
 
-import { DialogAndWelcomeBot } from './bots/dialogAndWelcomeBot';
+import { DialogBot } from './bots/dialogBot';
 import { MainDialog } from './dialogs/mainDialog';
 
 // Note: Ensure you have a .env file and include LuisAppId, LuisAPIKey and LuisAPIHostName.
@@ -52,7 +52,7 @@ const logger = console;
 
 // Create the main dialog.
 const dialog = new MainDialog(logger);
-const bot = new DialogAndWelcomeBot(conversationState, userState, dialog, logger);
+const bot = new DialogBot(conversationState, userState, dialog, logger);
 
 // Create HTTP server
 const server = restify.createServer();
