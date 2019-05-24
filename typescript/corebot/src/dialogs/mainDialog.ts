@@ -1,11 +1,10 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-import { TimexProperty } from '@microsoft/recognizers-text-data-types-timex-expression';
 import { BookingDetails } from './bookingDetails';
-import { BookingDialog } from './bookingDialog';
+import { ClusteringDialog } from './clusteringDialog';
 
-import { StatePropertyAccessor, TurnContext } from 'botbuilder';
+import { ConversationState, StatePropertyAccessor, TurnContext } from 'botbuilder';
 
 import {
     ComponentDialog,
@@ -17,26 +16,25 @@ import {
     WaterfallDialog,
     WaterfallStepContext,
 } from 'botbuilder-dialogs';
+
+import { QnAMakerEndpoint } from 'botbuilder-ai';
 import { Logger } from '../logger';
-import { LuisHelper } from './luisHelper';
 
 const MAIN_WATERFALL_DIALOG = 'mainWaterfallDialog';
-const BOOKING_DIALOG = 'bookingDialog';
+const CLUSTERING_DIALOG = 'clusteringDialog';
 
 export class MainDialog extends ComponentDialog {
-    private logger: Logger;
-    constructor(logger: Logger) {
+    constructor(private logger: Logger, endpoint: QnAMakerEndpoint, conversationState: ConversationState) {
         super('MainDialog');
         if (!logger) {
             logger = console as Logger;
             logger.log('[MainDialog]: logger not passed in, defaulting to console');
         }
-        this.logger = logger;
 
         // Define the main dialog and its related components.
         // This is a sample "book a flight" dialog.
         this.addDialog(new TextPrompt('TextPrompt'))
-            .addDialog(new BookingDialog(BOOKING_DIALOG))
+            .addDialog(new ClusteringDialog(CLUSTERING_DIALOG, endpoint, conversationState))
             .addDialog(new WaterfallDialog(MAIN_WATERFALL_DIALOG, [
                 this.introStep.bind(this),
                 this.actStep.bind(this),
@@ -68,11 +66,6 @@ export class MainDialog extends ComponentDialog {
      * Note that the sample LUIS model will only recognize Paris, Berlin, New York and London as airport cities.
      */
     private async introStep(stepContext: WaterfallStepContext): Promise<DialogTurnResult> {
-        if (!process.env.LuisAppId || !process.env.LuisAPIKey || !process.env.LuisAPIHostName) {
-            await stepContext.context.sendActivity('NOTE: LUIS is not configured. To enable all capabilities, add `LuisAppId`, `LuisAPIKey` and `LuisAPIHostName` to the .env file.');
-            return await stepContext.next();
-        }
-
         return await stepContext.prompt('TextPrompt', { prompt: 'What can I help you with today?\nSay something like "Book a flight from Paris to Berlin on March 22, 2020"' });
     }
 
@@ -81,22 +74,12 @@ export class MainDialog extends ComponentDialog {
      * Then, it hands off to the bookingDialog child dialog to collect any remaining details.
      */
     private async actStep(stepContext: WaterfallStepContext): Promise<DialogTurnResult> {
-        let bookingDetails = new BookingDetails();
-
-        if (process.env.LuisAppId && process.env.LuisAPIKey && process.env.LuisAPIHostName) {
-            // Call LUIS and gather any potential booking details.
-            // This will attempt to extract the origin, destination and travel date from the user's message
-            // and will then pass those values into the booking dialog
-            bookingDetails = await LuisHelper.executeLuisQuery(this.logger, stepContext.context);
-
-            this.logger.log('LUIS extracted these booking details:', bookingDetails);
-        }
+        const bookingDetails = new BookingDetails();
 
         // In this sample we only have a single intent we are concerned with. However, typically a scenario
         // will have multiple different intents each corresponding to starting a different child dialog.
 
-        // Run the BookingDialog giving it whatever details we have from the LUIS call, it will fill out the remainder.
-        return await stepContext.beginDialog('bookingDialog', bookingDetails);
+        return await stepContext.beginDialog('clusteringDialog');
     }
 
     /**
@@ -112,9 +95,7 @@ export class MainDialog extends ComponentDialog {
             // This is where calls to the booking AOU service or database would go.
 
             // If the call to the booking service was successful tell the user.
-            const timeProperty = new TimexProperty(result.travelDate);
-            const travelDateMsg = timeProperty.toNaturalLanguage(new Date(Date.now()));
-            const msg = `I have you booked to ${ result.destination } from ${ result.origin } on ${ travelDateMsg }.`;
+            const msg = `I have you booked to ${ result.destination } from ${ result.origin }.`;
             await stepContext.context.sendActivity(msg);
         } else {
             await stepContext.context.sendActivity('Thank you.');
