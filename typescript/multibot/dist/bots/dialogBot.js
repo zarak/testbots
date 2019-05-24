@@ -32,17 +32,17 @@ class DialogBot extends botbuilder_1.ActivityHandler {
         this.dialog = dialog;
         this.logger = logger;
         this.dialogState = this.conversationState.createProperty('DialogState');
-        this.onMessage((context, next) => __awaiter(this, void 0, void 0, function* () {
-            this.logger.log('Running dialog with Message Activity.');
-            // Run the Dialog with the new message Activity.
-            //await this.dialog.run(context, this.dialogState);
-            yield context.sendActivity(`dialogBot first lel`);
-            yield next();
-        }));
         this.onDialog((context, next) => __awaiter(this, void 0, void 0, function* () {
             // Save any state changes. The load happened during the execution of the Dialog.
             yield this.conversationState.saveChanges(context, false);
             yield this.userState.saveChanges(context, false);
+            yield next();
+        }));
+        this.onMessage((context, next) => __awaiter(this, void 0, void 0, function* () {
+            this.logger.log('Running dialog with Message Activity.');
+            // Run the Dialog with the new message Activity.
+            yield context.sendActivity(`dialogBot first lel`);
+            yield this.dialog.run(context, this.dialogState);
             yield next();
         }));
     }
