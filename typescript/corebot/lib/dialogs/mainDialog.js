@@ -20,10 +20,11 @@ class MainDialog extends botbuilder_dialogs_1.ComponentDialog {
             logger = console;
             logger.log('[MainDialog]: logger not passed in, defaulting to console');
         }
+        this.qnaPropertyAccessor = conversationState.createProperty('qna');
         // Define the main dialog and its related components.
         // This is a sample "book a flight" dialog.
         this.addDialog(new botbuilder_dialogs_1.TextPrompt('TextPrompt'))
-            .addDialog(new clusteringDialog_1.ClusteringDialog(CLUSTERING_DIALOG, endpoint, conversationState))
+            .addDialog(new clusteringDialog_1.ClusteringDialog(CLUSTERING_DIALOG, endpoint, this.qnaPropertyAccessor))
             .addDialog(new botbuilder_dialogs_1.WaterfallDialog(MAIN_WATERFALL_DIALOG, [
             this.actStep.bind(this),
         ]));

@@ -16,7 +16,6 @@ const restify = require("restify");
 // Import required bot services.
 // See https://aka.ms/bot-services to learn more about the different parts of a bot.
 const botbuilder_1 = require("botbuilder");
-const botbuilder_ai_1 = require("botbuilder-ai");
 const dialogBot_1 = require("./bots/dialogBot");
 const mainDialog_1 = require("./dialogs/mainDialog");
 // Note: Ensure you have a .env file and include LuisAppId, LuisAPIKey and LuisAPIHostName.
@@ -56,7 +55,6 @@ const qnaMakerEndpoint = {
     host: process.env.hostname,
     knowledgeBaseId: process.env.kbId,
 };
-const qnaMaker = new botbuilder_ai_1.QnAMaker(qnaMakerEndpoint);
 // Create the main dialog.
 const dialog = new mainDialog_1.MainDialog(logger, qnaMakerEndpoint, conversationState);
 const bot = new dialogBot_1.DialogBot(conversationState, userState, dialog, logger);

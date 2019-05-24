@@ -4,6 +4,7 @@ import { QnAMakerEndpoint } from 'botbuilder-ai';
 import { Logger } from '../logger';
 export declare class MainDialog extends ComponentDialog {
     private logger;
+    private qnaPropertyAccessor;
     constructor(logger: Logger, endpoint: QnAMakerEndpoint, conversationState: ConversationState);
     /**
      * The run method handles the incoming activity (in the form of a DialogContext) and passes it through the dialog system.

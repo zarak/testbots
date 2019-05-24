@@ -18,12 +18,13 @@ const CONVERSATION_STATE_PROPERTY = 'conversationStateProperty';
 const USER_STATE_PROPERTY = 'userStateProperty';
 const WATERFALL_DIALOG = 'waterfallDialog';
 class ClusteringDialog extends cancelAndHelpDialog_1.CancelAndHelpDialog {
-    constructor(id, endpoint, conversationState) {
+    // private qnaPropertyAccessor: StatePropertyAccessor;
+    constructor(id, endpoint, qnaPropertyAccessor) {
         super(id || 'activeLearningDialog');
         this.endpoint = endpoint;
-        this.conversationState = conversationState;
+        this.qnaPropertyAccessor = qnaPropertyAccessor;
         this.initialDialogId = WATERFALL_DIALOG;
-        this.qnaPropertyAccessor = this.conversationState.createProperty(CONVERSATION_STATE_PROPERTY);
+        // this.qnaPropertyAccessor = this.conversationState.createProperty(CONVERSATION_STATE_PROPERTY);
         this.qnaMaker = new botbuilder_ai_1.QnAMaker(endpoint);
         this.activeLearningHelper = new activeLearningHelper_1.ActiveLearningHelper();
         this.addDialog(new botbuilder_dialogs_1.WaterfallDialog(WATERFALL_DIALOG, [
@@ -141,7 +142,6 @@ class ClusteringDialog extends cancelAndHelpDialog_1.CancelAndHelpDialog {
             }
             yield stepContext.context.sendActivity(message);
             console.log('\n\n\nSTEPCONTEXT: ', (stepContext));
-            console.log('\n\n\\nRECIPIENT: ', JSON.stringify(stepContext.context.activity.recipient));
             const feedbackInfo = {
                 botResponse: message,
                 calledTrain: qnaPropertyData.calledTrain,

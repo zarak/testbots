@@ -48,14 +48,14 @@ export class ClusteringDialog extends CancelAndHelpDialog {
      */
     public qnaMaker: QnAMaker;
     public activeLearningHelper: ActiveLearningHelper;
-    private qnaPropertyAccessor: StatePropertyAccessor;
+    // private qnaPropertyAccessor: StatePropertyAccessor;
 
-    constructor(id: string, public endpoint: QnAMakerEndpoint, public conversationState: ConversationState) {
+    constructor(id: string, public endpoint: QnAMakerEndpoint, public qnaPropertyAccessor: StatePropertyAccessor) {
         super(id || 'activeLearningDialog');
 
         this.initialDialogId = WATERFALL_DIALOG;
 
-        this.qnaPropertyAccessor = this.conversationState.createProperty(CONVERSATION_STATE_PROPERTY);
+        // this.qnaPropertyAccessor = this.conversationState.createProperty(CONVERSATION_STATE_PROPERTY);
 
         this.qnaMaker = new QnAMaker(endpoint);
         this.activeLearningHelper = new ActiveLearningHelper();
@@ -191,7 +191,6 @@ export class ClusteringDialog extends CancelAndHelpDialog {
         }
         await stepContext.context.sendActivity(message);
         console.log('\n\n\nSTEPCONTEXT: ', (stepContext));
-        console.log('\n\n\\nRECIPIENT: ', JSON.stringify(stepContext.context.activity.recipient));
 
         const feedbackInfo: FeedbackInfo = {
             botResponse: message,

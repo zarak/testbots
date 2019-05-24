@@ -20,6 +20,7 @@ const MAIN_WATERFALL_DIALOG = 'mainWaterfallDialog';
 const CLUSTERING_DIALOG = 'clusteringDialog';
 
 export class MainDialog extends ComponentDialog {
+    private qnaPropertyAccessor: StatePropertyAccessor;
     constructor(private logger: Logger, endpoint: QnAMakerEndpoint, conversationState: ConversationState) {
         super('MainDialog');
         if (!logger) {
@@ -27,10 +28,12 @@ export class MainDialog extends ComponentDialog {
             logger.log('[MainDialog]: logger not passed in, defaulting to console');
         }
 
+        this.qnaPropertyAccessor = conversationState.createProperty('qna');
+
         // Define the main dialog and its related components.
         // This is a sample "book a flight" dialog.
         this.addDialog(new TextPrompt('TextPrompt'))
-            .addDialog(new ClusteringDialog(CLUSTERING_DIALOG, endpoint, conversationState))
+            .addDialog(new ClusteringDialog(CLUSTERING_DIALOG, endpoint, this.qnaPropertyAccessor))
             .addDialog(new WaterfallDialog(MAIN_WATERFALL_DIALOG, [
                 this.actStep.bind(this),
             ]));

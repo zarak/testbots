@@ -57,8 +57,6 @@ const qnaMakerEndpoint = {
     knowledgeBaseId: process.env.kbId as string,
 };
 
-const qnaMaker = new QnAMaker(qnaMakerEndpoint);
-
 // Create the main dialog.
 const dialog = new MainDialog(logger, qnaMakerEndpoint, conversationState);
 const bot = new DialogBot(conversationState, userState, dialog, logger);
