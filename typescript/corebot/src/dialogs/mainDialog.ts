@@ -21,12 +21,13 @@ const FEEDBACK_DIALOG = 'feedbackDialog';
 
 export class MainDialog extends ComponentDialog {
     private qnaPropertyAccessor: StatePropertyAccessor;
+    private feedbackPropertyAccessor: StatePropertyAccessor;
     constructor(
         private logger: Logger,
-        endpoint: QnAMakerEndpoint,
-        conversationState: ConversationState,
-        userState: UserState,
-        storage: CosmosDbStorage,
+        private endpoint: QnAMakerEndpoint,
+        private conversationState: ConversationState,
+        private userState: UserState,
+        private storage: CosmosDbStorage,
     ) {
         super('MainDialog');
         if (!logger) {
@@ -35,12 +36,13 @@ export class MainDialog extends ComponentDialog {
         }
 
         this.qnaPropertyAccessor = conversationState.createProperty('qna');
+        this.feedbackPropertyAccessor = conversationState.createProperty('feedback');
 
         // Define the main dialog and its related components.
         // This is a sample "book a flight" dialog.
         this.addDialog(new TextPrompt('TextPrompt'))
             .addDialog(new ClusteringDialog(CLUSTERING_DIALOG, endpoint, this.qnaPropertyAccessor))
-            .addDialog(new FeedbackDialog(FEEDBACK_DIALOG, userState, storage))
+            .addDialog(new FeedbackDialog(FEEDBACK_DIALOG, this.feedbackPropertyAccessor, storage))
             .addDialog(new WaterfallDialog(MAIN_WATERFALL_DIALOG, [
                 this.clusteringStep.bind(this),
                 this.feedbackStep.bind(this),

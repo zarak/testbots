@@ -18,16 +18,21 @@ class MainDialog extends botbuilder_dialogs_1.ComponentDialog {
     constructor(logger, endpoint, conversationState, userState, storage) {
         super('MainDialog');
         this.logger = logger;
+        this.endpoint = endpoint;
+        this.conversationState = conversationState;
+        this.userState = userState;
+        this.storage = storage;
         if (!logger) {
             logger = console;
             logger.log('[MainDialog]: logger not passed in, defaulting to console');
         }
         this.qnaPropertyAccessor = conversationState.createProperty('qna');
+        this.feedbackPropertyAccessor = conversationState.createProperty('feedback');
         // Define the main dialog and its related components.
         // This is a sample "book a flight" dialog.
         this.addDialog(new botbuilder_dialogs_1.TextPrompt('TextPrompt'))
             .addDialog(new clusteringDialog_1.ClusteringDialog(CLUSTERING_DIALOG, endpoint, this.qnaPropertyAccessor))
-            .addDialog(new feedbackDialog_1.FeedbackDialog(FEEDBACK_DIALOG, userState, storage))
+            .addDialog(new feedbackDialog_1.FeedbackDialog(FEEDBACK_DIALOG, this.feedbackPropertyAccessor, storage))
             .addDialog(new botbuilder_dialogs_1.WaterfallDialog(MAIN_WATERFALL_DIALOG, [
             this.clusteringStep.bind(this),
             this.feedbackStep.bind(this),

@@ -13,16 +13,18 @@ const cancelAndHelpDialog_1 = require("./cancelAndHelpDialog");
 const CONFIRM_PROMPT = 'confirmPrompt';
 const TEXT_PROMPT = 'textPrompt';
 const USER_STATE_PROPERTY = 'userStateProperty';
+const WATERFALL_DIALOG = 'waterfallDialog';
 class FeedbackDialog extends cancelAndHelpDialog_1.CancelAndHelpDialog {
-    constructor(id, userState, storage) {
+    // public feedbackPropertyAccessor: StatePropertyAccessor;
+    constructor(id, feedbackPropertyAccessor, storage) {
         super(id || 'feedbackDialog');
-        this.userState = userState;
+        this.feedbackPropertyAccessor = feedbackPropertyAccessor;
         this.storage = storage;
-        this.feedbackHelperDialogName = 'feedbackDialog';
+        this.initialDialogId = WATERFALL_DIALOG;
         // this.qnaData = "value-qnaData";
         // this.currentQuery = "value-current-query";
-        this.feedbackPropertyAccessor = this.userState.createProperty(USER_STATE_PROPERTY);
-        this.feedbackHelperDialog = new botbuilder_dialogs_1.WaterfallDialog(this.feedbackHelperDialogName);
+        // this.feedbackPropertyAccessor = this.userState.createProperty(USER_STATE_PROPERTY);
+        this.feedbackHelperDialog = new botbuilder_dialogs_1.WaterfallDialog(WATERFALL_DIALOG);
         this.feedbackHelperDialog
             .addStep(this.getFeedbackBool.bind(this))
             .addStep(this.getFeedbackComment.bind(this))
@@ -54,6 +56,7 @@ class FeedbackDialog extends cancelAndHelpDialog_1.CancelAndHelpDialog {
     getFeedbackComment(stepContext) {
         return __awaiter(this, void 0, void 0, function* () {
             const userInfo = yield this.feedbackPropertyAccessor.get(stepContext.context);
+            console.log('userinfo', userInfo);
             userInfo.helpful = stepContext.result;
             yield this.feedbackPropertyAccessor.set(stepContext.context, userInfo);
             return yield stepContext.prompt(TEXT_PROMPT, `Please leave any additional comments`);
@@ -65,7 +68,7 @@ class FeedbackDialog extends cancelAndHelpDialog_1.CancelAndHelpDialog {
             const userInfo = yield this.feedbackPropertyAccessor.get(stepContext.context);
             userInfo.comment = stepContext.result;
             yield this.feedbackPropertyAccessor.set(stepContext.context, userInfo);
-            // console.log('\n\n\nUSER INFO: ', userInfo);
+            console.log('\n\n\nUSER INFO: ', userInfo);
             if (userInfo && userInfo.conversationId) {
                 const changes = {};
                 // Create unique ID to store under

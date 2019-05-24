@@ -16,6 +16,7 @@ import { CancelAndHelpDialog } from './cancelAndHelpDialog';
 const CONFIRM_PROMPT = 'confirmPrompt';
 const TEXT_PROMPT =  'textPrompt';
 const USER_STATE_PROPERTY = 'userStateProperty';
+const WATERFALL_DIALOG = 'waterfallDialog';
 
 interface FeedbackInfo {
     botResponse: string;
@@ -35,20 +36,20 @@ interface UserFeedbackInfo {
 }
 
 export class FeedbackDialog extends CancelAndHelpDialog {
-    public feedbackHelperDialogName: string;
     // private feedbackPropertyAccessor: StatePropertyAccessor;
     public feedbackHelperDialog: WaterfallDialog;
-    public feedbackPropertyAccessor: StatePropertyAccessor;
+    // public feedbackPropertyAccessor: StatePropertyAccessor;
 
-    constructor(id: string, public userState: UserState, private storage: CosmosDbStorage) {
+    constructor(id: string, public feedbackPropertyAccessor: StatePropertyAccessor, private storage: CosmosDbStorage) {
         super(id || 'feedbackDialog');
-        this.feedbackHelperDialogName = 'feedbackDialog';
+
+        this.initialDialogId = WATERFALL_DIALOG;
         // this.qnaData = "value-qnaData";
         // this.currentQuery = "value-current-query";
 
-        this.feedbackPropertyAccessor = this.userState.createProperty(USER_STATE_PROPERTY);
+        // this.feedbackPropertyAccessor = this.userState.createProperty(USER_STATE_PROPERTY);
 
-        this.feedbackHelperDialog = new WaterfallDialog(this.feedbackHelperDialogName);
+        this.feedbackHelperDialog = new WaterfallDialog(WATERFALL_DIALOG);
         this.feedbackHelperDialog
             .addStep(this.getFeedbackBool.bind(this))
             .addStep(this.getFeedbackComment.bind(this))
@@ -82,6 +83,7 @@ export class FeedbackDialog extends CancelAndHelpDialog {
 
     private async getFeedbackComment(stepContext: WaterfallStepContext) {
         const userInfo: UserFeedbackInfo = await this.feedbackPropertyAccessor.get(stepContext.context);
+        console.log('userinfo', userInfo);
         userInfo.helpful = stepContext.result;
         await this.feedbackPropertyAccessor.set(stepContext.context, userInfo);
         return await stepContext.prompt(TEXT_PROMPT, `Please leave any additional comments`);
@@ -93,7 +95,7 @@ export class FeedbackDialog extends CancelAndHelpDialog {
         userInfo.comment = stepContext.result;
         await this.feedbackPropertyAccessor.set(stepContext.context, userInfo);
 
-        // console.log('\n\n\nUSER INFO: ', userInfo);
+        console.log('\n\n\nUSER INFO: ', userInfo);
 
         if (userInfo && userInfo.conversationId) {
             const changes: any = {};
