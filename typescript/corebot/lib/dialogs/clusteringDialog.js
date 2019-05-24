@@ -70,6 +70,7 @@ class ClusteringDialog extends cancelAndHelpDialog_1.CancelAndHelpDialog {
                 return yield stepContext.next(responses);
             }
             const filteredResponses = this.activeLearningHelper.getLowScoreVariation(responses);
+            console.log('\n\nFILTERED RESPONSES', filteredResponses);
             qnaPropertyData.qnaData = filteredResponses;
             yield this.qnaPropertyAccessor.set(stepContext.context, qnaPropertyData);
             if (filteredResponses.length > 1) {

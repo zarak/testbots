@@ -112,6 +112,7 @@ export class ClusteringDialog extends CancelAndHelpDialog {
         }
 
         const filteredResponses: QnAMakerResult[] = this.activeLearningHelper.getLowScoreVariation(responses);
+        console.log('\n\nFILTERED RESPONSES', filteredResponses);
 
         qnaPropertyData.qnaData = filteredResponses;
         await this.qnaPropertyAccessor.set(stepContext.context, qnaPropertyData);
