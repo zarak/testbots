@@ -1,18 +1,25 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-const { TimexProperty } = require('@microsoft/recognizers-text-data-types-timex-expression');
-const { ConfirmPrompt, TextPrompt, WaterfallDialog } = require('botbuilder-dialogs');
-const { CancelAndHelpDialog } = require('./cancelAndHelpDialog');
-const { DateResolverDialog } = require('./dateResolverDialog');
+import { TimexProperty } from '@microsoft/recognizers-text-data-types-timex-expression';
+import {
+    ConfirmPrompt,
+    DialogTurnResult,
+    TextPrompt,
+    WaterfallDialog,
+    WaterfallStepContext,
+} from 'botbuilder-dialogs';
+import { BookingDetails } from './bookingDetails';
+import { CancelAndHelpDialog } from './cancelAndHelpDialog';
+import { DateResolverDialog } from './dateResolverDialog';
 
 const CONFIRM_PROMPT = 'confirmPrompt';
 const DATE_RESOLVER_DIALOG = 'dateResolverDialog';
 const TEXT_PROMPT = 'textPrompt';
 const WATERFALL_DIALOG = 'waterfallDialog';
 
-class BookingDialog extends CancelAndHelpDialog {
-    constructor(id) {
+export class BookingDialog extends CancelAndHelpDialog {
+    constructor(id: string) {
         super(id || 'bookingDialog');
 
         this.addDialog(new TextPrompt(TEXT_PROMPT))
@@ -23,7 +30,7 @@ class BookingDialog extends CancelAndHelpDialog {
                 this.originStep.bind(this),
                 this.travelDateStep.bind(this),
                 this.confirmStep.bind(this),
-                this.finalStep.bind(this)
+                this.finalStep.bind(this),
             ]));
 
         this.initialDialogId = WATERFALL_DIALOG;
@@ -32,8 +39,8 @@ class BookingDialog extends CancelAndHelpDialog {
     /**
      * If a destination city has not been provided, prompt for one.
      */
-    async destinationStep(stepContext) {
-        const bookingDetails = stepContext.options;
+    private async destinationStep(stepContext: WaterfallStepContext): Promise<DialogTurnResult> {
+        const bookingDetails = stepContext.options as BookingDetails;
 
         if (!bookingDetails.destination) {
             return await stepContext.prompt(TEXT_PROMPT, { prompt: 'To what city would you like to travel?' });
@@ -45,8 +52,8 @@ class BookingDialog extends CancelAndHelpDialog {
     /**
      * If an origin city has not been provided, prompt for one.
      */
-    async originStep(stepContext) {
-        const bookingDetails = stepContext.options;
+    private async originStep(stepContext: WaterfallStepContext): Promise<DialogTurnResult> {
+        const bookingDetails = stepContext.options as BookingDetails;
 
         // Capture the response to the previous step's prompt
         bookingDetails.destination = stepContext.result;
@@ -61,8 +68,8 @@ class BookingDialog extends CancelAndHelpDialog {
      * If a travel date has not been provided, prompt for one.
      * This will use the DATE_RESOLVER_DIALOG.
      */
-    async travelDateStep(stepContext) {
-        const bookingDetails = stepContext.options;
+    private async travelDateStep(stepContext: WaterfallStepContext): Promise<DialogTurnResult> {
+        const bookingDetails = stepContext.options as BookingDetails;
 
         // Capture the results of the previous step
         bookingDetails.origin = stepContext.result;
@@ -76,8 +83,8 @@ class BookingDialog extends CancelAndHelpDialog {
     /**
      * Confirm the information the user has provided.
      */
-    async confirmStep(stepContext) {
-        const bookingDetails = stepContext.options;
+    private async confirmStep(stepContext: WaterfallStepContext): Promise<DialogTurnResult> {
+        const bookingDetails = stepContext.options as BookingDetails;
 
         // Capture the results of the previous step
         bookingDetails.travelDate = stepContext.result;
@@ -90,9 +97,9 @@ class BookingDialog extends CancelAndHelpDialog {
     /**
      * Complete the interaction and end the dialog.
      */
-    async finalStep(stepContext) {
+    private async finalStep(stepContext: WaterfallStepContext): Promise<DialogTurnResult> {
         if (stepContext.result === true) {
-            const bookingDetails = stepContext.options;
+            const bookingDetails = stepContext.options as BookingDetails;
 
             return await stepContext.endDialog(bookingDetails);
         } else {
@@ -100,10 +107,8 @@ class BookingDialog extends CancelAndHelpDialog {
         }
     }
 
-    isAmbiguous(timex) {
+    private isAmbiguous(timex: string): boolean {
         const timexPropery = new TimexProperty(timex);
         return !timexPropery.types.has('definite');
     }
 }
-
-module.exports.BookingDialog = BookingDialog;

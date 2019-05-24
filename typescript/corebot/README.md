@@ -14,7 +14,6 @@ This bot has been created using [Bot Framework](https://dev.botframework.com), i
 This sample **requires** prerequisites in order to run.
 
 ### Overview
-
 This bot uses [LUIS](https://www.luis.ai), an AI based cognitive service, to implement language understanding.
 
 - [Node.js](https://nodejs.org) version 10.14 or higher
@@ -38,10 +37,10 @@ If you wish to create a LUIS application via the CLI, these steps can be found i
     git clone https://github.com/microsoft/botbuilder-samples.git
     ```
 
-- In a terminal, navigate to `samples/javascript_nodejs/13.core-bot`
+- In a terminal, navigate to `samples/typescript_nodejs/13.core-bot`
 
     ```bash
-    cd samples/javascript_nodejs/13.core-bot
+    cd samples/typescript_nodejs/13.core-bot
     ```
 
 - Install modules
@@ -52,13 +51,19 @@ If you wish to create a LUIS application via the CLI, these steps can be found i
 
 - Setup LUIS
 
-    The prerequisites outlined above contain the steps necessary to provision a language understanding model on www.luis.ai.  Refer to _Create a LUIS Application to enable language understanding_ above for directions to setup and configure LUIS.
+    The prerequisite outlined above contain the steps necessary to provision a language understanding model on www.luis.ai.  Refer to _Create a LUIS Application to enable language understanding_ above for directions to setup and configure LUIS.
+
+- Build the bot source code
+
+    ```bash
+    npm run build
+    ```
 
 - Run the sample
 
-    ```bash
-    npm start
-    ```
+  ```bash
+  npm start
+  ```
 
 ## Testing the bot using Bot Framework Emulator
 
@@ -89,5 +94,6 @@ To learn more about deploying a bot to Azure, see [Deploy your bot to Azure](htt
 - [Azure Portal](https://portal.azure.com)
 - [Language Understanding using LUIS](https://docs.microsoft.com/en-us/azure/cognitive-services/luis/)
 - [Channels and Bot Connector Service](https://docs.microsoft.com/en-us/azure/bot-service/bot-concepts?view=azure-bot-service-4.0)
+- [TypeScript](https://www.typescriptlang.org)
 - [Restify](https://www.npmjs.com/package/restify)
 - [dotenv](https://www.npmjs.com/package/dotenv)

@@ -1,22 +1,27 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-const { LuisRecognizer } = require('botbuilder-ai');
+import { BookingDetails } from './bookingDetails';
 
-class LuisHelper {
+import { RecognizerResult, TurnContext } from 'botbuilder';
+
+import { LuisRecognizer } from 'botbuilder-ai';
+import { Logger } from '../logger';
+
+export class LuisHelper {
     /**
      * Returns an object with preformatted LUIS results for the bot's dialogs to consume.
-     * @param {*} logger
+     * @param {Logger} logger
      * @param {TurnContext} context
      */
-    static async executeLuisQuery(logger, context) {
-        const bookingDetails = {};
+    public static async executeLuisQuery(logger: Logger, context: TurnContext): Promise<BookingDetails> {
+        const bookingDetails = new BookingDetails();
 
         try {
             const recognizer = new LuisRecognizer({
                 applicationId: process.env.LuisAppId,
+                endpoint: `https://${ process.env.LuisAPIHostName }`,
                 endpointKey: process.env.LuisAPIKey,
-                endpoint: `https://${ process.env.LuisAPIHostName }`
             }, {}, true);
 
             const recognizerResult = await recognizer.recognize(context);
@@ -41,27 +46,33 @@ class LuisHelper {
         return bookingDetails;
     }
 
-    static parseCompositeEntity(result, compositeName, entityName) {
+    private static parseCompositeEntity(result: RecognizerResult, compositeName: string, entityName: string): string {
         const compositeEntity = result.entities[compositeName];
-        if (!compositeEntity || !compositeEntity[0]) return undefined;
+        if (!compositeEntity || !compositeEntity[0]) {
+            return undefined;
+        }
 
         const entity = compositeEntity[0][entityName];
-        if (!entity || !entity[0]) return undefined;
+        if (!entity || !entity[0]) {
+            return undefined;
+        }
 
         const entityValue = entity[0][0];
         return entityValue;
     }
 
-    static parseDatetimeEntity(result) {
-        const datetimeEntity = result.entities['datetime'];
-        if (!datetimeEntity || !datetimeEntity[0]) return undefined;
+    private static parseDatetimeEntity(result: RecognizerResult): string {
+        const datetimeEntity = result.entities.datetime;
+        if (!datetimeEntity || !datetimeEntity[0]) {
+            return undefined;
+        }
 
-        const timex = datetimeEntity[0]['timex'];
-        if (!timex || !timex[0]) return undefined;
+        const timex = datetimeEntity[0].timex;
+        if (!timex || !timex[0]) {
+            return undefined;
+        }
 
         const datetime = timex[0].split('T')[0];
         return datetime;
     }
 }
-
-module.exports.LuisHelper = LuisHelper;

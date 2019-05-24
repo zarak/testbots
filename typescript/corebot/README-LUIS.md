@@ -9,7 +9,6 @@ This README contains information on how to create and deploy a LUIS application.
   [Quickstart-create]: https://docs.microsoft.com/en-us/azure/cognitive-services/luis/get-started-portal-build-app
   [Quickstart-deploy]:https://docs.microsoft.com/en-us/azure/cognitive-services/luis/get-started-portal-deploy-app
 
-
 ## Table of Contents:
 
 - [Prerequisites](#Prerequisites)
@@ -129,6 +128,7 @@ ___
 
 ```bash
 # Use Azure CLI to create the LUIS Key resource on Azure
+
 az cognitiveservices account create --kind "luis" --name "NewLuisResourceName" --sku "S0" --location "westus" --subscription "AzureSubscriptionGuid" -g "ResourceGroupName"
 ```
 
@@ -153,6 +153,8 @@ The command will output a response similar to the JSON below:
   "type": "Microsoft.CognitiveServices/accounts"
 }
 ```
+
+
 
 Take the output from the previous command and create a JSON file in the following format:
 
@@ -183,6 +185,7 @@ This will return an object that looks like this:
 ```
 
 The value needed for the next step is the `"accessToken"`.
+
 
 ### 3. Use `luis add appazureaccount` to pair your LUIS resource with a LUIS Application
 

@@ -1,28 +1,26 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-// index.js is used to setup and configure your bot
+import { config } from 'dotenv';
+import * as path from 'path';
+import * as restify from 'restify';
 
-// Import required pckages
-const path = require('path');
-const restify = require('restify');
+// Import required bot services.
+// See https://aka.ms/bot-services to learn more about the different parts of a bot.
+import { BotFrameworkAdapter, ConversationState, MemoryStorage, UserState } from 'botbuilder';
 
-// Import required bot services. See https://aka.ms/bot-services to learn more about the different parts of a bot.
-const { BotFrameworkAdapter, MemoryStorage, ConversationState, UserState } = require('botbuilder');
-
-// This bot's main dialog.
-const { DialogAndWelcomeBot } = require('./bots/dialogAndWelcomeBot');
-const { MainDialog } = require('./dialogs/mainDialog');
+import { DialogAndWelcomeBot } from './bots/dialogAndWelcomeBot';
+import { MainDialog } from './dialogs/mainDialog';
 
 // Note: Ensure you have a .env file and include LuisAppId, LuisAPIKey and LuisAPIHostName.
-const ENV_FILE = path.join(__dirname, '.env');
-require('dotenv').config({ path: ENV_FILE });
+const ENV_FILE = path.join(__dirname, '..', '.env');
+const loadFromEnv = config({ path: ENV_FILE });
 
 // Create adapter.
 // See https://aka.ms/about-bot-adapter to learn more about adapters.
 const adapter = new BotFrameworkAdapter({
-    appId: process.env.MicrosoftAppId,
-    appPassword: process.env.MicrosoftAppPassword
+    appId: process.env.MicrosoftAppID,
+    appPassword: process.env.MicrosoftAppPassword,
 });
 
 // Catch-all for errors.
@@ -39,7 +37,8 @@ adapter.onTurnError = async (context, error) => {
 
 // Define a state store for your bot. See https://aka.ms/about-bot-state to learn more about using MemoryStorage.
 // A bot requires a state store to persist the dialog and user state between messages.
-let conversationState, userState;
+let conversationState: ConversationState;
+let userState: UserState;
 
 // For local development, in-memory storage is used.
 // CAUTION: The Memory Storage used here is for local bot debugging only. When the bot
@@ -56,10 +55,11 @@ const dialog = new MainDialog(logger);
 const bot = new DialogAndWelcomeBot(conversationState, userState, dialog, logger);
 
 // Create HTTP server
-let server = restify.createServer();
-server.listen(process.env.port || process.env.PORT || 3978, function() {
+const server = restify.createServer();
+server.listen(process.env.port || process.env.PORT || 3978, () => {
     console.log(`\n${ server.name } listening to ${ server.url }`);
     console.log(`\nGet Bot Framework Emulator: https://aka.ms/botframework-emulator`);
+    console.log(`\nSee https://aka.ms/connect-to-bot for more information`);
 });
 
 // Listen for incoming activities and route them to your bot main dialog.
