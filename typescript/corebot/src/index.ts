@@ -31,10 +31,14 @@ const adapter = new BotFrameworkAdapter({
 
 // Catch-all for errors.
 adapter.onTurnError = async (context, error) => {
+    const appInsightsLogger: TelemetryLoggerMiddleware = new TelemetryLoggerMiddleware(TELEMETRY_CLIENT, true,  true);
+    adapter.use(appInsightsLogger);
     // This check writes out errors to console log
     // NOTE: In production environment, you should consider logging this to Azure
     //       application insights.
     console.error(`\n [onTurnError]: ${ error }`);
+    TELEMETRY_CLIENT.trackException({ exception: error });
+
     // Send a message to the user
     await context.sendActivity(`Oops. Something went wrong!`);
     // Clear out state
