@@ -2,9 +2,10 @@
 // Licensed under the MIT License.
 
 import {
-    AuthProviderCallback,
+    // AuthProviderCallback,
     Client,
-    GraphError } from '@microsoft/microsoft-graph-client';
+    // GraphError 
+} from '@microsoft/microsoft-graph-client';
 import { User } from '@microsoft/microsoft-graph-types';
 
 /**
@@ -21,7 +22,7 @@ export class SimpleGraphClient {
         // Get an Authenticated Microsoft Graph client using the token issued to the user.
         this.graphClient = Client.init({
             authProvider: (done) => {
-                done('error no token', this.token); // First parameter takes an error if you can't get an access token.
+                done(null, this.token); // First parameter takes an error if you can't get an access token.
             }
         });
     }

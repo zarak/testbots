@@ -11,29 +11,13 @@ import {
     WaterfallDialog,
     WaterfallStepContext,
 } from 'botbuilder-dialogs';
+import { FeedbackInfo, UserFeedbackInfo } from '../interfaces';
 import { CancelAndHelpDialog } from './cancelAndHelpDialog';
 
 const CONFIRM_PROMPT = 'confirmPrompt';
 const TEXT_PROMPT =  'textPrompt';
 const USER_STATE_PROPERTY = 'userStateProperty';
 const WATERFALL_DIALOG = 'waterfallDialog';
-
-interface FeedbackInfo {
-    botResponse: string;
-    conversationId: string;
-    currentQuery: string;
-    calledTrain: boolean;
-    source: string | undefined;
-}
-
-interface UserFeedbackInfo {
-    type: string;
-    query: string | undefined;
-    botResponse: string | undefined;
-    conversationId: string | undefined;
-    helpful: boolean;
-    comment: string | undefined;
-}
 
 export class FeedbackDialog extends CancelAndHelpDialog {
     // private feedbackPropertyAccessor: StatePropertyAccessor;

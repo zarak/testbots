@@ -24,7 +24,7 @@ class SimpleGraphClient {
         // Get an Authenticated Microsoft Graph client using the token issued to the user.
         this.graphClient = microsoft_graph_client_1.Client.init({
             authProvider: (done) => {
-                done('error no token', this.token); // First parameter takes an error if you can't get an access token.
+                done(null, this.token); // First parameter takes an error if you can't get an access token.
             }
         });
     }

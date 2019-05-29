@@ -1,5 +1,6 @@
 import { CardFactory, ConversationState, MemoryStorage, StatePropertyAccessor } from 'botbuilder';
 import { DialogTurnResult, DialogTurnStatus, WaterfallDialog, WaterfallStepContext } from 'botbuilder-dialogs';
+import { FeedbackInfo, FeedbackRecords, QnAProperty } from '../interfaces';
 import { TelemetryQnAMaker } from '../middleware/telemetry/telemetryQnAMaker';
 
 import {
@@ -14,32 +15,6 @@ import { CancelAndHelpDialog } from './cancelAndHelpDialog';
 const CONVERSATION_STATE_PROPERTY = 'conversationStateProperty';
 const USER_STATE_PROPERTY = 'userStateProperty';
 const WATERFALL_DIALOG = 'waterfallDialog';
-
-interface FeedbackInfo {
-    botResponse: string;
-    conversationId: string;
-    currentQuery: string;
-    calledTrain: boolean;
-    source: string | undefined;
-}
-
-interface QnAProperty {
-    qnaData: QnAMakerResult[];
-    activeLearningDialogName: string;
-    currentQuery: string;
-    source: string | undefined;
-    calledTrain: boolean;
-}
-
-interface FeedbackRecords {
-    FeedbackRecords: [
-        {
-            UserId?: string,
-            UserQuestion?: string,
-            QnaId?: number,
-        }
-    ];
-}
 
 export class ClusteringDialog extends CancelAndHelpDialog {
     /**
@@ -117,6 +92,7 @@ export class ClusteringDialog extends CancelAndHelpDialog {
         qnaPropertyData.qnaData = filteredResponses;
         await this.qnaPropertyAccessor.set(stepContext.context, qnaPropertyData);
 
+        // Check for more than one clustered question
         if (filteredResponses.length > 1) {
             const suggestedQuestions: string[] = [];
             filteredResponses.forEach( (element) => {
